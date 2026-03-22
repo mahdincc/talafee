@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talafee | Admin Panel</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* ==================== CSS RESET & DESIGN TOKENS ==================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-background: #FAFAFA;
+      --color-surface: #FFFFFF;
+      --color-surface-elevated: #FFFFFF;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B7280;
+      --color-text-tertiary: #9CA3AF;
+      --color-border: #E5E7EB;
+      --color-border-subtle: #F3F4F6;
+      --color-border-focus: #D4AF37;
+      --color-gold-50: #FDF8E8;
+      --color-gold-100: #F9EDCC;
+      --color-gold-200: #F0D98C;
+      --color-gold-300: #E5C560;
+      --color-gold-400: #D4AF37;
+      --color-gold-500: #C5A028;
+      --color-gold-600: #A68523;
+      --color-gold-700: #8B6914;
+      --color-success: #10B981;
+      --color-success-bg: #ECFDF5;
+      --color-danger: #EF4444;
+      --color-danger-bg: #FEF2F2;
+      --color-warning: #F59E0B;
+      --color-warning-bg: #FFFBEB;
+      --color-info: #3B82F6;
+      --color-info-bg: #EFF6FF;
+      --color-purple: #8B5CF6;
+      --color-purple-bg: #F5F3FF;
+      --font-display: 'Outfit', 'Vazirmatn', system-ui, sans-serif;
+      --font-body: 'Work Sans', 'Vazirmatn', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+      --font-persian: 'Vazirmatn', 'Tahoma', sans-serif;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px;
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms;
+    }
+
+    [data-theme="dark"] {
+      --color-background: #0F0F0F;
+      --color-surface: #1A1A1A;
+      --color-surface-elevated: #242424;
+      --color-text-primary: #FAFAFA;
+      --color-text-secondary: #A1A1AA;
+      --color-text-tertiary: #71717A;
+      --color-border: #27272A;
+      --color-border-subtle: #1F1F23;
+      --color-gold-50: #1C1A0F;
+      --color-gold-100: #2A2510;
+      --color-success-bg: #052E16;
+      --color-danger-bg: #450A0A;
+      --color-warning-bg: #422006;
+      --color-info-bg: #172554;
+      --color-purple-bg: #2E1065;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: var(--font-persian);
+      background-color: var(--color-background);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ==================== LAYOUT ==================== */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ==================== SIDEBAR ==================== */
+    .sidebar {
+      width: 280px;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      padding: var(--space-4);
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    [dir="ltr"] .sidebar {
+      right: auto;
+      left: 0;
+      border-left: none;
+      border-right: 1px solid var(--color-border);
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-4);
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .admin-badge {
+      font-size: 0.625rem;
+      background: var(--color-danger);
+      color: white;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-title {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-2);
+      padding: 0 var(--space-3);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: right;
+    }
+
+    [dir="ltr"] .nav-item {
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    .nav-item.active {
+      background: #FEE2E2;
+      color: var(--color-danger);
+    }
+
+    .nav-item i {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-badge {
+      margin-right: auto;
+      background: var(--color-success);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+    }
+
+    [dir="ltr"] .nav-badge {
+      margin-right: 0;
+      margin-left: auto;
+    }
+
+    .sidebar-footer {
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .admin-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-danger-bg);
+      border-radius: var(--radius-lg);
+    }
+
+    .admin-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--color-danger), #B91C1C);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    .admin-info {
+      flex: 1;
+    }
+
+    .admin-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .admin-role {
+      font-size: 0.75rem;
+      color: var(--color-danger);
+    }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .main-content {
+      flex: 1;
+      margin-right: 280px;
+      padding: var(--space-6);
+    }
+
+    [dir="ltr"] .main-content {
+      margin-right: 0;
+      margin-left: 280px;
+    }
+
+    .page-header {
+      margin-bottom: var(--space-6);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+
+    .page-subtitle {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* ==================== STATS GRID ==================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+    }
+
+    .stat-card.gold::before { background: var(--color-gold-400); }
+    .stat-card.green::before { background: var(--color-success); }
+    .stat-card.blue::before { background: var(--color-info); }
+    .stat-card.orange::before { background: var(--color-warning); }
+    .stat-card.purple::before { background: var(--color-purple); }
+    .stat-card.red::before { background: var(--color-danger); }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .stat-icon.gold { background: var(--color-gold-100); color: var(--color-gold-600); }
+    .stat-icon.green { background: var(--color-success-bg); color: var(--color-success); }
+    .stat-icon.blue { background: var(--color-info-bg); color: var(--color-info); }
+    .stat-icon.orange { background: var(--color-warning-bg); color: var(--color-warning); }
+    .stat-icon.purple { background: var(--color-purple-bg); color: var(--color-purple); }
+    .stat-icon.red { background: var(--color-danger-bg); color: var(--color-danger); }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    .stat-change {
+      font-size: 0.75rem;
+      margin-top: var(--space-2);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .stat-change.up { color: var(--color-success); }
+    .stat-change.down { color: var(--color-danger); }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .card-title i {
+      color: var(--color-gold-400);
+    }
+
+    /* ==================== CHARTS ==================== */
+    .chart-container {
+      height: 300px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: var(--space-4);
+      gap: var(--space-2);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+    }
+
+    .chart-bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 40px;
+      background: linear-gradient(to top, var(--color-gold-400), var(--color-gold-200));
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .chart-bar:hover {
+      background: linear-gradient(to top, var(--color-gold-500), var(--color-gold-300));
+    }
+
+    .chart-label {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      text-align: center;
+    }
+
+    /* ==================== TABLES ==================== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .data-table th {
+      text-align: right;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-background);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    [dir="ltr"] .data-table th {
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover td {
+      background: var(--color-gold-50);
+    }
+
+    .table-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-gold-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-gold-600);
+    }
+
+    .table-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    /* ==================== STATUS BADGES ==================== */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-badge.active {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+
+    .status-badge.inactive {
+      background: var(--color-border);
+      color: var(--color-text-tertiary);
+    }
+
+    .status-badge.pending {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background: var(--color-gold-50);
+      border-color: var(--color-gold-200);
+      color: var(--color-gold-700);
+    }
+
+    .btn-primary {
+      background: var(--color-gold-400);
+      border-color: var(--color-gold-400);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-gold-500);
+      border-color: var(--color-gold-500);
+    }
+
+    .btn-danger {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--color-danger-bg);
+    }
+
+    .btn-sm {
+      padding: var(--space-1) var(--space-2);
+      font-size: 0.75rem;
+    }
+
+    .btn-icon {
+      padding: var(--space-2);
+    }
+
+    /* ==================== FORMS ==================== */
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      font-size: 0.875rem;
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--color-gold-400);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+
+    /* ==================== GRID LAYOUTS ==================== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    @media (min-width: 1024px) {
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ==================== SECTIONS ==================== */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* ==================== PROVIDER CARD ==================== */
+    .provider-card {
+      background: var(--color-background);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .provider-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--color-gold-600);
+      font-size: 1rem;
+    }
+
+    .provider-info {
+      flex: 1;
+    }
+
+    .provider-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .provider-meta {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .provider-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    /* ==================== REVENUE CARD ==================== */
+    .revenue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .revenue-item:last-child {
+      border-bottom: none;
+    }
+
+    .revenue-label {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .revenue-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* ==================== ACTIVITY LIST ==================== */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .activity-time {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    /* ==================== MOBILE ==================== */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 var(--space-4);
+      align-items: center;
+      justify-content: space-between;
+      z-index: 99;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(100%);
+      }
+
+      [dir="ltr"] .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-right: 0;
+        margin-left: 0;
+        padding-top: calc(60px + var(--space-6));
+      }
+    }
+
+    /* ==================== PROGRESS BAR ==================== */
+    .progress-bar {
+      height: 8px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-gold-400), var(--color-gold-500));
+      border-radius: var(--radius-full);
+      transition: width 0.5s var(--ease-out);
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div style="display: flex; align-items: center; gap: var(--space-3);">
+      <div class="sidebar-logo" style="width: 32px; height: 32px;">
+        <i data-lucide="shield" style="width: 16px; height: 16px;"></i>
+      </div>
+      <span style="font-weight: 600;">Admin Panel</span>
+    </div>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+    </button>
+  </header>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+        </div>
+        <div>
+          <div class="sidebar-title">Talafee</div>
+          <span class="admin-badge">Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="نمای کلی" data-en="Overview">نمای کلی</div>
+          <a href="index.html" class="nav-item">
+            <i data-lucide="home"></i>
+            <span data-fa="صفحه اصلی سایت" data-en="Main Site">صفحه اصلی سایت</span>
+          </a>
+          <button class="nav-item active" onclick="showSection('dashboard')">
+            <i data-lucide="layout-dashboard"></i>
+            <span data-fa="داشبورد" data-en="Dashboard">داشبورد</span>
+          </button>
+          <button class="nav-item" onclick="showSection('analytics')">
+            <i data-lucide="bar-chart-3"></i>
+            <span data-fa="آنالیتیکس" data-en="Analytics">آنالیتیکس</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="مدیریت" data-en="Management">مدیریت</div>
+          <button class="nav-item" onclick="showSection('providers')">
+            <i data-lucide="store"></i>
+            <span data-fa="پلتفرم‌ها" data-en="Providers">پلتفرم‌ها</span>
+            <span class="nav-badge">10</span>
+          </button>
+          <button class="nav-item" onclick="showSection('users')">
+            <i data-lucide="users"></i>
+            <span data-fa="کاربران" data-en="Users">کاربران</span>
+          </button>
+          <button class="nav-item" onclick="showSection('affiliates')">
+            <i data-lucide="link"></i>
+            <span data-fa="همکاری در فروش" data-en="Affiliates">همکاری در فروش</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="مالی" data-en="Financial">مالی</div>
+          <button class="nav-item" onclick="showSection('revenue')">
+            <i data-lucide="wallet"></i>
+            <span data-fa="درآمد" data-en="Revenue">درآمد</span>
+          </button>
+          <button class="nav-item" onclick="showSection('conversions')">
+            <i data-lucide="target"></i>
+            <span data-fa="تبدیل‌ها" data-en="Conversions">تبدیل‌ها</span>
+          </button>
+          <button class="nav-item" onclick="showSection('wallets')">
+            <i data-lucide="landmark"></i>
+            <span data-fa="کیف پول‌ها" data-en="Wallets">کیف پول‌ها</span>
+            <span class="nav-badge" style="background: var(--color-warning);">5</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="سیستم" data-en="System">سیستم</div>
+          <button class="nav-item" onclick="showSection('settings')">
+            <i data-lucide="settings"></i>
+            <span data-fa="تنظیمات" data-en="Settings">تنظیمات</span>
+          </button>
+          <button class="nav-item" onclick="showSection('logs')">
+            <i data-lucide="file-text"></i>
+            <span data-fa="لاگ‌ها" data-en="Logs">لاگ‌ها</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="admin-card">
+          <div class="admin-avatar">AD</div>
+          <div class="admin-info">
+            <div class="admin-name">Admin User</div>
+            <div class="admin-role">Super Admin</div>
+          </div>
+          <button class="btn btn-icon btn-sm" title="Logout">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section class="section active" id="section-dashboard">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-fa="داشبورد مدیریت" data-en="Admin Dashboard">داشبورد مدیریت</h1>
+            <p class="page-subtitle" data-fa="خوش آمدید! در اینجا خلاصه‌ای از عملکرد سایت را مشاهده کنید" data-en="Welcome! Here's an overview of your site's performance">خوش آمدید! در اینجا خلاصه‌ای از عملکرد سایت را مشاهده کنید</p>
+          </div>
+          <div style="display: flex; gap: var(--space-2);">
+            <button class="btn">
+              <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+              <span data-fa="خروجی گزارش" data-en="Export Report">خروجی گزارش</span>
+            </button>
+            <button class="btn btn-primary">
+              <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+              <span data-fa="بروزرسانی" data-en="Refresh">بروزرسانی</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card gold">
+            <div class="stat-icon gold">
+              <i data-lucide="mouse-pointer-click" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">12,459</div>
+            <div class="stat-label" data-fa="کل کلیک‌ها" data-en="Total Clicks">کل کلیک‌ها</div>
+            <div class="stat-change up">
+              <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+              +23.5%
+            </div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon green">
+              <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">342</div>
+            <div class="stat-label" data-fa="تبدیل‌ها" data-en="Conversions">تبدیل‌ها</div>
+            <div class="stat-change up">
+              <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+              +12.3%
+            </div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon blue">
+              <i data-lucide="percent" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">2.74%</div>
+            <div class="stat-label" data-fa="نرخ تبدیل" data-en="Conv. Rate">نرخ تبدیل</div>
+            <div class="stat-change down">
+              <i data-lucide="trending-down" style="width: 12px; height: 12px;"></i>
+              -0.5%
+            </div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon orange">
+              <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">$8,542</div>
+            <div class="stat-label" data-fa="درآمد ماه" data-en="Monthly Revenue">درآمد ماه</div>
+            <div class="stat-change up">
+              <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+              +31.2%
+            </div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon purple">
+              <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">1,892</div>
+            <div class="stat-label" data-fa="کاربران فعال" data-en="Active Users">کاربران فعال</div>
+            <div class="stat-change up">
+              <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+              +8.7%
+            </div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon red">
+              <i data-lucide="store" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">10</div>
+            <div class="stat-label" data-fa="پلتفرم فعال" data-en="Active Providers">پلتفرم فعال</div>
+            <div class="stat-change up">
+              <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+              +2
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Revenue Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                <span data-fa="نمودار درآمد" data-en="Revenue Chart">نمودار درآمد</span>
+              </h3>
+              <select class="form-select" style="width: auto;">
+                <option data-fa="۷ روز اخیر" data-en="Last 7 days">۷ روز اخیر</option>
+                <option data-fa="۳۰ روز اخیر" data-en="Last 30 days">۳۰ روز اخیر</option>
+                <option data-fa="۳ ماه اخیر" data-en="Last 3 months">۳ ماه اخیر</option>
+              </select>
+            </div>
+            <div class="chart-container" id="revenueChart"></div>
+          </div>
+
+          <!-- Top Providers -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="trophy" style="width: 18px; height: 18px;"></i>
+                <span data-fa="پلتفرم‌های برتر" data-en="Top Providers">پلتفرم‌های برتر</span>
+              </h3>
+              <button class="btn btn-sm" onclick="showSection('providers')">
+                <span data-fa="مشاهده همه" data-en="View All">مشاهده همه</span>
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-fa="پلتفرم" data-en="Provider">پلتفرم</th>
+                  <th data-fa="کلیک" data-en="Clicks">کلیک</th>
+                  <th data-fa="تبدیل" data-en="Conv.">تبدیل</th>
+                  <th data-fa="درآمد" data-en="Revenue">درآمد</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="table-user"><div class="table-avatar">TL</div><span>طلالاین</span></div></td>
+                  <td style="font-family: var(--font-mono);">3,421</td>
+                  <td style="font-family: var(--font-mono);">98</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-success);">$2,450</td>
+                </tr>
+                <tr>
+                  <td><div class="table-user"><div class="table-avatar">TB</div><span>طلابازار</span></div></td>
+                  <td style="font-family: var(--font-mono);">2,876</td>
+                  <td style="font-family: var(--font-mono);">72</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-success);">$1,890</td>
+                </tr>
+                <tr>
+                  <td><div class="table-user"><div class="table-avatar">TG</div><span>تکنوگلد</span></div></td>
+                  <td style="font-family: var(--font-mono);">2,134</td>
+                  <td style="font-family: var(--font-mono);">56</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-success);">$1,420</td>
+                </tr>
+                <tr>
+                  <td><div class="table-user"><div class="table-avatar">ZG</div><span>زرگلد</span></div></td>
+                  <td style="font-family: var(--font-mono);">1,856</td>
+                  <td style="font-family: var(--font-mono);">48</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-success);">$1,180</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card" style="margin-top: var(--space-6);">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
+              <span data-fa="فعالیت‌های اخیر" data-en="Recent Activity">فعالیت‌های اخیر</span>
+            </h3>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+                <i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">تبدیل جدید از <strong>طلالاین</strong> - $245</div>
+                <div class="activity-time">۵ دقیقه پیش</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background: var(--color-info-bg); color: var(--color-info);">
+                <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">کاربر جدید ثبت‌نام کرد: <strong>محمد رضایی</strong></div>
+                <div class="activity-time">۱۵ دقیقه پیش</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background: var(--color-gold-100); color: var(--color-gold-600);">
+                <i data-lucide="mouse-pointer-click" style="width: 16px; height: 16px;"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">۱۰۰ کلیک جدید در ساعت گذشته</div>
+                <div class="activity-time">۱ ساعت پیش</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background: var(--color-purple-bg); color: var(--color-purple);">
+                <i data-lucide="store" style="width: 16px; height: 16px;"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">پلتفرم <strong>مصباح گلد</strong> اضافه شد</div>
+                <div class="activity-time">۲ ساعت پیش</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics Section -->
+      <section class="section" id="section-analytics">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-fa="آنالیتیکس" data-en="Analytics">آنالیتیکس</h1>
+            <p class="page-subtitle" data-fa="تحلیل دقیق عملکرد سایت" data-en="Detailed site performance analysis">تحلیل دقیق عملکرد سایت</p>
+          </div>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="stat-card gold">
+            <div class="stat-value">$149.76</div>
+            <div class="stat-label">RPM (Revenue per 1K)</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-value">$0.68</div>
+            <div class="stat-label">EPC (Earnings per Click)</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-value">12:1</div>
+            <div class="stat-label">ROAS</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-value">$24.97</div>
+            <div class="stat-label">Avg. Commission</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+                <span data-fa="توزیع ترافیک" data-en="Traffic Distribution">توزیع ترافیک</span>
+              </h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>طلالاین</span>
+                  <span style="font-family: var(--font-mono);">35%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 35%;"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>طلابازار</span>
+                  <span style="font-family: var(--font-mono);">25%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 25%;"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>تکنوگلد</span>
+                  <span style="font-family: var(--font-mono);">18%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 18%;"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>زرگلد</span>
+                  <span style="font-family: var(--font-mono);">12%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 12%;"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>سایر</span>
+                  <span style="font-family: var(--font-mono);">10%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 10%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="mouse-pointer" style="width: 18px; height: 18px;"></i>
+                <span data-fa="منبع کلیک" data-en="Click Source">منبع کلیک</span>
+              </h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>Buy Button (Card)</span>
+                  <span style="font-family: var(--font-mono);">68%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 68%; background: linear-gradient(90deg, var(--color-success), #059669);"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>Buy Button (Table)</span>
+                  <span style="font-family: var(--font-mono);">22%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 22%; background: linear-gradient(90deg, var(--color-info), #2563EB);"></div></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span>Direct Link</span>
+                  <span style="font-family: var(--font-mono);">10%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 10%; background: linear-gradient(90deg, var(--color-purple), #7C3AED);"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Providers Section -->
+      <section class="section" id="section-providers">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-fa="مدیریت پلتفرم‌ها" data-en="Manage Providers">مدیریت پلتفرم‌ها</h1>
+            <p class="page-subtitle" data-fa="مشاهده و مدیریت پلتفرم‌های همکار" data-en="View and manage partner platforms">مشاهده و مدیریت پلتفرم‌های همکار</p>
+          </div>
+          <button class="btn btn-primary">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+            <span data-fa="افزودن پلتفرم" data-en="Add Provider">افزودن پلتفرم</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="provider-card">
+              <div class="provider-logo">TL</div>
+              <div class="provider-info">
+                <div class="provider-name">طلالاین (Taline)</div>
+                <div class="provider-meta">
+                  <span>Commission: 25%</span>
+                  <span>•</span>
+                  <span>Clicks: 3,421</span>
+                  <span>•</span>
+                  <span class="status-badge active">فعال</span>
+                </div>
+              </div>
+              <div class="provider-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="provider-card">
+              <div class="provider-logo">TG</div>
+              <div class="provider-info">
+                <div class="provider-name">تکنوگلد (Technogold)</div>
+                <div class="provider-meta">
+                  <span>Commission: 1%</span>
+                  <span>•</span>
+                  <span>Clicks: 2,134</span>
+                  <span>•</span>
+                  <span class="status-badge active">فعال</span>
+                </div>
+              </div>
+              <div class="provider-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="provider-card">
+              <div class="provider-logo">ZG</div>
+              <div class="provider-info">
+                <div class="provider-name">زرگلد (ZarGold)</div>
+                <div class="provider-meta">
+                  <span>Commission: 500K CPA</span>
+                  <span>•</span>
+                  <span>Clicks: 1,856</span>
+                  <span>•</span>
+                  <span class="status-badge active">فعال</span>
+                </div>
+              </div>
+              <div class="provider-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="provider-card">
+              <div class="provider-logo">TB</div>
+              <div class="provider-info">
+                <div class="provider-name">طلابازار (TalaBazar)</div>
+                <div class="provider-meta">
+                  <span>Commission: 1%</span>
+                  <span>•</span>
+                  <span>Clicks: 2,876</span>
+                  <span>•</span>
+                  <span class="status-badge active">فعال</span>
+                </div>
+              </div>
+              <div class="provider-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="provider-card">
+              <div class="provider-logo">G+</div>
+              <div class="provider-info">
+                <div class="provider-name">گلدپلاس (GoldPlus)</div>
+                <div class="provider-meta">
+                  <span>Commission: 0.8%</span>
+                  <span>•</span>
+                  <span>Clicks: 892</span>
+                  <span>•</span>
+                  <span class="status-badge pending">در انتظار</span>
+                </div>
+              </div>
+              <div class="provider-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Users Section -->
+      <section class="section" id="section-users">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-fa="مدیریت کاربران" data-en="User Management">مدیریت کاربران</h1>
+            <p class="page-subtitle" data-fa="مشاهده و مدیریت کاربران سایت" data-en="View and manage site users">مشاهده و مدیریت کاربران سایت</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div style="display: flex; gap: var(--space-2);">
+              <input type="search" class="form-input" placeholder="جستجوی کاربر..." style="width: 250px;">
+              <select class="form-select" style="width: 150px;">
+                <option>همه</option>
+                <option>فعال</option>
+                <option>غیرفعال</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-fa="کاربر" data-en="User">کاربر</th>
+                <th data-fa="ایمیل" data-en="Email">ایمیل</th>
+                <th data-fa="تاریخ عضویت" data-en="Joined">تاریخ عضویت</th>
+                <th data-fa="هشدارها" data-en="Alerts">هشدارها</th>
+                <th data-fa="وضعیت" data-en="Status">وضعیت</th>
+                <th data-fa="عملیات" data-en="Actions">عملیات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="table-user"><div class="table-avatar">AG</div><span>علی قاسمی</span></div></td>
+                <td style="direction: ltr;">ali@example.com</td>
+                <td>۱۴۰۴/۱۰/۱۵</td>
+                <td>3</td>
+                <td><span class="status-badge active">فعال</span></td>
+                <td>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="eye" style="width: 14px; height: 14px;"></i></button>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td><div class="table-user"><div class="table-avatar">MR</div><span>محمد رضایی</span></div></td>
+                <td style="direction: ltr;">mohammad@example.com</td>
+                <td>۱۴۰۴/۱۱/۰۲</td>
+                <td>5</td>
+                <td><span class="status-badge active">فعال</span></td>
+                <td>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="eye" style="width: 14px; height: 14px;"></i></button>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td><div class="table-user"><div class="table-avatar">ZK</div><span>زهرا کریمی</span></div></td>
+                <td style="direction: ltr;">zahra@example.com</td>
+                <td>۱۴۰۴/۱۱/۲۰</td>
+                <td>1</td>
+                <td><span class="status-badge active">فعال</span></td>
+                <td>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="eye" style="width: 14px; height: 14px;"></i></button>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td><div class="table-user"><div class="table-avatar">HA</div><span>حسین احمدی</span></div></td>
+                <td style="direction: ltr;">hossein@example.com</td>
+                <td>۱۴۰۴/۱۲/۰۵</td>
+                <td>0</td>
+                <td><span class="status-badge inactive">غیرفعال</span></td>
+                <td>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="eye" style="width: 14px; height: 14px;"></i></button>
+                  <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Revenue Section -->
+      <section class="section" id="section-revenue">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-fa="گزارش درآمد" data-en="Revenue Report">گزارش درآمد</h1>
+            <p class="page-subtitle" data-fa="مشاهده درآمد و کمیسیون‌ها" data-en="View earnings and commissions">مشاهده درآمد و کمیسیون‌ها</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="wallet" style="width: 18px; height: 18px;"></i>
+                <span data-fa="خلاصه درآمد" data-en="Revenue Summary">خلاصه درآمد</span>
+              </h3>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">درآمد این ماه</span>
+              <span class="revenue-value" style="color: var(--color-success);">$8,542</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">درآمد ماه قبل</span>
+              <span class="revenue-value">$6,512</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">در انتظار پرداخت</span>
+              <span class="revenue-value" style="color: var(--color-warning);">$1,245</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">کل پرداخت شده</span>
+              <span class="revenue-value">$45,890</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">میانگین ماهانه</span>
+              <span class="revenue-value">$5,736</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="trending-up" style="width: 18px; height: 18px;"></i>
+                <span data-fa="درآمد به تفکیک پلتفرم" data-en="Revenue by Provider">درآمد به تفکیک پلتفرم</span>
+              </h3>
+            </div>
+            <div class="revenue-item">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="table-avatar" style="width: 24px; height: 24px; font-size: 0.625rem;">TL</div>
+                <span>طلالاین</span>
+              </div>
+              <span class="revenue-value">$2,450</span>
+            </div>
+            <div class="revenue-item">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="table-avatar" style="width: 24px; height: 24px; font-size: 0.625rem;">TB</div>
+                <span>طلابازار</span>
+              </div>
+              <span class="revenue-value">$1,890</span>
+            </div>
+            <div class="revenue-item">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="table-avatar" style="width: 24px; height: 24px; font-size: 0.625rem;">TG</div>
+                <span>تکنوگلد</span>
+              </div>
+              <span class="revenue-value">$1,420</span>
+            </div>
+            <div class="revenue-item">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="table-avatar" style="width: 24px; height: 24px; font-size: 0.625rem;">ZG</div>
+                <span>زرگلد</span>
+              </div>
+              <span class="revenue-value">$1,180</span>
+            </div>
+            <div class="revenue-item">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="table-avatar" style="width: 24px; height: 24px; font-size: 0.625rem;">++</div>
+                <span>سایر</span>
+              </div>
+              <span class="revenue-value">$1,602</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Other sections placeholders -->
+      <section class="section" id="section-affiliates">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="مدیریت همکاری در فروش" data-en="Affiliate Management">مدیریت همکاری در فروش</h1>
+        </div>
+        <div class="card">
+          <p style="text-align: center; padding: var(--space-8); color: var(--color-text-tertiary);">
+            <i data-lucide="construction" style="width: 48px; height: 48px; margin-bottom: var(--space-4); display: block; margin-left: auto; margin-right: auto; opacity: 0.5;"></i>
+            این بخش در حال توسعه است...
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="section-conversions">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="گزارش تبدیل‌ها" data-en="Conversion Report">گزارش تبدیل‌ها</h1>
+        </div>
+        <div class="card">
+          <p style="text-align: center; padding: var(--space-8); color: var(--color-text-tertiary);">
+            <i data-lucide="construction" style="width: 48px; height: 48px; margin-bottom: var(--space-4); display: block; margin-left: auto; margin-right: auto; opacity: 0.5;"></i>
+            این بخش در حال توسعه است...
+          </p>
+        </div>
+      </section>
+
+      <!-- Wallets Management Section -->
+      <section class="section" id="section-wallets">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+          <div>
+            <h1 class="page-title" data-fa="مدیریت کیف پول‌ها" data-en="Wallet Management">مدیریت کیف پول‌ها</h1>
+            <p class="page-subtitle" data-fa="مدیریت موجودی و تراکنش‌های کاربران" data-en="Manage user balances and transactions">مدیریت موجودی و تراکنش‌های کاربران</p>
+          </div>
+          <div style="display: flex; gap: var(--space-2);">
+            <button class="btn">
+              <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+              <span data-fa="خروجی اکسل" data-en="Export Excel">خروجی اکسل</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Wallet Stats -->
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="stat-card">
+            <div class="stat-icon gold">
+              <i data-lucide="landmark" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">۴۵۲</div>
+            <div class="stat-label" data-fa="کل کیف پول‌ها" data-en="Total Wallets">کل کیف پول‌ها</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">۱۲.۵B</div>
+            <div class="stat-label" data-fa="کل موجودی ریالی" data-en="Total Cash Balance">کل موجودی ریالی</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i data-lucide="coins" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">۸۵۴.۲</div>
+            <div class="stat-label" data-fa="کل موجودی طلا (گرم)" data-en="Total Gold (grams)">کل موجودی طلا (گرم)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red">
+              <i data-lucide="clock" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">۵</div>
+            <div class="stat-label" data-fa="درخواست برداشت در انتظار" data-en="Pending Withdrawals">درخواست برداشت در انتظار</div>
+          </div>
+        </div>
+
+        <!-- Pending Withdrawals -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="alert-circle" style="width: 18px; height: 18px; color: var(--color-warning);"></i>
+              <span data-fa="درخواست‌های برداشت در انتظار" data-en="Pending Withdrawal Requests">درخواست‌های برداشت در انتظار</span>
+            </h3>
+          </div>
+          <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-fa="کاربر" data-en="User">کاربر</th>
+                  <th data-fa="مبلغ" data-en="Amount">مبلغ</th>
+                  <th data-fa="شماره شبا" data-en="IBAN">شماره شبا</th>
+                  <th data-fa="تاریخ درخواست" data-en="Request Date">تاریخ درخواست</th>
+                  <th data-fa="وضعیت" data-en="Status">وضعیت</th>
+                  <th data-fa="عملیات" data-en="Actions">عملیات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">AG</div>
+                      <div>
+                        <div style="font-weight: 500;">علی قاسمی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">ali@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-danger);">۳۰,۰۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono); font-size: 0.75rem;">IR06 0120 **** **** 4567</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۱۰:۳۰</td>
+                  <td><span class="status-badge pending">در انتظار</span></td>
+                  <td>
+                    <div style="display: flex; gap: var(--space-2);">
+                      <button class="btn btn-sm" style="background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success);">
+                        <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="تأیید" data-en="Approve">تأیید</span>
+                      </button>
+                      <button class="btn btn-sm" style="background: var(--color-danger-bg); color: var(--color-danger); border-color: var(--color-danger);">
+                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="رد" data-en="Reject">رد</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">MR</div>
+                      <div>
+                        <div style="font-weight: 500;">مریم رضایی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">maryam@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-danger);">۱۵,۰۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono); font-size: 0.75rem;">IR82 0550 **** **** 8901</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۰۹:۱۵</td>
+                  <td><span class="status-badge pending">در انتظار</span></td>
+                  <td>
+                    <div style="display: flex; gap: var(--space-2);">
+                      <button class="btn btn-sm" style="background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success);">
+                        <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="تأیید" data-en="Approve">تأیید</span>
+                      </button>
+                      <button class="btn btn-sm" style="background: var(--color-danger-bg); color: var(--color-danger); border-color: var(--color-danger);">
+                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="رد" data-en="Reject">رد</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">HM</div>
+                      <div>
+                        <div style="font-weight: 500;">حسین محمدی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">hossein@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-danger);">۵۰,۰۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono); font-size: 0.75rem;">IR14 0170 **** **** 2345</td>
+                  <td>۱۴۰۴/۱۲/۲۸ - ۱۶:۴۵</td>
+                  <td><span class="status-badge pending">در انتظار</span></td>
+                  <td>
+                    <div style="display: flex; gap: var(--space-2);">
+                      <button class="btn btn-sm" style="background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success);">
+                        <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="تأیید" data-en="Approve">تأیید</span>
+                      </button>
+                      <button class="btn btn-sm" style="background: var(--color-danger-bg); color: var(--color-danger); border-color: var(--color-danger);">
+                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                        <span data-fa="رد" data-en="Reject">رد</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- All Wallets Table -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="list" style="width: 18px; height: 18px;"></i>
+              <span data-fa="لیست کیف پول‌ها" data-en="Wallets List">لیست کیف پول‌ها</span>
+            </h3>
+            <div style="display: flex; gap: var(--space-2);">
+              <input type="text" class="form-input" placeholder="جستجوی کاربر..." style="width: 200px; padding: var(--space-2) var(--space-3); font-size: 0.75rem;">
+              <select class="form-select" style="width: auto; padding: var(--space-2) var(--space-3); font-size: 0.75rem;">
+                <option data-fa="همه" data-en="All">همه</option>
+                <option data-fa="موجودی بالا" data-en="High Balance">موجودی بالا</option>
+                <option data-fa="موجودی صفر" data-en="Zero Balance">موجودی صفر</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-fa="کاربر" data-en="User">کاربر</th>
+                  <th data-fa="موجودی ریالی" data-en="Cash Balance">موجودی ریالی</th>
+                  <th data-fa="موجودی طلا" data-en="Gold Balance">موجودی طلا</th>
+                  <th data-fa="ارزش کل" data-en="Total Value">ارزش کل</th>
+                  <th data-fa="آخرین تراکنش" data-en="Last Transaction">آخرین تراکنش</th>
+                  <th data-fa="وضعیت" data-en="Status">وضعیت</th>
+                  <th data-fa="عملیات" data-en="Actions">عملیات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">AG</div>
+                      <div>
+                        <div style="font-weight: 500;">علی قاسمی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">ali@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono);">۲۵,۵۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono);">۲.۳۵۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">گرم</span></td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-gold-600);">۵۲۰,۰۱۹,۵۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۱۴:۳۰</td>
+                  <td><span class="status-badge active">فعال</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-icon" title="مشاهده جزئیات">
+                      <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">MR</div>
+                      <div>
+                        <div style="font-weight: 500;">مریم رضایی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">maryam@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono);">۱۲۰,۰۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono);">۵.۸۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">گرم</span></td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-gold-600);">۹۸۶,۳۴۶,۰۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۰۹:۱۵</td>
+                  <td><span class="status-badge active">فعال</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-icon" title="مشاهده جزئیات">
+                      <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">HM</div>
+                      <div>
+                        <div style="font-weight: 500;">حسین محمدی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">hossein@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono);">۰</td>
+                  <td style="font-family: var(--font-mono);">۱۰.۵۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">گرم</span></td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-gold-600);">۱,۵۶۸,۳۸۵,۰۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۸ - ۱۶:۴۵</td>
+                  <td><span class="status-badge active">فعال</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-icon" title="مشاهده جزئیات">
+                      <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="table-user">
+                      <div class="table-avatar">ZK</div>
+                      <div>
+                        <div style="font-weight: 500;">زهرا کریمی</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">zahra@example.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-family: var(--font-mono);">۵,۰۰۰,۰۰۰</td>
+                  <td style="font-family: var(--font-mono);">۰.۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">گرم</span></td>
+                  <td style="font-family: var(--font-mono); font-weight: 600; color: var(--color-gold-600);">۵,۰۰۰,۰۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۵ - ۱۱:۲۰</td>
+                  <td><span class="status-badge active">فعال</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-icon" title="مشاهده جزئیات">
+                      <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: var(--space-4); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; color: var(--color-text-tertiary);">نمایش ۱-۴ از ۴۵۲ کیف پول</span>
+            <div style="display: flex; gap: var(--space-1);">
+              <button class="btn btn-sm">قبلی</button>
+              <button class="btn btn-sm" style="background: var(--color-gold-100); color: var(--color-gold-700);">۱</button>
+              <button class="btn btn-sm">۲</button>
+              <button class="btn btn-sm">۳</button>
+              <button class="btn btn-sm">بعدی</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="scroll-text" style="width: 18px; height: 18px;"></i>
+              <span data-fa="تراکنش‌های اخیر" data-en="Recent Transactions">تراکنش‌های اخیر</span>
+            </h3>
+            <button class="btn btn-sm">
+              <span data-fa="مشاهده همه" data-en="View All">مشاهده همه</span>
+            </button>
+          </div>
+          <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-fa="نوع" data-en="Type">نوع</th>
+                  <th data-fa="کاربر" data-en="User">کاربر</th>
+                  <th data-fa="مبلغ/مقدار" data-en="Amount">مبلغ/مقدار</th>
+                  <th data-fa="تاریخ" data-en="Date">تاریخ</th>
+                  <th data-fa="وضعیت" data-en="Status">وضعیت</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: var(--space-2);">
+                      <div style="width: 28px; height: 28px; border-radius: var(--radius-md); background: var(--color-success-bg); color: var(--color-success); display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="arrow-down-circle" style="width: 14px; height: 14px;"></i>
+                      </div>
+                      <span data-fa="واریز" data-en="Deposit">واریز</span>
+                    </div>
+                  </td>
+                  <td>علی قاسمی</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-success);">+۵۰,۰۰۰,۰۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۱۴:۳۰</td>
+                  <td><span class="status-badge active">موفق</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: var(--space-2);">
+                      <div style="width: 28px; height: 28px; border-radius: var(--radius-md); background: var(--color-gold-100); color: var(--color-gold-600); display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="coins" style="width: 14px; height: 14px;"></i>
+                      </div>
+                      <span data-fa="خرید طلا" data-en="Buy Gold">خرید طلا</span>
+                    </div>
+                  </td>
+                  <td>مریم رضایی</td>
+                  <td style="font-family: var(--font-mono);">۱.۲ گرم</td>
+                  <td>۱۴۰۴/۱۲/۲۹ - ۱۱:۱۵</td>
+                  <td><span class="status-badge active">موفق</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: var(--space-2);">
+                      <div style="width: 28px; height: 28px; border-radius: var(--radius-md); background: var(--color-danger-bg); color: var(--color-danger); display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="arrow-up-circle" style="width: 14px; height: 14px;"></i>
+                      </div>
+                      <span data-fa="برداشت" data-en="Withdraw">برداشت</span>
+                    </div>
+                  </td>
+                  <td>حسین محمدی</td>
+                  <td style="font-family: var(--font-mono); color: var(--color-danger);">-۵۰,۰۰۰,۰۰۰</td>
+                  <td>۱۴۰۴/۱۲/۲۸ - ۱۶:۴۵</td>
+                  <td><span class="status-badge pending">در انتظار</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: var(--space-2);">
+                      <div style="width: 28px; height: 28px; border-radius: var(--radius-md); background: var(--color-warning-bg); color: var(--color-warning); display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="trending-down" style="width: 14px; height: 14px;"></i>
+                      </div>
+                      <span data-fa="فروش طلا" data-en="Sell Gold">فروش طلا</span>
+                    </div>
+                  </td>
+                  <td>زهرا کریمی</td>
+                  <td style="font-family: var(--font-mono);">۰.۵ گرم</td>
+                  <td>۱۴۰۴/۱۲/۲۸ - ۱۰:۲۰</td>
+                  <td><span class="status-badge active">موفق</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="section-settings">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="تنظیمات سیستم" data-en="System Settings">تنظیمات سیستم</h1>
+        </div>
+        <div class="card">
+          <p style="text-align: center; padding: var(--space-8); color: var(--color-text-tertiary);">
+            <i data-lucide="construction" style="width: 48px; height: 48px; margin-bottom: var(--space-4); display: block; margin-left: auto; margin-right: auto; opacity: 0.5;"></i>
+            این بخش در حال توسعه است...
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="section-logs">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="لاگ‌های سیستم" data-en="System Logs">لاگ‌های سیستم</h1>
+        </div>
+        <div class="card">
+          <p style="text-align: center; padding: var(--space-8); color: var(--color-text-tertiary);">
+            <i data-lucide="construction" style="width: 48px; height: 48px; margin-bottom: var(--space-4); display: block; margin-left: auto; margin-right: auto; opacity: 0.5;"></i>
+            این بخش در حال توسعه است...
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Generate revenue chart
+    function renderRevenueChart() {
+      const container = document.getElementById('revenueChart');
+      const data = [
+        { label: 'شنبه', value: 850 },
+        { label: 'یکشنبه', value: 1200 },
+        { label: 'دوشنبه', value: 980 },
+        { label: 'سه‌شنبه', value: 1450 },
+        { label: 'چهارشنبه', value: 1100 },
+        { label: 'پنجشنبه', value: 1680 },
+        { label: 'جمعه', value: 1282 }
+      ];
+
+      const max = Math.max(...data.map(d => d.value));
+
+      container.innerHTML = data.map(d => {
+        const height = (d.value / max) * 100;
+        return `
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height: ${height}%;" title="${d.value}"></div>
+            <div class="chart-label">${d.label}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderRevenueChart();
+
+    // Section navigation
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('section-' + sectionId).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.target.closest('.nav-item').classList.add('active');
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

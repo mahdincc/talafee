@@ -1,0 +1,3242 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talafee | User Panel</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* ==================== CSS RESET & DESIGN TOKENS ==================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-background: #FAFAFA;
+      --color-surface: #FFFFFF;
+      --color-surface-elevated: #FFFFFF;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B7280;
+      --color-text-tertiary: #9CA3AF;
+      --color-border: #E5E7EB;
+      --color-border-subtle: #F3F4F6;
+      --color-border-focus: #D4AF37;
+      --color-gold-50: #FDF8E8;
+      --color-gold-100: #F9EDCC;
+      --color-gold-200: #F0D98C;
+      --color-gold-300: #E5C560;
+      --color-gold-400: #D4AF37;
+      --color-gold-500: #C5A028;
+      --color-gold-600: #A68523;
+      --color-gold-700: #8B6914;
+      --color-success: #10B981;
+      --color-success-bg: #ECFDF5;
+      --color-danger: #EF4444;
+      --color-danger-bg: #FEF2F2;
+      --color-warning: #F59E0B;
+      --color-warning-bg: #FFFBEB;
+      --color-info: #3B82F6;
+      --color-info-bg: #EFF6FF;
+      --font-display: 'Outfit', 'Vazirmatn', system-ui, sans-serif;
+      --font-body: 'Work Sans', 'Vazirmatn', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+      --font-persian: 'Vazirmatn', 'Tahoma', sans-serif;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px;
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms;
+    }
+
+    [data-theme="dark"] {
+      --color-background: #0F0F0F;
+      --color-surface: #1A1A1A;
+      --color-surface-elevated: #242424;
+      --color-text-primary: #FAFAFA;
+      --color-text-secondary: #A1A1AA;
+      --color-text-tertiary: #71717A;
+      --color-border: #27272A;
+      --color-border-subtle: #1F1F23;
+      --color-gold-50: #1C1A0F;
+      --color-gold-100: #2A2510;
+      --color-success-bg: #052E16;
+      --color-danger-bg: #450A0A;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: var(--font-persian);
+      background-color: var(--color-background);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ==================== LAYOUT ==================== */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ==================== SIDEBAR ==================== */
+    .sidebar {
+      width: 280px;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      padding: var(--space-4);
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    [dir="ltr"] .sidebar {
+      right: auto;
+      left: 0;
+      border-left: none;
+      border-right: 1px solid var(--color-border);
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-4);
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .sidebar-title span {
+      color: var(--color-gold-400);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-title {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-2);
+      padding: 0 var(--space-3);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: right;
+    }
+
+    [dir="ltr"] .nav-item {
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background: var(--color-gold-50);
+      color: var(--color-gold-700);
+    }
+
+    .nav-item.active {
+      background: var(--color-gold-100);
+      color: var(--color-gold-700);
+    }
+
+    .nav-item i {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-badge {
+      margin-right: auto;
+      background: var(--color-danger);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+    }
+
+    [dir="ltr"] .nav-badge {
+      margin-right: 0;
+      margin-left: auto;
+    }
+
+    .sidebar-footer {
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-background);
+      border-radius: var(--radius-lg);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--color-gold-200), var(--color-gold-400));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--color-gold-700);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .user-email {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .main-content {
+      flex: 1;
+      margin-right: 280px;
+      padding: var(--space-6);
+    }
+
+    [dir="ltr"] .main-content {
+      margin-right: 0;
+      margin-left: 280px;
+    }
+
+    .page-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+
+    .page-subtitle {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .card-title i {
+      color: var(--color-gold-400);
+    }
+
+    /* ==================== STATS GRID ==================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (min-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .stat-icon.gold { background: var(--color-gold-100); color: var(--color-gold-600); }
+    .stat-icon.green { background: var(--color-success-bg); color: var(--color-success); }
+    .stat-icon.blue { background: var(--color-info-bg); color: var(--color-info); }
+    .stat-icon.orange { background: var(--color-warning-bg); color: var(--color-warning); }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ==================== ALERTS LIST ==================== */
+    .alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .alert-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-gold-100);
+      color: var(--color-gold-600);
+    }
+
+    .alert-info {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .alert-meta {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .alert-status {
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+
+    .alert-status.active {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+
+    .alert-status.triggered {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+
+    .alert-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    /* ==================== FAVORITES ==================== */
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .favorite-card {
+      background: var(--color-background);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .favorite-card:hover {
+      border-color: var(--color-gold-200);
+      box-shadow: var(--shadow-md);
+    }
+
+    .favorite-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--color-gold-600);
+      margin: 0 auto var(--space-3);
+      font-size: 1rem;
+    }
+
+    .favorite-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .favorite-price {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ==================== HISTORY TABLE ==================== */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .history-table th {
+      text-align: right;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-background);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    [dir="ltr"] .history-table th {
+      text-align: left;
+    }
+
+    .history-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .history-table tr:hover td {
+      background: var(--color-gold-50);
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .btn:hover {
+      background: var(--color-gold-50);
+      border-color: var(--color-gold-200);
+      color: var(--color-gold-700);
+    }
+
+    .btn-primary {
+      background: var(--color-gold-400);
+      border-color: var(--color-gold-400);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-gold-500);
+      border-color: var(--color-gold-500);
+      color: white;
+    }
+
+    .btn-icon {
+      padding: var(--space-2);
+    }
+
+    .btn-sm {
+      padding: var(--space-1) var(--space-2);
+      font-size: 0.75rem;
+    }
+
+    .btn-danger {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    /* ==================== FORM ==================== */
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      font-size: 0.875rem;
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--color-gold-400);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+
+    /* ==================== TOGGLE ==================== */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+
+    .toggle.active {
+      background: var(--color-gold-400);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+
+    [dir="ltr"] .toggle::after {
+      right: auto;
+      left: 2px;
+    }
+
+    .toggle.active::after {
+      transform: translateX(-20px);
+    }
+
+    [dir="ltr"] .toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    /* ==================== SECTIONS ==================== */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    @media (min-width: 1024px) {
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ==================== MOBILE ==================== */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 var(--space-4);
+      align-items: center;
+      justify-content: space-between;
+      z-index: 99;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(100%);
+      }
+
+      [dir="ltr"] .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-right: 0;
+        margin-left: 0;
+        padding-top: calc(60px + var(--space-6));
+      }
+    }
+
+    /* ==================== EMPTY STATE ==================== */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--color-text-tertiary);
+    }
+
+    .empty-state i {
+      width: 48px;
+      height: 48px;
+      margin-bottom: var(--space-4);
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      margin-bottom: var(--space-4);
+    }
+
+    /* ==================== WALLET STYLES ==================== */
+    .wallet-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      background: var(--color-background);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+
+    .wallet-action-btn:hover {
+      border-color: var(--color-gold-200);
+      background: var(--color-gold-50);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .wallet-action-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gold-holdings-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .gold-holding-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .gold-holding-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .gold-holding-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-gold-100);
+      color: var(--color-gold-600);
+    }
+
+    .gold-holding-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .gold-holding-amount {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      font-family: var(--font-mono);
+    }
+
+    .gold-holding-value {
+      text-align: left;
+    }
+
+    [dir="rtl"] .gold-holding-value {
+      text-align: right;
+    }
+
+    .transactions-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-item:hover {
+      background: var(--color-gold-50);
+    }
+
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .transaction-info {
+      flex: 1;
+    }
+
+    .transaction-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .transaction-meta {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .transaction-amount {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+
+    .transaction-amount.positive {
+      color: var(--color-success);
+    }
+
+    .transaction-amount.negative {
+      color: var(--color-danger);
+    }
+
+    /* Wallet Modal */
+    .wallet-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: var(--space-4);
+    }
+
+    .wallet-modal-backdrop.active {
+      display: flex;
+    }
+
+    .wallet-modal {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      animation: fade-in 0.2s var(--ease-out);
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .wallet-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .wallet-modal-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .wallet-modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      padding: var(--space-1);
+    }
+
+    .wallet-modal-body {
+      padding: var(--space-5);
+    }
+
+    .wallet-modal-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-2);
+    }
+
+    .amount-input-wrapper {
+      position: relative;
+    }
+
+    .amount-input-wrapper .form-input {
+      padding-left: 60px;
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      text-align: center;
+    }
+
+    [dir="rtl"] .amount-input-wrapper .form-input {
+      padding-right: 60px;
+      padding-left: var(--space-3);
+    }
+
+    .amount-currency {
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      font-weight: 500;
+    }
+
+    [dir="rtl"] .amount-currency {
+      left: auto;
+      right: var(--space-3);
+    }
+
+    .quick-amounts {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .quick-amount-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .quick-amount-btn:hover {
+      border-color: var(--color-gold-400);
+      background: var(--color-gold-50);
+      color: var(--color-gold-700);
+    }
+
+    .balance-display {
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .balance-label {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .balance-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-gold-600);
+    }
+
+    @media (max-width: 640px) {
+      .wallet-action-btn {
+        padding: var(--space-3);
+      }
+
+      .wallet-action-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .wallet-action-icon i {
+        width: 20px !important;
+        height: 20px !important;
+      }
+    }
+
+    /* ==================== CONNECTED ACCOUNTS STYLES ==================== */
+    .platform-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      transition: all 0.2s var(--ease-out);
+    }
+
+    .platform-card:hover {
+      border-color: var(--color-gold-300);
+      box-shadow: var(--shadow-md);
+    }
+
+    .platform-card.connected {
+      border-color: var(--color-success);
+      background: linear-gradient(135deg, var(--color-success-bg), var(--color-surface));
+    }
+
+    .platform-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .platform-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .platform-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .platform-logo.taline { background: #1a73e8; color: white; }
+    .platform-logo.technogold { background: #ffc107; color: #333; }
+    .platform-logo.zargold { background: #d4af37; color: white; }
+    .platform-logo.goldiran { background: #c41e3a; color: white; }
+    .platform-logo.talamarket { background: #6366f1; color: white; }
+
+    .platform-name {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .platform-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: 0.75rem;
+    }
+
+    .platform-status.connected {
+      color: var(--color-success);
+    }
+
+    .platform-status.disconnected {
+      color: var(--color-text-tertiary);
+    }
+
+    .platform-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .platform-balance {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+    }
+
+    .platform-balance-item {
+      text-align: center;
+    }
+
+    .platform-balance-label {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+    }
+
+    .platform-balance-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .platform-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .platform-last-sync {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .connect-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    .connect-modal.active {
+      display: flex;
+    }
+
+    .connect-modal-content {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .connect-modal-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .connect-modal-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .connect-modal-body {
+      padding: var(--space-5);
+    }
+
+    .connect-modal-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-2);
+      justify-content: flex-end;
+    }
+
+    .connection-method {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .connection-method-btn {
+      flex: 1;
+      padding: var(--space-4);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .connection-method-btn:hover {
+      border-color: var(--color-gold-400);
+    }
+
+    .connection-method-btn.active {
+      border-color: var(--color-gold-400);
+      background: var(--color-gold-50);
+    }
+
+    .connection-method-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      background: var(--color-background);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gold-600);
+    }
+
+    .connection-method-btn.active .connection-method-icon {
+      background: var(--color-gold-200);
+    }
+
+    .connection-method-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+
+    .browser-session {
+      background: var(--color-background);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .browser-session-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--color-gold-100), var(--color-gold-200));
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+      color: var(--color-gold-600);
+    }
+
+    .browser-session-title {
+      font-weight: 600;
+      margin-bottom: var(--space-2);
+    }
+
+    .browser-session-desc {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-4);
+    }
+
+    .aggregated-balance {
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      color: white;
+      margin-bottom: var(--space-6);
+    }
+
+    .aggregated-balance-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .aggregated-balance-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .aggregated-balance-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+
+    .aggregated-balance-item {
+      text-align: center;
+    }
+
+    .aggregated-balance-label {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-bottom: var(--space-1);
+    }
+
+    .aggregated-balance-value {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .aggregated-balance-unit {
+      font-size: 0.625rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div style="display: flex; align-items: center; gap: var(--space-3);">
+      <div class="sidebar-logo" style="width: 32px; height: 32px;">
+        <i data-lucide="coins" style="width: 16px; height: 16px;"></i>
+      </div>
+      <span style="font-weight: 600;">Talafee</span>
+    </div>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+    </button>
+  </header>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i data-lucide="coins" style="width: 20px; height: 20px;"></i>
+        </div>
+        <div class="sidebar-title"><span>Tala</span>fee</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="منوی اصلی" data-en="Main Menu">منوی اصلی</div>
+          <a href="index.html" class="nav-item">
+            <i data-lucide="home"></i>
+            <span data-fa="صفحه اصلی" data-en="Home">صفحه اصلی</span>
+          </a>
+          <button class="nav-item active" onclick="showSection('dashboard')">
+            <i data-lucide="layout-dashboard"></i>
+            <span data-fa="داشبورد" data-en="Dashboard">داشبورد</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="مدیریت" data-en="Management">مدیریت</div>
+          <button class="nav-item" onclick="showSection('alerts')">
+            <i data-lucide="bell"></i>
+            <span data-fa="هشدارهای قیمت" data-en="Price Alerts">هشدارهای قیمت</span>
+            <span class="nav-badge">3</span>
+          </button>
+          <button class="nav-item" onclick="showSection('favorites')">
+            <i data-lucide="heart"></i>
+            <span data-fa="علاقه‌مندی‌ها" data-en="Favorites">علاقه‌مندی‌ها</span>
+          </button>
+          <button class="nav-item" onclick="showSection('history')">
+            <i data-lucide="history"></i>
+            <span data-fa="تاریخچه" data-en="History">تاریخچه</span>
+          </button>
+          <button class="nav-item" onclick="showSection('wallet')">
+            <i data-lucide="wallet"></i>
+            <span data-fa="کیف پول" data-en="Wallet">کیف پول</span>
+          </button>
+          <button class="nav-item" onclick="showSection('connected')">
+            <i data-lucide="link-2"></i>
+            <span data-fa="حساب‌های متصل" data-en="Connected Accounts">حساب‌های متصل</span>
+            <span class="nav-badge">۳</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title" data-fa="حساب کاربری" data-en="Account">حساب کاربری</div>
+          <button class="nav-item" onclick="showSection('profile')">
+            <i data-lucide="user"></i>
+            <span data-fa="پروفایل" data-en="Profile">پروفایل</span>
+          </button>
+          <button class="nav-item" onclick="showSection('settings')">
+            <i data-lucide="settings"></i>
+            <span data-fa="تنظیمات" data-en="Settings">تنظیمات</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">AG</div>
+          <div class="user-info">
+            <div class="user-name">علی قاسمی</div>
+            <div class="user-email">ali@example.com</div>
+          </div>
+          <button class="btn btn-icon btn-sm" title="Logout">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section class="section active" id="section-dashboard">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="داشبورد" data-en="Dashboard">داشبورد</h1>
+          <p class="page-subtitle" data-fa="خلاصه فعالیت‌های شما" data-en="Summary of your activities">خلاصه فعالیت‌های شما</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon gold">
+              <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">3</div>
+            <div class="stat-label" data-fa="هشدارهای فعال" data-en="Active Alerts">هشدارهای فعال</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i data-lucide="heart" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">5</div>
+            <div class="stat-label" data-fa="پلتفرم محبوب" data-en="Favorite Platforms">پلتفرم محبوب</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <i data-lucide="mouse-pointer-click" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">24</div>
+            <div class="stat-label" data-fa="کلیک این ماه" data-en="Clicks This Month">کلیک این ماه</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="stat-value">2</div>
+            <div class="stat-label" data-fa="هشدار فعال شده" data-en="Triggered Alerts">هشدار فعال شده</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                <span data-fa="آخرین هشدارها" data-en="Recent Alerts">آخرین هشدارها</span>
+              </h3>
+              <button class="btn btn-sm" onclick="showSection('alerts')">
+                <span data-fa="مشاهده همه" data-en="View All">مشاهده همه</span>
+              </button>
+            </div>
+            <div class="alerts-list">
+              <div class="alert-item">
+                <div class="alert-icon">
+                  <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">گرم طلای ۱۸ عیار < ۱۴۸,۰۰۰,۰۰۰</div>
+                  <div class="alert-meta">
+                    <span>طلالاین</span>
+                    <span>•</span>
+                    <span class="alert-status active" data-fa="فعال" data-en="Active">فعال</span>
+                  </div>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon">
+                  <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">سکه امامی > ۸۵,۰۰۰,۰۰۰</div>
+                  <div class="alert-meta">
+                    <span>همه پلتفرم‌ها</span>
+                    <span>•</span>
+                    <span class="alert-status triggered" data-fa="فعال شده" data-en="Triggered">فعال شده</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
+                <span data-fa="آخرین فعالیت‌ها" data-en="Recent Activity">آخرین فعالیت‌ها</span>
+              </h3>
+            </div>
+            <div class="alerts-list">
+              <div class="alert-item">
+                <div class="alert-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+                  <i data-lucide="external-link" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">کلیک روی طلالاین</div>
+                  <div class="alert-meta">
+                    <span>۵ دقیقه پیش</span>
+                  </div>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon" style="background: var(--color-info-bg); color: var(--color-info);">
+                  <i data-lucide="bell-plus" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">هشدار جدید ایجاد شد</div>
+                  <div class="alert-meta">
+                    <span>۲ ساعت پیش</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Alerts Section -->
+      <section class="section" id="section-alerts">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1 class="page-title" data-fa="هشدارهای قیمت" data-en="Price Alerts">هشدارهای قیمت</h1>
+            <p class="page-subtitle" data-fa="مدیریت هشدارهای قیمت شما" data-en="Manage your price alerts">مدیریت هشدارهای قیمت شما</p>
+          </div>
+          <button class="btn btn-primary">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+            <span data-fa="هشدار جدید" data-en="New Alert">هشدار جدید</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="alerts-list">
+            <div class="alert-item">
+              <div class="alert-icon">
+                <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="alert-info">
+                <div class="alert-title">گرم طلای ۱۸ عیار < ۱۴۸,۰۰۰,۰۰۰ ریال</div>
+                <div class="alert-meta">
+                  <span>طلالاین</span>
+                  <span>•</span>
+                  <span>ایجاد: ۱۴۰۴/۱۲/۲۵</span>
+                  <span>•</span>
+                  <span class="alert-status active">فعال</span>
+                </div>
+              </div>
+              <div class="alert-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon">
+                <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="alert-info">
+                <div class="alert-title">سکه امامی > ۸۵,۰۰۰,۰۰۰ ریال</div>
+                <div class="alert-meta">
+                  <span>همه پلتفرم‌ها</span>
+                  <span>•</span>
+                  <span>ایجاد: ۱۴۰۴/۱۲/۲۰</span>
+                  <span>•</span>
+                  <span class="alert-status triggered">فعال شده</span>
+                </div>
+              </div>
+              <div class="alert-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon">
+                <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="alert-info">
+                <div class="alert-title">نیم سکه < ۴۲,۰۰۰,۰۰۰ ریال</div>
+                <div class="alert-meta">
+                  <span>تکنوگلد</span>
+                  <span>•</span>
+                  <span>ایجاد: ۱۴۰۴/۱۲/۱۵</span>
+                  <span>•</span>
+                  <span class="alert-status active">فعال</span>
+                </div>
+              </div>
+              <div class="alert-actions">
+                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Favorites Section -->
+      <section class="section" id="section-favorites">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="پلتفرم‌های محبوب" data-en="Favorite Platforms">پلتفرم‌های محبوب</h1>
+          <p class="page-subtitle" data-fa="پلتفرم‌هایی که ذخیره کرده‌اید" data-en="Platforms you've saved">پلتفرم‌هایی که ذخیره کرده‌اید</p>
+        </div>
+
+        <div class="card">
+          <div class="favorites-grid">
+            <div class="favorite-card">
+              <div class="favorite-logo">TL</div>
+              <div class="favorite-name">طلالاین</div>
+              <div class="favorite-price">149,370,000 IRR</div>
+              <button class="btn btn-sm" style="margin-top: var(--space-3); width: 100%;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span data-fa="مشاهده" data-en="View">مشاهده</span>
+              </button>
+            </div>
+            <div class="favorite-card">
+              <div class="favorite-logo">TG</div>
+              <div class="favorite-name">تکنوگلد</div>
+              <div class="favorite-price">149,500,000 IRR</div>
+              <button class="btn btn-sm" style="margin-top: var(--space-3); width: 100%;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span data-fa="مشاهده" data-en="View">مشاهده</span>
+              </button>
+            </div>
+            <div class="favorite-card">
+              <div class="favorite-logo">ZG</div>
+              <div class="favorite-name">زرگلد</div>
+              <div class="favorite-price">149,650,000 IRR</div>
+              <button class="btn btn-sm" style="margin-top: var(--space-3); width: 100%;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span data-fa="مشاهده" data-en="View">مشاهده</span>
+              </button>
+            </div>
+            <div class="favorite-card">
+              <div class="favorite-logo">TB</div>
+              <div class="favorite-name">طلابازار</div>
+              <div class="favorite-price">149,350,000 IRR</div>
+              <button class="btn btn-sm" style="margin-top: var(--space-3); width: 100%;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span data-fa="مشاهده" data-en="View">مشاهده</span>
+              </button>
+            </div>
+            <div class="favorite-card">
+              <div class="favorite-logo">ZE</div>
+              <div class="favorite-name">زراکسچنج</div>
+              <div class="favorite-price">149,380,000 IRR</div>
+              <button class="btn btn-sm" style="margin-top: var(--space-3); width: 100%;">
+                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                <span data-fa="مشاهده" data-en="View">مشاهده</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="section" id="section-history">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="تاریخچه کلیک‌ها" data-en="Click History">تاریخچه کلیک‌ها</h1>
+          <p class="page-subtitle" data-fa="لیست کلیک‌های شما روی پلتفرم‌ها" data-en="List of your clicks on platforms">لیست کلیک‌های شما روی پلتفرم‌ها</p>
+        </div>
+
+        <div class="card">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th data-fa="پلتفرم" data-en="Platform">پلتفرم</th>
+                <th data-fa="قیمت" data-en="Price">قیمت</th>
+                <th data-fa="تاریخ" data-en="Date">تاریخ</th>
+                <th data-fa="وضعیت" data-en="Status">وضعیت</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>طلالاین</strong></td>
+                <td style="font-family: var(--font-mono);">149,370,000</td>
+                <td>۱۴۰۴/۱۲/۲۹ - ۱۵:۰۱</td>
+                <td><span class="alert-status active">کلیک شده</span></td>
+              </tr>
+              <tr>
+                <td><strong>تکنوگلد</strong></td>
+                <td style="font-family: var(--font-mono);">149,500,000</td>
+                <td>۱۴۰۴/۱۲/۲۹ - ۱۴:۳۵</td>
+                <td><span class="alert-status active">کلیک شده</span></td>
+              </tr>
+              <tr>
+                <td><strong>طلابازار</strong></td>
+                <td style="font-family: var(--font-mono);">149,350,000</td>
+                <td>۱۴۰۴/۱۲/۲۸ - ۱۱:۲۰</td>
+                <td><span class="alert-status active">کلیک شده</span></td>
+              </tr>
+              <tr>
+                <td><strong>زرگلد</strong></td>
+                <td style="font-family: var(--font-mono);">149,650,000</td>
+                <td>۱۴۰۴/۱۲/۲۷ - ۱۶:۴۵</td>
+                <td><span class="alert-status active">کلیک شده</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Wallet Section -->
+      <section class="section" id="section-wallet">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="کیف پول" data-en="Wallet">کیف پول</h1>
+          <p class="page-subtitle" data-fa="مدیریت موجودی و تراکنش‌ها" data-en="Manage balance and transactions">مدیریت موجودی و تراکنش‌ها</p>
+        </div>
+
+        <!-- Wallet Balance Cards -->
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="stat-card" style="background: linear-gradient(135deg, var(--color-gold-50), var(--color-gold-100)); border-color: var(--color-gold-200);">
+            <div class="stat-icon gold">
+              <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-bottom: var(--space-1);" data-fa="موجودی ریالی" data-en="Cash Balance (IRR)">موجودی ریالی</div>
+            <div class="stat-value" style="font-size: 1.75rem; color: var(--color-gold-700);">۲۵,۵۰۰,۰۰۰</div>
+            <div style="font-size: 0.625rem; color: var(--color-text-tertiary); margin-top: var(--space-1);" data-fa="ریال" data-en="IRR">ریال</div>
+          </div>
+          <div class="stat-card" style="background: linear-gradient(135deg, var(--color-gold-100), var(--color-gold-200)); border-color: var(--color-gold-300);">
+            <div class="stat-icon" style="background: var(--color-gold-300); color: var(--color-gold-700);">
+              <i data-lucide="coins" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-bottom: var(--space-1);" data-fa="موجودی طلا" data-en="Gold Balance">موجودی طلا</div>
+            <div class="stat-value" style="font-size: 1.75rem; color: var(--color-gold-700);">۲.۳۵۰</div>
+            <div style="font-size: 0.625rem; color: var(--color-text-tertiary); margin-top: var(--space-1);" data-fa="گرم طلای ۱۸ عیار" data-en="Grams 18K Gold">گرم طلای ۱۸ عیار</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="zap" style="width: 18px; height: 18px;"></i>
+              <span data-fa="عملیات سریع" data-en="Quick Actions">عملیات سریع</span>
+            </h3>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3);">
+            <button class="wallet-action-btn" onclick="openWalletModal('deposit')">
+              <div class="wallet-action-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+                <i data-lucide="arrow-down-circle" style="width: 24px; height: 24px;"></i>
+              </div>
+              <span data-fa="واریز" data-en="Deposit">واریز</span>
+            </button>
+            <button class="wallet-action-btn" onclick="openWalletModal('withdraw')">
+              <div class="wallet-action-icon" style="background: var(--color-danger-bg); color: var(--color-danger);">
+                <i data-lucide="arrow-up-circle" style="width: 24px; height: 24px;"></i>
+              </div>
+              <span data-fa="برداشت" data-en="Withdraw">برداشت</span>
+            </button>
+            <button class="wallet-action-btn" onclick="openWalletModal('buy-gold')">
+              <div class="wallet-action-icon" style="background: var(--color-gold-100); color: var(--color-gold-600);">
+                <i data-lucide="trending-up" style="width: 24px; height: 24px;"></i>
+              </div>
+              <span data-fa="خرید طلا" data-en="Buy Gold">خرید طلا</span>
+            </button>
+            <button class="wallet-action-btn" onclick="openWalletModal('sell-gold')">
+              <div class="wallet-action-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">
+                <i data-lucide="trending-down" style="width: 24px; height: 24px;"></i>
+              </div>
+              <span data-fa="فروش طلا" data-en="Sell Gold">فروش طلا</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Gold Holdings -->
+        <div class="grid-2" style="margin-bottom: var(--space-6);">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                <span data-fa="دارایی‌های طلا" data-en="Gold Holdings">دارایی‌های طلا</span>
+              </h3>
+            </div>
+            <div class="gold-holdings-list">
+              <div class="gold-holding-item">
+                <div class="gold-holding-info">
+                  <div class="gold-holding-icon">
+                    <i data-lucide="circle" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div>
+                    <div class="gold-holding-name" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</div>
+                    <div class="gold-holding-amount">۲.۳۵۰ <span data-fa="گرم" data-en="g">گرم</span></div>
+                  </div>
+                </div>
+                <div class="gold-holding-value">
+                  <div style="font-family: var(--font-mono); font-weight: 600;">۳۵۱,۰۱۹,۵۰۰</div>
+                  <div style="font-size: 0.625rem; color: var(--color-text-tertiary);" data-fa="ریال" data-en="IRR">ریال</div>
+                </div>
+              </div>
+              <div class="gold-holding-item">
+                <div class="gold-holding-info">
+                  <div class="gold-holding-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">
+                    <i data-lucide="hexagon" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div>
+                    <div class="gold-holding-name" data-fa="سکه امامی" data-en="Emami Coin">سکه امامی</div>
+                    <div class="gold-holding-amount">۱ <span data-fa="عدد" data-en="pcs">عدد</span></div>
+                  </div>
+                </div>
+                <div class="gold-holding-value">
+                  <div style="font-family: var(--font-mono); font-weight: 600;">۸۵,۰۰۰,۰۰۰</div>
+                  <div style="font-size: 0.625rem; color: var(--color-text-tertiary);" data-fa="ریال" data-en="IRR">ریال</div>
+                </div>
+              </div>
+              <div class="gold-holding-item">
+                <div class="gold-holding-info">
+                  <div class="gold-holding-icon" style="background: var(--color-info-bg); color: var(--color-info);">
+                    <i data-lucide="octagon" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div>
+                    <div class="gold-holding-name" data-fa="نیم سکه" data-en="Half Coin">نیم سکه</div>
+                    <div class="gold-holding-amount">۲ <span data-fa="عدد" data-en="pcs">عدد</span></div>
+                  </div>
+                </div>
+                <div class="gold-holding-value">
+                  <div style="font-family: var(--font-mono); font-weight: 600;">۸۴,۰۰۰,۰۰۰</div>
+                  <div style="font-size: 0.625rem; color: var(--color-text-tertiary);" data-fa="ریال" data-en="IRR">ریال</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 600;" data-fa="ارزش کل دارایی" data-en="Total Asset Value">ارزش کل دارایی</span>
+              <div style="text-align: left;">
+                <div style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--color-gold-600);">۵۲۰,۰۱۹,۵۰۰</div>
+                <div style="font-size: 0.625rem; color: var(--color-text-tertiary);" data-fa="ریال" data-en="IRR">ریال</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallet Stats -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+                <span data-fa="آمار کیف پول" data-en="Wallet Stats">آمار کیف پول</span>
+              </h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;" data-fa="کل واریزی‌ها" data-en="Total Deposits">کل واریزی‌ها</span>
+                <span style="font-family: var(--font-mono); font-weight: 600; color: var(--color-success);">+۱۵۰,۰۰۰,۰۰۰</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;" data-fa="کل برداشتی‌ها" data-en="Total Withdrawals">کل برداشتی‌ها</span>
+                <span style="font-family: var(--font-mono); font-weight: 600; color: var(--color-danger);">-۵۰,۰۰۰,۰۰۰</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;" data-fa="کل خرید طلا" data-en="Total Gold Purchases">کل خرید طلا</span>
+                <span style="font-family: var(--font-mono); font-weight: 600; color: var(--color-gold-600);">۴۵۰,۰۰۰,۰۰۰</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;" data-fa="کل فروش طلا" data-en="Total Gold Sales">کل فروش طلا</span>
+                <span style="font-family: var(--font-mono); font-weight: 600; color: var(--color-warning);">۸۰,۰۰۰,۰۰۰</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-3); border-top: 1px solid var(--color-border);">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;" data-fa="سود/زیان" data-en="Profit/Loss">سود/زیان</span>
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <span class="alert-status active">+۱۲.۵%</span>
+                  <span style="font-family: var(--font-mono); font-weight: 600; color: var(--color-success);">+۶۵,۰۰۰,۰۰۰</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="scroll-text" style="width: 18px; height: 18px;"></i>
+              <span data-fa="تاریخچه تراکنش‌ها" data-en="Transaction History">تاریخچه تراکنش‌ها</span>
+            </h3>
+            <div style="display: flex; gap: var(--space-2);">
+              <select class="form-select" style="width: auto; padding: var(--space-2) var(--space-3); font-size: 0.75rem;">
+                <option data-fa="همه تراکنش‌ها" data-en="All Transactions">همه تراکنش‌ها</option>
+                <option data-fa="واریز" data-en="Deposits">واریز</option>
+                <option data-fa="برداشت" data-en="Withdrawals">برداشت</option>
+                <option data-fa="خرید طلا" data-en="Gold Purchases">خرید طلا</option>
+                <option data-fa="فروش طلا" data-en="Gold Sales">فروش طلا</option>
+              </select>
+            </div>
+          </div>
+          <div class="transactions-list">
+            <div class="transaction-item">
+              <div class="transaction-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+                <i data-lucide="arrow-down-circle" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="transaction-info">
+                <div class="transaction-title" data-fa="واریز به کیف پول" data-en="Deposit to Wallet">واریز به کیف پول</div>
+                <div class="transaction-meta">
+                  <span>۱۴۰۴/۱۲/۲۹ - ۱۴:۳۰</span>
+                  <span>•</span>
+                  <span data-fa="کارت بانکی" data-en="Bank Card">کارت بانکی</span>
+                </div>
+              </div>
+              <div class="transaction-amount positive">+۵۰,۰۰۰,۰۰۰</div>
+            </div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="background: var(--color-gold-100); color: var(--color-gold-600);">
+                <i data-lucide="coins" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="transaction-info">
+                <div class="transaction-title" data-fa="خرید طلای ۱۸ عیار" data-en="Buy 18K Gold">خرید طلای ۱۸ عیار</div>
+                <div class="transaction-meta">
+                  <span>۱۴۰۴/۱۲/۲۸ - ۱۱:۱۵</span>
+                  <span>•</span>
+                  <span>۱.۲ <span data-fa="گرم" data-en="g">گرم</span></span>
+                </div>
+              </div>
+              <div class="transaction-amount negative">-۱۷۹,۲۴۴,۰۰۰</div>
+            </div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">
+                <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="transaction-info">
+                <div class="transaction-title" data-fa="فروش نیم سکه" data-en="Sell Half Coin">فروش نیم سکه</div>
+                <div class="transaction-meta">
+                  <span>۱۴۰۴/۱۲/۲۷ - ۱۶:۴۵</span>
+                  <span>•</span>
+                  <span>۱ <span data-fa="عدد" data-en="pcs">عدد</span></span>
+                </div>
+              </div>
+              <div class="transaction-amount positive">+۴۲,۰۰۰,۰۰۰</div>
+            </div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="background: var(--color-danger-bg); color: var(--color-danger);">
+                <i data-lucide="arrow-up-circle" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="transaction-info">
+                <div class="transaction-title" data-fa="برداشت از کیف پول" data-en="Withdrawal from Wallet">برداشت از کیف پول</div>
+                <div class="transaction-meta">
+                  <span>۱۴۰۴/۱۲/۲۵ - ۰۹:۲۰</span>
+                  <span>•</span>
+                  <span data-fa="انتقال به حساب" data-en="Transfer to Account">انتقال به حساب</span>
+                </div>
+              </div>
+              <div class="transaction-amount negative">-۳۰,۰۰۰,۰۰۰</div>
+            </div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+                <i data-lucide="arrow-down-circle" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="transaction-info">
+                <div class="transaction-title" data-fa="واریز به کیف پول" data-en="Deposit to Wallet">واریز به کیف پول</div>
+                <div class="transaction-meta">
+                  <span>۱۴۰۴/۱۲/۲۰ - ۱۰:۰۰</span>
+                  <span>•</span>
+                  <span data-fa="درگاه پرداخت" data-en="Payment Gateway">درگاه پرداخت</span>
+                </div>
+              </div>
+              <div class="transaction-amount positive">+۱۰۰,۰۰۰,۰۰۰</div>
+            </div>
+          </div>
+          <div style="margin-top: var(--space-4); text-align: center;">
+            <button class="btn">
+              <span data-fa="مشاهده همه تراکنش‌ها" data-en="View All Transactions">مشاهده همه تراکنش‌ها</span>
+              <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Connected Accounts Section -->
+      <section class="section" id="section-connected">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="حساب‌های متصل" data-en="Connected Accounts">حساب‌های متصل</h1>
+          <p class="page-subtitle" data-fa="مدیریت اتصال به پلتفرم‌های طلا و جمع‌آوری دارایی‌ها" data-en="Manage connections to gold platforms and aggregate assets">مدیریت اتصال به پلتفرم‌های طلا و جمع‌آوری دارایی‌ها</p>
+        </div>
+
+        <!-- Aggregated Balance Card -->
+        <div class="aggregated-balance">
+          <div class="aggregated-balance-header">
+            <div class="aggregated-balance-title">
+              <i data-lucide="layers" style="width: 20px; height: 20px;"></i>
+              <span data-fa="مجموع دارایی‌ها در همه پلتفرم‌ها" data-en="Total Assets Across All Platforms">مجموع دارایی‌ها در همه پلتفرم‌ها</span>
+            </div>
+            <button class="btn" style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); color: white; padding: var(--space-2) var(--space-3);" onclick="syncAllPlatforms()">
+              <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+              <span data-fa="همگام‌سازی" data-en="Sync All">همگام‌سازی</span>
+            </button>
+          </div>
+          <div class="aggregated-balance-grid">
+            <div class="aggregated-balance-item">
+              <div class="aggregated-balance-label" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</div>
+              <div class="aggregated-balance-value">۱۲.۸۵۰</div>
+              <div class="aggregated-balance-unit" data-fa="گرم" data-en="grams">گرم</div>
+            </div>
+            <div class="aggregated-balance-item">
+              <div class="aggregated-balance-label" data-fa="موجودی نقدی" data-en="Cash Balance">موجودی نقدی</div>
+              <div class="aggregated-balance-value">۱۸۵M</div>
+              <div class="aggregated-balance-unit" data-fa="ریال" data-en="IRR">ریال</div>
+            </div>
+            <div class="aggregated-balance-item">
+              <div class="aggregated-balance-label" data-fa="ارزش کل" data-en="Total Value">ارزش کل</div>
+              <div class="aggregated-balance-value">۲.۱B</div>
+              <div class="aggregated-balance-unit" data-fa="ریال" data-en="IRR">ریال</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add New Platform Button -->
+        <button class="btn btn-primary" style="margin-bottom: var(--space-6);" onclick="openConnectModal()">
+          <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+          <span data-fa="اتصال پلتفرم جدید" data-en="Connect New Platform">اتصال پلتفرم جدید</span>
+        </button>
+
+        <!-- Connected Platforms -->
+        <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: var(--space-3);" data-fa="پلتفرم‌های متصل" data-en="Connected Platforms">پلتفرم‌های متصل</div>
+
+        <!-- Taline - Connected -->
+        <div class="platform-card connected">
+          <div class="platform-header">
+            <div class="platform-info">
+              <div class="platform-logo taline">TL</div>
+              <div>
+                <div class="platform-name" data-fa="تالین" data-en="Taline">تالین</div>
+                <div class="platform-status connected">
+                  <span class="platform-status-dot"></span>
+                  <span data-fa="متصل" data-en="Connected">متصل</span>
+                </div>
+              </div>
+            </div>
+            <div class="platform-last-sync">
+              <i data-lucide="clock" style="width: 10px; height: 10px;"></i>
+              <span data-fa="آخرین همگام‌سازی: ۵ دقیقه پیش" data-en="Last sync: 5 min ago">آخرین همگام‌سازی: ۵ دقیقه پیش</span>
+            </div>
+          </div>
+          <div class="platform-balance">
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</div>
+              <div class="platform-balance-value" style="color: var(--color-gold-600);">۵.۲۵۰ گرم</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="موجودی نقدی" data-en="Cash">موجودی نقدی</div>
+              <div class="platform-balance-value">۴۵,۰۰۰,۰۰۰</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="سکه" data-en="Coins">سکه</div>
+              <div class="platform-balance-value">۲ عدد</div>
+            </div>
+          </div>
+          <div class="platform-actions">
+            <button class="btn btn-sm" onclick="syncPlatform('taline')">
+              <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+              <span data-fa="همگام‌سازی" data-en="Sync">همگام‌سازی</span>
+            </button>
+            <button class="btn btn-sm" onclick="viewPlatformDetails('taline')">
+              <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+              <span data-fa="مشاهده در پلتفرم" data-en="View in Platform">مشاهده در پلتفرم</span>
+            </button>
+            <button class="btn btn-sm" style="color: var(--color-danger);" onclick="disconnectPlatform('taline')">
+              <i data-lucide="unlink" style="width: 12px; height: 12px;"></i>
+              <span data-fa="قطع اتصال" data-en="Disconnect">قطع اتصال</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Technogold - Connected -->
+        <div class="platform-card connected">
+          <div class="platform-header">
+            <div class="platform-info">
+              <div class="platform-logo technogold">TG</div>
+              <div>
+                <div class="platform-name" data-fa="تکنوگلد" data-en="Technogold">تکنوگلد</div>
+                <div class="platform-status connected">
+                  <span class="platform-status-dot"></span>
+                  <span data-fa="متصل" data-en="Connected">متصل</span>
+                </div>
+              </div>
+            </div>
+            <div class="platform-last-sync">
+              <i data-lucide="clock" style="width: 10px; height: 10px;"></i>
+              <span data-fa="آخرین همگام‌سازی: ۱۲ دقیقه پیش" data-en="Last sync: 12 min ago">آخرین همگام‌سازی: ۱۲ دقیقه پیش</span>
+            </div>
+          </div>
+          <div class="platform-balance">
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</div>
+              <div class="platform-balance-value" style="color: var(--color-gold-600);">۳.۱۰۰ گرم</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="موجودی نقدی" data-en="Cash">موجودی نقدی</div>
+              <div class="platform-balance-value">۸۵,۵۰۰,۰۰۰</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="سکه" data-en="Coins">سکه</div>
+              <div class="platform-balance-value">۰ عدد</div>
+            </div>
+          </div>
+          <div class="platform-actions">
+            <button class="btn btn-sm" onclick="syncPlatform('technogold')">
+              <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+              <span data-fa="همگام‌سازی" data-en="Sync">همگام‌سازی</span>
+            </button>
+            <button class="btn btn-sm" onclick="viewPlatformDetails('technogold')">
+              <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+              <span data-fa="مشاهده در پلتفرم" data-en="View in Platform">مشاهده در پلتفرم</span>
+            </button>
+            <button class="btn btn-sm" style="color: var(--color-danger);" onclick="disconnectPlatform('technogold')">
+              <i data-lucide="unlink" style="width: 12px; height: 12px;"></i>
+              <span data-fa="قطع اتصال" data-en="Disconnect">قطع اتصال</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ZarGold - Connected -->
+        <div class="platform-card connected">
+          <div class="platform-header">
+            <div class="platform-info">
+              <div class="platform-logo zargold">ZG</div>
+              <div>
+                <div class="platform-name" data-fa="زرگلد" data-en="ZarGold">زرگلد</div>
+                <div class="platform-status connected">
+                  <span class="platform-status-dot"></span>
+                  <span data-fa="متصل" data-en="Connected">متصل</span>
+                </div>
+              </div>
+            </div>
+            <div class="platform-last-sync">
+              <i data-lucide="clock" style="width: 10px; height: 10px;"></i>
+              <span data-fa="آخرین همگام‌سازی: ۳۰ دقیقه پیش" data-en="Last sync: 30 min ago">آخرین همگام‌سازی: ۳۰ دقیقه پیش</span>
+            </div>
+          </div>
+          <div class="platform-balance">
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</div>
+              <div class="platform-balance-value" style="color: var(--color-gold-600);">۴.۵۰۰ گرم</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="موجودی نقدی" data-en="Cash">موجودی نقدی</div>
+              <div class="platform-balance-value">۵۵,۰۰۰,۰۰۰</div>
+            </div>
+            <div class="platform-balance-item">
+              <div class="platform-balance-label" data-fa="سکه" data-en="Coins">سکه</div>
+              <div class="platform-balance-value">۱ عدد</div>
+            </div>
+          </div>
+          <div class="platform-actions">
+            <button class="btn btn-sm" onclick="syncPlatform('zargold')">
+              <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+              <span data-fa="همگام‌سازی" data-en="Sync">همگام‌سازی</span>
+            </button>
+            <button class="btn btn-sm" onclick="viewPlatformDetails('zargold')">
+              <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+              <span data-fa="مشاهده در پلتفرم" data-en="View in Platform">مشاهده در پلتفرم</span>
+            </button>
+            <button class="btn btn-sm" style="color: var(--color-danger);" onclick="disconnectPlatform('zargold')">
+              <i data-lucide="unlink" style="width: 12px; height: 12px;"></i>
+              <span data-fa="قطع اتصال" data-en="Disconnect">قطع اتصال</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Available Platforms -->
+        <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: var(--space-3); margin-top: var(--space-6);" data-fa="پلتفرم‌های موجود برای اتصال" data-en="Available Platforms to Connect">پلتفرم‌های موجود برای اتصال</div>
+
+        <!-- GoldIran - Not Connected -->
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-info">
+              <div class="platform-logo goldiran">GI</div>
+              <div>
+                <div class="platform-name" data-fa="گلدایران" data-en="GoldIran">گلدایران</div>
+                <div class="platform-status disconnected">
+                  <span class="platform-status-dot"></span>
+                  <span data-fa="متصل نیست" data-en="Not Connected">متصل نیست</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="platform-actions">
+            <button class="btn btn-primary btn-sm" onclick="openConnectModal('goldiran')">
+              <i data-lucide="link" style="width: 12px; height: 12px;"></i>
+              <span data-fa="اتصال" data-en="Connect">اتصال</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TalaMarket - Not Connected -->
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-info">
+              <div class="platform-logo talamarket">TM</div>
+              <div>
+                <div class="platform-name" data-fa="طلامارکت" data-en="TalaMarket">طلامارکت</div>
+                <div class="platform-status disconnected">
+                  <span class="platform-status-dot"></span>
+                  <span data-fa="متصل نیست" data-en="Not Connected">متصل نیست</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="platform-actions">
+            <button class="btn btn-primary btn-sm" onclick="openConnectModal('talamarket')">
+              <i data-lucide="link" style="width: 12px; height: 12px;"></i>
+              <span data-fa="اتصال" data-en="Connect">اتصال</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Profile Section -->
+      <section class="section" id="section-profile">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="پروفایل کاربری" data-en="User Profile">پروفایل کاربری</h1>
+          <p class="page-subtitle" data-fa="مدیریت اطلاعات حساب کاربری" data-en="Manage your account information">مدیریت اطلاعات حساب کاربری</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                <span data-fa="اطلاعات شخصی" data-en="Personal Information">اطلاعات شخصی</span>
+              </h3>
+            </div>
+            <form>
+              <div class="form-group">
+                <label class="form-label" data-fa="نام" data-en="Name">نام</label>
+                <input type="text" class="form-input" value="علی قاسمی">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-fa="ایمیل" data-en="Email">ایمیل</label>
+                <input type="email" class="form-input" value="ali@example.com" dir="ltr">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-fa="شماره موبایل" data-en="Phone">شماره موبایل</label>
+                <input type="tel" class="form-input" value="09123456789" dir="ltr">
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+                <span data-fa="ذخیره تغییرات" data-en="Save Changes">ذخیره تغییرات</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+                <span data-fa="تغییر رمز عبور" data-en="Change Password">تغییر رمز عبور</span>
+              </h3>
+            </div>
+            <form>
+              <div class="form-group">
+                <label class="form-label" data-fa="رمز عبور فعلی" data-en="Current Password">رمز عبور فعلی</label>
+                <input type="password" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-fa="رمز عبور جدید" data-en="New Password">رمز عبور جدید</label>
+                <input type="password" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-fa="تکرار رمز عبور" data-en="Confirm Password">تکرار رمز عبور</label>
+                <input type="password" class="form-input">
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="key" style="width: 16px; height: 16px;"></i>
+                <span data-fa="تغییر رمز" data-en="Update Password">تغییر رمز</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Section -->
+      <section class="section" id="section-settings">
+        <div class="page-header">
+          <h1 class="page-title" data-fa="تنظیمات" data-en="Settings">تنظیمات</h1>
+          <p class="page-subtitle" data-fa="تنظیمات برنامه و اعلان‌ها" data-en="App and notification settings">تنظیمات برنامه و اعلان‌ها</p>
+        </div>
+
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+              <span data-fa="تنظیمات اعلان" data-en="Notification Settings">تنظیمات اعلان</span>
+            </h3>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 500;" data-fa="اعلان ایمیل" data-en="Email Notifications">اعلان ایمیل</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="دریافت هشدارها از طریق ایمیل" data-en="Receive alerts via email">دریافت هشدارها از طریق ایمیل</div>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 500;" data-fa="اعلان پیامک" data-en="SMS Notifications">اعلان پیامک</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="دریافت هشدارها از طریق پیامک" data-en="Receive alerts via SMS">دریافت هشدارها از طریق پیامک</div>
+              </div>
+              <div class="toggle" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 500;" data-fa="اعلان مرورگر" data-en="Browser Notifications">اعلان مرورگر</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="نمایش اعلان در مرورگر" data-en="Show browser notifications">نمایش اعلان در مرورگر</div>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i data-lucide="palette" style="width: 18px; height: 18px;"></i>
+              <span data-fa="ظاهر برنامه" data-en="Appearance">ظاهر برنامه</span>
+            </h3>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" data-fa="زبان" data-en="Language">زبان</label>
+              <select class="form-select" onchange="updateLanguage(this.value)">
+                <option value="fa">فارسی</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 500;" data-fa="حالت تاریک" data-en="Dark Mode">حالت تاریک</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="استفاده از تم تاریک" data-en="Use dark theme">استفاده از تم تاریک</div>
+              </div>
+              <div class="toggle" id="darkModeToggle" onclick="toggleDarkMode()"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Platform Connection Modal -->
+  <div class="connect-modal" id="connectModal">
+    <div class="connect-modal-content">
+      <div class="connect-modal-header">
+        <div class="connect-modal-title">
+          <i data-lucide="link-2" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+          <span data-fa="اتصال به پلتفرم" data-en="Connect to Platform">اتصال به پلتفرم</span>
+        </div>
+        <button style="background: none; border: none; cursor: pointer; color: var(--color-text-tertiary);" onclick="closeConnectModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="connect-modal-body">
+        <!-- Platform Selection -->
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" data-fa="انتخاب پلتفرم" data-en="Select Platform">انتخاب پلتفرم</label>
+          <select class="form-select" id="platformSelect">
+            <option value="goldiran" data-fa="گلدایران" data-en="GoldIran">گلدایران</option>
+            <option value="talamarket" data-fa="طلامارکت" data-en="TalaMarket">طلامارکت</option>
+            <option value="sekkeonline" data-fa="سکه آنلاین" data-en="SekkeOnline">سکه آنلاین</option>
+            <option value="zarexchange" data-fa="زرایکسچنج" data-en="ZarExchange">زرایکسچنج</option>
+            <option value="goldplus" data-fa="گلدپلاس" data-en="GoldPlus">گلدپلاس</option>
+          </select>
+        </div>
+
+        <!-- Connection Method -->
+        <div style="margin-bottom: var(--space-4);">
+          <label class="form-label" data-fa="روش اتصال" data-en="Connection Method">روش اتصال</label>
+          <div class="connection-method">
+            <button class="connection-method-btn active" onclick="switchConnectionMethod('credentials')">
+              <div class="connection-method-icon">
+                <i data-lucide="key" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="connection-method-label" data-fa="نام کاربری و رمز" data-en="Username & Password">نام کاربری و رمز</span>
+            </button>
+            <button class="connection-method-btn" onclick="switchConnectionMethod('browser')">
+              <div class="connection-method-icon">
+                <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="connection-method-label" data-fa="ورود با مرورگر" data-en="Browser Login">ورود با مرورگر</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Credentials Form -->
+        <div id="credentialsForm">
+          <div class="form-group" style="margin-bottom: var(--space-3);">
+            <label class="form-label" data-fa="نام کاربری یا ایمیل" data-en="Username or Email">نام کاربری یا ایمیل</label>
+            <input type="text" class="form-input" id="platformUsername" placeholder="user@example.com">
+          </div>
+          <div class="form-group" style="margin-bottom: var(--space-4);">
+            <label class="form-label" data-fa="رمز عبور" data-en="Password">رمز عبور</label>
+            <input type="password" class="form-input" id="platformPassword" placeholder="••••••••">
+          </div>
+
+          <div style="background: var(--color-warning-bg); border: 1px solid var(--color-warning); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-4);">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-2);">
+              <i data-lucide="shield-alert" style="width: 16px; height: 16px; color: var(--color-warning); flex-shrink: 0; margin-top: 2px;"></i>
+              <div style="font-size: 0.75rem; color: var(--color-text-secondary);">
+                <div style="font-weight: 600; margin-bottom: var(--space-1);" data-fa="امنیت اطلاعات" data-en="Data Security">امنیت اطلاعات</div>
+                <span data-fa="اطلاعات شما با رمزنگاری AES-256 ذخیره می‌شود و هرگز به صورت متن ساده نگهداری نمی‌شود." data-en="Your credentials are stored with AES-256 encryption and never kept in plain text.">اطلاعات شما با رمزنگاری AES-256 ذخیره می‌شود و هرگز به صورت متن ساده نگهداری نمی‌شود.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Browser Session Form -->
+        <div id="browserForm" style="display: none;">
+          <div class="browser-session">
+            <div class="browser-session-icon">
+              <i data-lucide="chrome" style="width: 32px; height: 32px;"></i>
+            </div>
+            <div class="browser-session-title" data-fa="ورود امن با مرورگر" data-en="Secure Browser Login">ورود امن با مرورگر</div>
+            <div class="browser-session-desc" data-fa="یک پنجره مرورگر کنترل‌شده باز می‌شود. شما وارد حساب خود شوید و ما به صورت خودکار اطلاعات کیف پول شما را دریافت می‌کنیم." data-en="A controlled browser window will open. Log in to your account and we'll automatically fetch your wallet information.">یک پنجره مرورگر کنترل‌شده باز می‌شود. شما وارد حساب خود شوید و ما به صورت خودکار اطلاعات کیف پول شما را دریافت می‌کنیم.</div>
+
+            <button class="btn btn-primary" style="width: 100%;" onclick="startBrowserSession()">
+              <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+              <span data-fa="باز کردن مرورگر امن" data-en="Open Secure Browser">باز کردن مرورگر امن</span>
+            </button>
+          </div>
+
+          <div style="margin-top: var(--space-4);">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="مراحل اتصال:" data-en="Connection Steps:">مراحل اتصال:</div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.75rem; color: var(--color-text-tertiary);">
+                <span style="width: 20px; height: 20px; background: var(--color-gold-100); color: var(--color-gold-700); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.625rem;">۱</span>
+                <span data-fa="مرورگر امن طلافی باز می‌شود" data-en="Talafee secure browser opens">مرورگر امن طلافی باز می‌شود</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.75rem; color: var(--color-text-tertiary);">
+                <span style="width: 20px; height: 20px; background: var(--color-gold-100); color: var(--color-gold-700); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.625rem;">۲</span>
+                <span data-fa="وارد حساب پلتفرم شوید" data-en="Log in to platform account">وارد حساب پلتفرم شوید</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.75rem; color: var(--color-text-tertiary);">
+                <span style="width: 20px; height: 20px; background: var(--color-gold-100); color: var(--color-gold-700); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.625rem;">۳</span>
+                <span data-fa="اطلاعات کیف پول خودکار دریافت می‌شود" data-en="Wallet info is fetched automatically">اطلاعات کیف پول خودکار دریافت می‌شود</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.75rem; color: var(--color-text-tertiary);">
+                <span style="width: 20px; height: 20px; background: var(--color-gold-100); color: var(--color-gold-700); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.625rem;">۴</span>
+                <span data-fa="اتصال تکمیل و همگام‌سازی فعال" data-en="Connection complete, sync enabled">اتصال تکمیل و همگام‌سازی فعال</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: var(--color-info-bg); border: 1px solid var(--color-info); border-radius: var(--radius-md); padding: var(--space-3); margin-top: var(--space-4);">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-2);">
+              <i data-lucide="info" style="width: 16px; height: 16px; color: var(--color-info); flex-shrink: 0; margin-top: 2px;"></i>
+              <div style="font-size: 0.75rem; color: var(--color-text-secondary);">
+                <span data-fa="مرورگر در محیط امن و ایزوله اجرا می‌شود. رمز عبور شما هرگز توسط طلافی ذخیره نمی‌شود." data-en="Browser runs in a secure, isolated environment. Your password is never stored by Talafee.">مرورگر در محیط امن و ایزوله اجرا می‌شود. رمز عبور شما هرگز توسط طلافی ذخیره نمی‌شود.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sync Settings -->
+        <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border);">
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-3);" data-fa="تنظیمات همگام‌سازی" data-en="Sync Settings">تنظیمات همگام‌سازی</div>
+          <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+            <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer;">
+              <input type="checkbox" checked style="width: 16px; height: 16px;">
+              <span style="font-size: 0.875rem;" data-fa="همگام‌سازی خودکار هر ۵ دقیقه" data-en="Auto-sync every 5 minutes">همگام‌سازی خودکار هر ۵ دقیقه</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer;">
+              <input type="checkbox" checked style="width: 16px; height: 16px;">
+              <span style="font-size: 0.875rem;" data-fa="اطلاع‌رسانی تغییرات موجودی" data-en="Notify on balance changes">اطلاع‌رسانی تغییرات موجودی</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="connect-modal-footer">
+        <button class="btn" onclick="closeConnectModal()" data-fa="انصراف" data-en="Cancel">انصراف</button>
+        <button class="btn btn-primary" id="connectPlatformBtn" onclick="connectPlatform()">
+          <i data-lucide="link" style="width: 16px; height: 16px;"></i>
+          <span data-fa="اتصال به پلتفرم" data-en="Connect Platform">اتصال به پلتفرم</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser Session Modal -->
+  <div class="connect-modal" id="browserSessionModal">
+    <div class="connect-modal-content" style="max-width: 600px;">
+      <div class="connect-modal-header">
+        <div class="connect-modal-title">
+          <i data-lucide="globe" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+          <span data-fa="مرورگر امن طلافی" data-en="Talafee Secure Browser">مرورگر امن طلافی</span>
+        </div>
+        <button style="background: none; border: none; cursor: pointer; color: var(--color-text-tertiary);" onclick="closeBrowserSession()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="connect-modal-body" style="padding: 0;">
+        <!-- Simulated Browser -->
+        <div style="background: var(--color-background); border-bottom: 1px solid var(--color-border); padding: var(--space-2) var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="display: flex; gap: var(--space-1);">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f57;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #28ca41;"></span>
+          </div>
+          <div style="flex: 1; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2); font-size: 0.75rem; font-family: var(--font-mono); color: var(--color-text-secondary); display: flex; align-items: center; gap: var(--space-2);">
+            <i data-lucide="lock" style="width: 12px; height: 12px; color: var(--color-success);"></i>
+            <span>https://goldiran.com/login</span>
+          </div>
+          <button class="btn btn-sm" onclick="refreshBrowserSession()">
+            <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+          </button>
+        </div>
+        <!-- Browser Content Area -->
+        <div style="height: 400px; display: flex; align-items: center; justify-content: center; background: var(--color-surface);">
+          <div style="text-align: center; padding: var(--space-6);">
+            <div style="width: 64px; height: 64px; background: var(--color-gold-100); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+              <i data-lucide="loader-2" style="width: 32px; height: 32px; color: var(--color-gold-600); animation: spin 1s linear infinite;"></i>
+            </div>
+            <div style="font-weight: 600; margin-bottom: var(--space-2);" data-fa="در حال بارگذاری صفحه ورود..." data-en="Loading login page...">در حال بارگذاری صفحه ورود...</div>
+            <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="لطفاً صبر کنید" data-en="Please wait">لطفاً صبر کنید</div>
+          </div>
+        </div>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      </div>
+      <div class="connect-modal-footer" style="justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.75rem; color: var(--color-text-tertiary);">
+          <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--color-success);"></i>
+          <span data-fa="محیط امن و رمزنگاری شده" data-en="Secure encrypted environment">محیط امن و رمزنگاری شده</span>
+        </div>
+        <button class="btn" onclick="closeBrowserSession()" data-fa="بستن" data-en="Close">بستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wallet Modal -->
+  <div class="wallet-modal-backdrop" id="walletModal">
+    <div class="wallet-modal">
+      <div class="wallet-modal-header">
+        <div class="wallet-modal-title" id="walletModalTitle">
+          <i data-lucide="wallet" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+          <span data-fa="واریز به کیف پول" data-en="Deposit to Wallet">واریز به کیف پول</span>
+        </div>
+        <button class="wallet-modal-close" onclick="closeWalletModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="wallet-modal-body" id="walletModalBody">
+        <!-- Deposit Form -->
+        <div id="depositForm">
+          <div class="balance-display">
+            <span class="balance-label" data-fa="موجودی فعلی" data-en="Current Balance">موجودی فعلی</span>
+            <span class="balance-value">۲۵,۵۰۰,۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">ریال</span></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="مبلغ واریز" data-en="Deposit Amount">مبلغ واریز</label>
+            <div class="amount-input-wrapper">
+              <input type="text" class="form-input" id="depositAmount" placeholder="۰" dir="ltr">
+              <span class="amount-currency" data-fa="ریال" data-en="IRR">ریال</span>
+            </div>
+            <div class="quick-amounts">
+              <button class="quick-amount-btn" onclick="setAmount('depositAmount', 10000000)">۱۰,۰۰۰,۰۰۰</button>
+              <button class="quick-amount-btn" onclick="setAmount('depositAmount', 50000000)">۵۰,۰۰۰,۰۰۰</button>
+              <button class="quick-amount-btn" onclick="setAmount('depositAmount', 100000000)">۱۰۰,۰۰۰,۰۰۰</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="روش پرداخت" data-en="Payment Method">روش پرداخت</label>
+            <select class="form-select" id="paymentMethod">
+              <option value="card" data-fa="کارت بانکی" data-en="Bank Card">کارت بانکی</option>
+              <option value="gateway" data-fa="درگاه پرداخت اینترنتی" data-en="Online Payment Gateway">درگاه پرداخت اینترنتی</option>
+              <option value="transfer" data-fa="انتقال بانکی" data-en="Bank Transfer">انتقال بانکی</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Withdraw Form -->
+        <div id="withdrawForm" style="display: none;">
+          <div class="balance-display">
+            <span class="balance-label" data-fa="موجودی قابل برداشت" data-en="Available Balance">موجودی قابل برداشت</span>
+            <span class="balance-value">۲۵,۵۰۰,۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">ریال</span></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="مبلغ برداشت" data-en="Withdrawal Amount">مبلغ برداشت</label>
+            <div class="amount-input-wrapper">
+              <input type="text" class="form-input" id="withdrawAmount" placeholder="۰" dir="ltr">
+              <span class="amount-currency" data-fa="ریال" data-en="IRR">ریال</span>
+            </div>
+            <div class="quick-amounts">
+              <button class="quick-amount-btn" onclick="setAmount('withdrawAmount', 5000000)">۵,۰۰۰,۰۰۰</button>
+              <button class="quick-amount-btn" onclick="setAmount('withdrawAmount', 10000000)">۱۰,۰۰۰,۰۰۰</button>
+              <button class="quick-amount-btn" onclick="setAmountMax('withdrawAmount')">حداکثر</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="شماره شبا" data-en="IBAN">شماره شبا</label>
+            <input type="text" class="form-input" placeholder="IR06 0120 0100 0000 0123 4567 89" dir="ltr">
+          </div>
+        </div>
+
+        <!-- Buy Gold Form -->
+        <div id="buyGoldForm" style="display: none;">
+          <div class="balance-display">
+            <span class="balance-label" data-fa="موجودی ریالی" data-en="Cash Balance">موجودی ریالی</span>
+            <span class="balance-value">۲۵,۵۰۰,۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">ریال</span></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="نوع طلا" data-en="Gold Type">نوع طلا</label>
+            <select class="form-select" id="goldType">
+              <option value="18k" data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</option>
+              <option value="emami" data-fa="سکه امامی" data-en="Emami Coin">سکه امامی</option>
+              <option value="half" data-fa="نیم سکه" data-en="Half Coin">نیم سکه</option>
+              <option value="quarter" data-fa="ربع سکه" data-en="Quarter Coin">ربع سکه</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="مقدار (گرم)" data-en="Amount (grams)">مقدار (گرم)</label>
+            <div class="amount-input-wrapper">
+              <input type="text" class="form-input" id="goldAmount" placeholder="۰.۰۰۰" dir="ltr">
+              <span class="amount-currency" data-fa="گرم" data-en="g">گرم</span>
+            </div>
+            <div class="quick-amounts">
+              <button class="quick-amount-btn" onclick="setGoldAmount(0.5)">۰.۵</button>
+              <button class="quick-amount-btn" onclick="setGoldAmount(1)">۱</button>
+              <button class="quick-amount-btn" onclick="setGoldAmount(2)">۲</button>
+              <button class="quick-amount-btn" onclick="setGoldAmount(5)">۵</button>
+            </div>
+          </div>
+          <div style="background: var(--color-gold-50); border: 1px solid var(--color-gold-200); border-radius: var(--radius-md); padding: var(--space-3); margin-top: var(--space-3);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+              <span style="font-size: 0.75rem; color: var(--color-text-secondary);" data-fa="قیمت هر گرم" data-en="Price per gram">قیمت هر گرم</span>
+              <span style="font-family: var(--font-mono); font-size: 0.875rem;">۱۴۹,۳۷۰,۰۰۰</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 0.875rem; font-weight: 600;" data-fa="جمع کل" data-en="Total">جمع کل</span>
+              <span style="font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--color-gold-600);">۰</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sell Gold Form -->
+        <div id="sellGoldForm" style="display: none;">
+          <div class="balance-display">
+            <span class="balance-label" data-fa="موجودی طلا" data-en="Gold Balance">موجودی طلا</span>
+            <span class="balance-value">۲.۳۵۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">گرم</span></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="نوع طلا" data-en="Gold Type">نوع طلا</label>
+            <select class="form-select">
+              <option value="18k" data-fa="طلای ۱۸ عیار (۲.۳۵۰ گرم)" data-en="18K Gold (2.350 g)">طلای ۱۸ عیار (۲.۳۵۰ گرم)</option>
+              <option value="emami" data-fa="سکه امامی (۱ عدد)" data-en="Emami Coin (1 pcs)">سکه امامی (۱ عدد)</option>
+              <option value="half" data-fa="نیم سکه (۲ عدد)" data-en="Half Coin (2 pcs)">نیم سکه (۲ عدد)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-fa="مقدار فروش (گرم)" data-en="Sell Amount (grams)">مقدار فروش (گرم)</label>
+            <div class="amount-input-wrapper">
+              <input type="text" class="form-input" id="sellGoldAmount" placeholder="۰.۰۰۰" dir="ltr">
+              <span class="amount-currency" data-fa="گرم" data-en="g">گرم</span>
+            </div>
+            <div class="quick-amounts">
+              <button class="quick-amount-btn" onclick="setSellGoldAmount(0.5)">۰.۵</button>
+              <button class="quick-amount-btn" onclick="setSellGoldAmount(1)">۱</button>
+              <button class="quick-amount-btn" onclick="setSellGoldAmountMax()">همه</button>
+            </div>
+          </div>
+          <div style="background: var(--color-warning-bg); border: 1px solid var(--color-warning); border-radius: var(--radius-md); padding: var(--space-3); margin-top: var(--space-3);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+              <span style="font-size: 0.75rem; color: var(--color-text-secondary);" data-fa="قیمت فروش هر گرم" data-en="Sell price per gram">قیمت فروش هر گرم</span>
+              <span style="font-family: var(--font-mono); font-size: 0.875rem;">۱۴۸,۵۰۰,۰۰۰</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 0.875rem; font-weight: 600;" data-fa="مبلغ دریافتی" data-en="You'll receive">مبلغ دریافتی</span>
+              <span style="font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--color-warning);">۰</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wallet-modal-footer">
+        <button class="btn" onclick="closeWalletModal()" data-fa="انصراف" data-en="Cancel">انصراف</button>
+        <button class="btn btn-primary" id="walletModalSubmit">
+          <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+          <span data-fa="تأیید" data-en="Confirm">تأیید</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Section navigation
+    function showSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      // Show target section
+      document.getElementById('section-' + sectionId).classList.add('active');
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.target.closest('.nav-item').classList.add('active');
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    // Dark mode
+    function toggleDarkMode() {
+      const isDark = document.documentElement.dataset.theme === 'dark';
+      document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+      document.getElementById('darkModeToggle').classList.toggle('active', !isDark);
+    }
+
+    // Language
+    let currentLang = 'fa';
+    function updateLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-fa][data-en]').forEach(el => {
+        el.textContent = el.dataset[lang];
+      });
+    }
+
+    // Wallet Modal Functions
+    const walletConfig = {
+      deposit: {
+        icon: 'arrow-down-circle',
+        iconColor: 'var(--color-success)',
+        titleFa: 'واریز به کیف پول',
+        titleEn: 'Deposit to Wallet',
+        form: 'depositForm',
+        buttonFa: 'پرداخت و واریز',
+        buttonEn: 'Pay & Deposit'
+      },
+      withdraw: {
+        icon: 'arrow-up-circle',
+        iconColor: 'var(--color-danger)',
+        titleFa: 'برداشت از کیف پول',
+        titleEn: 'Withdraw from Wallet',
+        form: 'withdrawForm',
+        buttonFa: 'ثبت درخواست برداشت',
+        buttonEn: 'Submit Withdrawal'
+      },
+      'buy-gold': {
+        icon: 'trending-up',
+        iconColor: 'var(--color-gold-500)',
+        titleFa: 'خرید طلا',
+        titleEn: 'Buy Gold',
+        form: 'buyGoldForm',
+        buttonFa: 'خرید طلا',
+        buttonEn: 'Buy Gold'
+      },
+      'sell-gold': {
+        icon: 'trending-down',
+        iconColor: 'var(--color-warning)',
+        titleFa: 'فروش طلا',
+        titleEn: 'Sell Gold',
+        form: 'sellGoldForm',
+        buttonFa: 'فروش طلا',
+        buttonEn: 'Sell Gold'
+      }
+    };
+
+    function openWalletModal(type) {
+      const config = walletConfig[type];
+      if (!config) return;
+
+      // Update modal title
+      const titleEl = document.querySelector('#walletModalTitle span');
+      titleEl.textContent = currentLang === 'fa' ? config.titleFa : config.titleEn;
+
+      // Update icon
+      const iconEl = document.querySelector('#walletModalTitle i');
+      iconEl.setAttribute('data-lucide', config.icon);
+      iconEl.style.color = config.iconColor;
+
+      // Update submit button
+      const submitBtn = document.querySelector('#walletModalSubmit span');
+      submitBtn.textContent = currentLang === 'fa' ? config.buttonFa : config.buttonEn;
+
+      // Hide all forms, show the correct one
+      document.querySelectorAll('#walletModalBody > div').forEach(form => {
+        form.style.display = 'none';
+      });
+      document.getElementById(config.form).style.display = 'block';
+
+      // Show modal
+      document.getElementById('walletModal').classList.add('active');
+
+      // Recreate icons
+      lucide.createIcons();
+    }
+
+    function closeWalletModal() {
+      document.getElementById('walletModal').classList.remove('active');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('walletModal').addEventListener('click', (e) => {
+      if (e.target.id === 'walletModal') {
+        closeWalletModal();
+      }
+    });
+
+    // Amount helpers
+    function setAmount(inputId, amount) {
+      const input = document.getElementById(inputId);
+      input.value = amount.toLocaleString('fa-IR');
+    }
+
+    function setAmountMax(inputId) {
+      setAmount(inputId, 25500000); // Max balance
+    }
+
+    function setGoldAmount(grams) {
+      document.getElementById('goldAmount').value = grams.toLocaleString('fa-IR', { minimumFractionDigits: 3 });
+    }
+
+    function setSellGoldAmount(grams) {
+      document.getElementById('sellGoldAmount').value = grams.toLocaleString('fa-IR', { minimumFractionDigits: 3 });
+    }
+
+    function setSellGoldAmountMax() {
+      document.getElementById('sellGoldAmount').value = '۲.۳۵۰';
+    }
+
+    // ============================================
+    // Connected Accounts Functions
+    // ============================================
+
+    // Platform configuration
+    const platformConfig = {
+      taline: {
+        name: { fa: 'تالین', en: 'Taline' },
+        url: 'https://my.tlyn.ir',
+        logo: 'TL'
+      },
+      technogold: {
+        name: { fa: 'تکنوگلد', en: 'Technogold' },
+        url: 'https://app.technogold.gold',
+        logo: 'TG'
+      },
+      zargold: {
+        name: { fa: 'زرگلد', en: 'ZarGold' },
+        url: 'https://zargold.ir',
+        logo: 'ZG'
+      },
+      goldiran: {
+        name: { fa: 'گلدایران', en: 'GoldIran' },
+        url: 'https://goldiran.com',
+        logo: 'GI'
+      },
+      talamarket: {
+        name: { fa: 'طلامارکت', en: 'TalaMarket' },
+        url: 'https://talamarket.ir',
+        logo: 'TM'
+      },
+      sekkeonline: {
+        name: { fa: 'سکه آنلاین', en: 'SekkeOnline' },
+        url: 'https://sekkeonline.com',
+        logo: 'SO'
+      },
+      zarexchange: {
+        name: { fa: 'زرایکسچنج', en: 'ZarExchange' },
+        url: 'https://zarexchange.ir',
+        logo: 'ZE'
+      },
+      goldplus: {
+        name: { fa: 'گلدپلاس', en: 'GoldPlus' },
+        url: 'https://goldplus.ir',
+        logo: 'GP'
+      }
+    };
+
+    let currentConnectionMethod = 'credentials';
+
+    // Open platform connection modal
+    function openConnectModal(platformId = null) {
+      const modal = document.getElementById('connectModal');
+      modal.classList.add('active');
+
+      // If platformId is provided, pre-select it
+      if (platformId) {
+        const platformSelect = document.getElementById('platformSelect');
+        platformSelect.value = platformId;
+      }
+
+      // Reset to credentials method
+      switchConnectionMethod('credentials');
+
+      // Clear form fields
+      document.getElementById('platformUsername').value = '';
+      document.getElementById('platformPassword').value = '';
+
+      lucide.createIcons();
+    }
+
+    // Close platform connection modal
+    function closeConnectModal() {
+      const modal = document.getElementById('connectModal');
+      modal.classList.remove('active');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('connectModal').addEventListener('click', (e) => {
+      if (e.target.id === 'connectModal') {
+        closeConnectModal();
+      }
+    });
+
+    // Switch connection method (credentials vs browser)
+    function switchConnectionMethod(method) {
+      currentConnectionMethod = method;
+
+      // Update buttons
+      document.querySelectorAll('.connection-method-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.closest('.connection-method-btn')?.classList.add('active') ||
+        document.querySelector(`.connection-method-btn:${method === 'credentials' ? 'first' : 'last'}-child`).classList.add('active');
+
+      // Show/hide forms
+      const credentialsForm = document.getElementById('credentialsForm');
+      const browserForm = document.getElementById('browserForm');
+      const connectBtn = document.getElementById('connectPlatformBtn');
+
+      if (method === 'credentials') {
+        credentialsForm.style.display = 'block';
+        browserForm.style.display = 'none';
+        connectBtn.style.display = 'flex';
+      } else {
+        credentialsForm.style.display = 'none';
+        browserForm.style.display = 'block';
+        connectBtn.style.display = 'none';
+      }
+    }
+
+    // Connect platform via credentials
+    function connectPlatform() {
+      const platformId = document.getElementById('platformSelect').value;
+      const username = document.getElementById('platformUsername').value;
+      const password = document.getElementById('platformPassword').value;
+
+      if (!username || !password) {
+        showToast(currentLang === 'fa' ? 'لطفاً نام کاربری و رمز عبور را وارد کنید' : 'Please enter username and password', 'error');
+        return;
+      }
+
+      // Show loading state
+      const btn = document.getElementById('connectPlatformBtn');
+      const originalContent = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="loader-2" style="width: 16px; height: 16px; animation: spin 1s linear infinite;"></i><span>' +
+        (currentLang === 'fa' ? 'در حال اتصال...' : 'Connecting...') + '</span>';
+      btn.disabled = true;
+      lucide.createIcons();
+
+      // Simulate connection (in real app, this would be an API call)
+      setTimeout(() => {
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+        lucide.createIcons();
+
+        closeConnectModal();
+        showToast(currentLang === 'fa' ? 'پلتفرم با موفقیت متصل شد' : 'Platform connected successfully', 'success');
+
+        // In real app: refresh the connected platforms list
+      }, 2000);
+    }
+
+    // Start browser session for login
+    function startBrowserSession() {
+      const platformId = document.getElementById('platformSelect').value;
+      const platform = platformConfig[platformId];
+
+      closeConnectModal();
+
+      // Open browser session modal
+      const browserModal = document.getElementById('browserSessionModal');
+      browserModal.classList.add('active');
+
+      // Update URL bar
+      const urlBar = browserModal.querySelector('.connect-modal-body span');
+      urlBar.textContent = platform.url + '/login';
+
+      lucide.createIcons();
+
+      // Simulate loading and then show login page
+      setTimeout(() => {
+        // In real app, this would load an actual controlled browser/iframe
+        // For demo, we just show that it's "ready"
+        const contentArea = browserModal.querySelector('[style*="height: 400px"]');
+        contentArea.innerHTML = `
+          <div style="text-align: center; padding: var(--space-6);">
+            <div style="width: 64px; height: 64px; background: var(--color-success-bg); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+              <i data-lucide="check-circle" style="width: 32px; height: 32px; color: var(--color-success);"></i>
+            </div>
+            <div style="font-weight: 600; margin-bottom: var(--space-2);" data-fa="صفحه ورود آماده است" data-en="Login page is ready">صفحه ورود آماده است</div>
+            <div style="font-size: 0.75rem; color: var(--color-text-tertiary); margin-bottom: var(--space-4);" data-fa="لطفاً وارد حساب ${platform.name[currentLang]} شوید" data-en="Please log in to your ${platform.name[currentLang]} account">لطفاً وارد حساب ${platform.name[currentLang]} شوید</div>
+            <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); text-align: left; max-width: 300px; margin: 0 auto;">
+              <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-bottom: var(--space-3);">${currentLang === 'fa' ? 'فرم ورود شبیه‌سازی شده:' : 'Simulated login form:'}</div>
+              <input type="text" placeholder="${currentLang === 'fa' ? 'نام کاربری' : 'Username'}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: var(--space-2); font-size: 0.875rem;">
+              <input type="password" placeholder="${currentLang === 'fa' ? 'رمز عبور' : 'Password'}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: var(--space-3); font-size: 0.875rem;">
+              <button onclick="simulateBrowserLogin()" style="width: 100%; padding: var(--space-2); background: var(--color-gold-500); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">${currentLang === 'fa' ? 'ورود' : 'Login'}</button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+        updateLanguage(currentLang);
+      }, 1500);
+    }
+
+    // Simulate browser login completion
+    function simulateBrowserLogin() {
+      const browserModal = document.getElementById('browserSessionModal');
+      const contentArea = browserModal.querySelector('[style*="height: 400px"]');
+
+      contentArea.innerHTML = `
+        <div style="text-align: center; padding: var(--space-6);">
+          <div style="width: 64px; height: 64px; background: var(--color-gold-100); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+            <i data-lucide="loader-2" style="width: 32px; height: 32px; color: var(--color-gold-600); animation: spin 1s linear infinite;"></i>
+          </div>
+          <div style="font-weight: 600; margin-bottom: var(--space-2);" data-fa="در حال دریافت اطلاعات کیف پول..." data-en="Fetching wallet information...">در حال دریافت اطلاعات کیف پول...</div>
+          <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="لطفاً صبر کنید" data-en="Please wait">لطفاً صبر کنید</div>
+        </div>
+      `;
+      lucide.createIcons();
+      updateLanguage(currentLang);
+
+      setTimeout(() => {
+        closeBrowserSession();
+        showToast(currentLang === 'fa' ? 'اتصال با موفقیت برقرار شد و اطلاعات همگام‌سازی شد' : 'Connected successfully and data synced', 'success');
+      }, 2000);
+    }
+
+    // Close browser session modal
+    function closeBrowserSession() {
+      const modal = document.getElementById('browserSessionModal');
+      modal.classList.remove('active');
+
+      // Reset content to loading state
+      setTimeout(() => {
+        const contentArea = modal.querySelector('[style*="height: 400px"]');
+        contentArea.innerHTML = `
+          <div style="text-align: center; padding: var(--space-6);">
+            <div style="width: 64px; height: 64px; background: var(--color-gold-100); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+              <i data-lucide="loader-2" style="width: 32px; height: 32px; color: var(--color-gold-600); animation: spin 1s linear infinite;"></i>
+            </div>
+            <div style="font-weight: 600; margin-bottom: var(--space-2);" data-fa="در حال بارگذاری صفحه ورود..." data-en="Loading login page...">در حال بارگذاری صفحه ورود...</div>
+            <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="لطفاً صبر کنید" data-en="Please wait">لطفاً صبر کنید</div>
+          </div>
+        `;
+        lucide.createIcons();
+      }, 300);
+    }
+
+    // Close browser modal on backdrop click
+    document.getElementById('browserSessionModal').addEventListener('click', (e) => {
+      if (e.target.id === 'browserSessionModal') {
+        closeBrowserSession();
+      }
+    });
+
+    // Refresh browser session
+    function refreshBrowserSession() {
+      const browserModal = document.getElementById('browserSessionModal');
+      const contentArea = browserModal.querySelector('[style*="height: 400px"]');
+
+      contentArea.innerHTML = `
+        <div style="text-align: center; padding: var(--space-6);">
+          <div style="width: 64px; height: 64px; background: var(--color-gold-100); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+            <i data-lucide="loader-2" style="width: 32px; height: 32px; color: var(--color-gold-600); animation: spin 1s linear infinite;"></i>
+          </div>
+          <div style="font-weight: 600; margin-bottom: var(--space-2);" data-fa="در حال بارگذاری مجدد..." data-en="Reloading...">در حال بارگذاری مجدد...</div>
+          <div style="font-size: 0.75rem; color: var(--color-text-tertiary);" data-fa="لطفاً صبر کنید" data-en="Please wait">لطفاً صبر کنید</div>
+        </div>
+      `;
+      lucide.createIcons();
+      updateLanguage(currentLang);
+
+      // Simulate reload
+      setTimeout(() => {
+        startBrowserSession();
+      }, 1000);
+    }
+
+    // Sync a specific platform
+    function syncPlatform(platformId) {
+      const platform = platformConfig[platformId];
+      const platformCard = document.querySelector(`.platform-card.connected .platform-logo.${platformId}`)?.closest('.platform-card');
+
+      // Find sync button and show loading
+      const syncBtn = event.target.closest('.btn');
+      const originalContent = syncBtn.innerHTML;
+      syncBtn.innerHTML = '<i data-lucide="loader-2" style="width: 12px; height: 12px; animation: spin 1s linear infinite;"></i>';
+      syncBtn.disabled = true;
+      lucide.createIcons();
+
+      // Simulate sync
+      setTimeout(() => {
+        syncBtn.innerHTML = originalContent;
+        syncBtn.disabled = false;
+        lucide.createIcons();
+
+        // Update last sync time
+        if (platformCard) {
+          const lastSyncEl = platformCard.querySelector('.platform-last-sync span');
+          lastSyncEl.textContent = currentLang === 'fa' ? 'آخرین همگام‌سازی: همین الان' : 'Last sync: just now';
+        }
+
+        showToast(currentLang === 'fa' ? `${platform.name[currentLang]} همگام‌سازی شد` : `${platform.name[currentLang]} synced`, 'success');
+      }, 1500);
+    }
+
+    // Sync all connected platforms
+    function syncAllPlatforms() {
+      const syncBtn = event.target.closest('.btn');
+      const originalContent = syncBtn.innerHTML;
+      syncBtn.innerHTML = '<i data-lucide="loader-2" style="width: 14px; height: 14px; animation: spin 1s linear infinite;"></i><span>' +
+        (currentLang === 'fa' ? 'در حال همگام‌سازی...' : 'Syncing...') + '</span>';
+      syncBtn.disabled = true;
+      lucide.createIcons();
+
+      // Simulate sync all
+      setTimeout(() => {
+        syncBtn.innerHTML = originalContent;
+        syncBtn.disabled = false;
+        lucide.createIcons();
+
+        // Update all last sync times
+        document.querySelectorAll('.platform-card.connected .platform-last-sync span').forEach(el => {
+          el.textContent = currentLang === 'fa' ? 'آخرین همگام‌سازی: همین الان' : 'Last sync: just now';
+        });
+
+        showToast(currentLang === 'fa' ? 'همه پلتفرم‌ها همگام‌سازی شدند' : 'All platforms synced', 'success');
+      }, 2500);
+    }
+
+    // Disconnect a platform
+    function disconnectPlatform(platformId) {
+      const platform = platformConfig[platformId];
+      const confirmMsg = currentLang === 'fa'
+        ? `آیا از قطع اتصال ${platform.name[currentLang]} مطمئن هستید؟`
+        : `Are you sure you want to disconnect ${platform.name[currentLang]}?`;
+
+      if (confirm(confirmMsg)) {
+        // In real app: API call to disconnect
+        showToast(currentLang === 'fa' ? `${platform.name[currentLang]} قطع اتصال شد` : `${platform.name[currentLang]} disconnected`, 'info');
+
+        // In real app: refresh the platforms list
+      }
+    }
+
+    // View platform details (open in new tab)
+    function viewPlatformDetails(platformId) {
+      const platform = platformConfig[platformId];
+      window.open(platform.url, '_blank');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+      // Remove existing toast
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+
+      const icons = {
+        success: 'check-circle',
+        error: 'x-circle',
+        warning: 'alert-triangle',
+        info: 'info'
+      };
+
+      const colors = {
+        success: 'var(--color-success)',
+        error: 'var(--color-danger)',
+        warning: 'var(--color-warning)',
+        info: 'var(--color-info)'
+      };
+
+      toast.innerHTML = `
+        <i data-lucide="${icons[type]}" style="width: 18px; height: 18px; color: ${colors[type]};"></i>
+        <span>${message}</span>
+      `;
+
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-3) var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        box-shadow: var(--shadow-lg);
+        z-index: 10000;
+        animation: toastSlideUp 0.3s var(--ease-out);
+      `;
+
+      document.body.appendChild(toast);
+      lucide.createIcons();
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.style.animation = 'toastSlideDown 0.3s var(--ease-in) forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Add toast animation styles
+    const toastStyles = document.createElement('style');
+    toastStyles.textContent = `
+      @keyframes toastSlideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes toastSlideDown {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+    `;
+    document.head.appendChild(toastStyles);
+  </script>
+</body>
+</html>

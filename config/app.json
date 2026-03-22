@@ -1,0 +1,56 @@
+{
+  "app": {
+    "name": "Talafee",
+    "nameFa": "طلافی",
+    "version": "1.0.0",
+    "description": {
+      "fa": "پلتفرم مقایسه قیمت طلا و سکه در ایران",
+      "en": "Gold Price Comparison Platform for Iranian Markets"
+    },
+    "url": "https://talafee.ir",
+    "apiUrl": "https://api.talafee.ir",
+    "supportEmail": "support@talafee.ir"
+  },
+  "features": {
+    "priceComparison": true,
+    "priceAlerts": true,
+    "wallet": true,
+    "fastBuy": true,
+    "universalPayment": true,
+    "connectedAccounts": true,
+    "affiliate": true,
+    "darkMode": true,
+    "multiLanguage": true
+  },
+  "languages": {
+    "default": "fa",
+    "supported": ["fa", "en"]
+  },
+  "currency": {
+    "default": "IRR",
+    "supported": ["IRR", "USD", "EUR"]
+  },
+  "priceUpdate": {
+    "intervalMs": 30000,
+    "maxAge": 300000
+  },
+  "analytics": {
+    "googleAnalyticsId": "G-XXXXXXXXXX",
+    "enabled": true
+  },
+  "security": {
+    "sessionTimeout": 3600000,
+    "maxLoginAttempts": 5,
+    "lockoutDuration": 900000,
+    "credentialEncryption": "AES-256-GCM"
+  },
+  "pagination": {
+    "defaultPageSize": 20,
+    "maxPageSize": 100
+  },
+  "cache": {
+    "pricesCacheTTL": 30000,
+    "providersCacheTTL": 86400000,
+    "userDataCacheTTL": 60000
+  }
+}

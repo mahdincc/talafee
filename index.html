@@ -1,0 +1,3934 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talafee | Gold Price Comparison</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* ==================== CSS RESET ==================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ==================== DESIGN TOKENS ==================== */
+    :root {
+      /* Colors - Light Mode */
+      --color-background: #FAFAFA;
+      --color-surface: #FFFFFF;
+      --color-surface-elevated: #FFFFFF;
+
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #6B7280;
+      --color-text-tertiary: #9CA3AF;
+
+      --color-border: #E5E7EB;
+      --color-border-subtle: #F3F4F6;
+      --color-border-focus: #D4AF37;
+
+      /* Gold Scale */
+      --color-gold-50: #FDF8E8;
+      --color-gold-100: #F9EDCC;
+      --color-gold-200: #F0D98C;
+      --color-gold-300: #E5C560;
+      --color-gold-400: #D4AF37;
+      --color-gold-500: #C5A028;
+      --color-gold-600: #A68523;
+      --color-gold-700: #8B6914;
+
+      /* Semantic */
+      --color-success: #10B981;
+      --color-success-bg: #ECFDF5;
+      --color-danger: #EF4444;
+      --color-danger-bg: #FEF2F2;
+      --color-warning: #F59E0B;
+      --color-warning-bg: #FFFBEB;
+
+      --color-best-deal: #059669;
+      --color-best-deal-bg: #D1FAE5;
+
+      /* Typography */
+      --font-display: 'Outfit', 'Vazirmatn', system-ui, sans-serif;
+      --font-body: 'Work Sans', 'Vazirmatn', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+      --font-persian: 'Vazirmatn', 'Tahoma', sans-serif;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-gold: 0 0 0 1px #F0D98C, 0 4px 12px rgba(212, 175, 55, 0.15);
+      --shadow-focus: 0 0 0 3px rgba(212, 175, 55, 0.2);
+
+      /* Transitions */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms;
+      --duration-normal: 200ms;
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --color-background: #0F0F0F;
+      --color-surface: #1A1A1A;
+      --color-surface-elevated: #242424;
+
+      --color-text-primary: #FAFAFA;
+      --color-text-secondary: #A1A1AA;
+      --color-text-tertiary: #71717A;
+
+      --color-border: #27272A;
+      --color-border-subtle: #1F1F23;
+
+      --color-gold-50: #1C1A0F;
+      --color-gold-100: #2A2510;
+
+      --color-success-bg: #052E16;
+      --color-danger-bg: #450A0A;
+      --color-best-deal-bg: #064E3B;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    /* LTR Mode */
+    [dir="ltr"] {
+      font-family: var(--font-body);
+    }
+
+    /* ==================== BASE STYLES ==================== */
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-persian);
+      background-color: var(--color-background);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      transition: background-color var(--duration-normal) var(--ease-out),
+                  color var(--duration-normal) var(--ease-out);
+    }
+
+    /* ==================== LAYOUT ==================== */
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    /* ==================== HEADER ==================== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4) 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .logo-text span {
+      color: var(--color-gold-400);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .btn:hover {
+      background: var(--color-gold-50);
+      border-color: var(--color-gold-200);
+      color: var(--color-gold-700);
+    }
+
+    .btn-icon {
+      padding: var(--space-2);
+    }
+
+    .btn-primary {
+      background: var(--color-gold-400);
+      border-color: var(--color-gold-400);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-gold-500);
+      border-color: var(--color-gold-500);
+      color: white;
+    }
+
+    /* Refresh Button Styles */
+    .refresh-btn {
+      position: relative;
+      min-width: 120px;
+    }
+
+    .refresh-btn .refresh-icon {
+      transition: transform 0.5s ease;
+    }
+
+    .refresh-btn.loading .refresh-icon {
+      animation: spin 1s linear infinite;
+    }
+
+    .refresh-btn.loading .refresh-text {
+      opacity: 0.7;
+    }
+
+    .refresh-countdown {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      margin-right: 4px;
+      opacity: 0.8;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .refresh-countdown:empty {
+      display: none;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .refresh-btn.loading {
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .lang-toggle {
+      display: flex;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .lang-toggle button {
+      padding: var(--space-2) var(--space-3);
+      border: none;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .lang-toggle button.active {
+      background: var(--color-gold-400);
+      color: white;
+    }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .main {
+      padding: var(--space-6) 0;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: var(--space-4);
+      color: var(--color-text-primary);
+    }
+
+    /* ==================== STATS GRID ==================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-gold-200);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .stat-change {
+      font-size: 0.75rem;
+      margin-top: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .stat-change.up {
+      color: var(--color-success);
+    }
+
+    .stat-change.down {
+      color: var(--color-danger);
+    }
+
+    /* ==================== CHART SECTION ==================== */
+    .chart-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .chart-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .chart-tabs {
+      display: flex;
+      gap: var(--space-1);
+      background: var(--color-background);
+      padding: var(--space-1);
+      border-radius: var(--radius-md);
+    }
+
+    .chart-tab {
+      padding: var(--space-2) var(--space-3);
+      border: none;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .chart-tab.active {
+      background: var(--color-surface);
+      color: var(--color-gold-600);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+
+    .chart-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: var(--space-4);
+      gap: 2px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--color-gold-400), var(--color-gold-200));
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      min-width: 8px;
+      max-width: 40px;
+      transition: all var(--duration-normal) var(--ease-out);
+      position: relative;
+    }
+
+    .chart-bar:hover {
+      background: linear-gradient(to top, var(--color-gold-500), var(--color-gold-300));
+      transform: scaleY(1.02);
+    }
+
+    .chart-bar::after {
+      content: attr(data-value);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    .chart-bar:hover::after {
+      opacity: 1;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-6);
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ==================== BUBBLE CARD ==================== */
+    .bubble-card {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-gold-50) 100%);
+      border: 1px solid var(--color-gold-200);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bubble-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+    }
+
+    .bubble-title {
+      font-family: var(--font-persian);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .bubble-title-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--color-gold-500);
+    }
+
+    .bubble-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .bubble-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 120px;
+    }
+
+    .bubble-value {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+
+    .bubble-value.positive {
+      color: var(--color-danger);
+    }
+
+    .bubble-value.negative {
+      color: var(--color-success);
+    }
+
+    .bubble-value.neutral {
+      color: var(--color-text-secondary);
+    }
+
+    .bubble-label {
+      font-family: var(--font-persian);
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    .bubble-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border-subtle);
+      margin-top: var(--space-4);
+    }
+
+    .bubble-detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .bubble-detail-label {
+      font-family: var(--font-persian);
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .bubble-detail-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .bubble-status {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-persian);
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .bubble-status.low {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+
+    .bubble-status.medium {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+
+    .bubble-status.high {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    .bubble-status.extreme {
+      background: #7F1D1D;
+      color: white;
+    }
+
+    .bubble-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+      color: var(--color-text-tertiary);
+    }
+
+    @media (max-width: 640px) {
+      .bubble-details {
+        grid-template-columns: 1fr;
+      }
+
+      .bubble-value {
+        font-size: 2rem;
+      }
+    }
+
+    /* ==================== PRODUCT TABS ==================== */
+    .product-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+      padding: var(--space-2);
+      background: var(--color-background);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .product-tab {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-family: var(--font-persian);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      white-space: nowrap;
+    }
+
+    .product-tab .tab-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .product-tab:hover {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+    }
+
+    .product-tab:hover .tab-icon {
+      opacity: 0.8;
+    }
+
+    .product-tab.active {
+      background: var(--color-gold-400);
+      color: white;
+      border-color: var(--color-gold-400);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .product-tab.active .tab-icon {
+      opacity: 1;
+      color: white;
+    }
+
+    .product-tab.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: var(--color-gold-100);
+      color: var(--color-gold-700);
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 9px;
+      margin-right: -4px;
+    }
+
+    .product-tab.active .tab-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+    }
+
+    /* Responsive: scroll on mobile */
+    @media (max-width: 768px) {
+      .product-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: var(--space-3);
+      }
+
+      .product-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .product-tab {
+        flex-shrink: 0;
+        padding: var(--space-2) var(--space-3);
+        font-size: 0.8rem;
+      }
+    }
+
+    /* ==================== PRICE CARDS GRID ==================== */
+    .cards-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .cards-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: var(--space-4);
+    }
+
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .cards-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .price-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--duration-normal) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .price-card.best-deal {
+      border-color: var(--color-best-deal);
+      box-shadow: var(--shadow-gold);
+    }
+
+    .price-card.best-deal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-gold-400), var(--color-best-deal));
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .provider-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .provider-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--color-gold-50);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--color-gold-600);
+    }
+
+    .provider-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .best-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2);
+      background: var(--color-best-deal-bg);
+      color: var(--color-best-deal);
+      font-size: 0.625rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-best-deal);
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .price-item {
+      text-align: center;
+      padding: var(--space-2);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+    }
+
+    .price-label {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+    }
+
+    .price-value {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .price-value.buy {
+      color: var(--color-success);
+    }
+
+    .price-value.sell {
+      color: var(--color-danger);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+
+    .spread {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    .spread-value {
+      font-family: var(--font-mono);
+      color: var(--color-warning);
+      direction: ltr;
+    }
+
+    .update-time {
+      font-size: 0.625rem;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .change-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .change-indicator.up {
+      color: var(--color-success);
+      background: var(--color-success-bg);
+    }
+
+    .change-indicator.down {
+      color: var(--color-danger);
+      background: var(--color-danger-bg);
+    }
+
+    /* ==================== BUY BUTTON ==================== */
+    .btn-buy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      margin-top: var(--space-3);
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-500));
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-family: var(--font-persian);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-buy::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-buy:hover {
+      background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-600));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-buy:hover::before {
+      left: 100%;
+    }
+
+    .btn-buy:active {
+      transform: translateY(0);
+    }
+
+    .btn-buy.best {
+      background: linear-gradient(135deg, var(--color-best-deal), #047857);
+    }
+
+    .btn-buy.best:hover {
+      background: linear-gradient(135deg, #047857, #065f46);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+    .btn-buy-sm {
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.75rem;
+      width: auto;
+      margin-top: 0;
+    }
+
+    .btn-buy-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Commission badge */
+    .commission-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--color-danger);
+      color: white;
+      font-size: 0.5rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      animation: pulse 2s infinite;
+    }
+
+    [dir="ltr"] .commission-badge {
+      right: auto;
+      left: -8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Affiliate disclosure */
+    .affiliate-disclosure {
+      background: var(--color-gold-50);
+      border: 1px solid var(--color-gold-200);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      margin-top: var(--space-4);
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+
+    .affiliate-disclosure i {
+      flex-shrink: 0;
+      color: var(--color-gold-500);
+    }
+
+    /* Click analytics toast */
+    .toast {
+      position: fixed;
+      bottom: var(--space-6);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-5);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      z-index: 500;
+      opacity: 0;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-success);
+    }
+
+    .toast-text {
+      font-size: 0.875rem;
+    }
+
+    /* ==================== COMPARISON TABLE ==================== */
+    .table-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .comparison-table th {
+      text-align: right;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-background);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    [dir="ltr"] .comparison-table th {
+      text-align: left;
+    }
+
+    .comparison-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      vertical-align: middle;
+    }
+
+    .comparison-table tr:hover td {
+      background: var(--color-gold-50);
+    }
+
+    .comparison-table tr.best-row {
+      background: var(--color-best-deal-bg);
+    }
+
+    .comparison-table tr.best-row td {
+      border-color: transparent;
+    }
+
+    .comparison-table tr.best-row td:first-child {
+      border-right: 3px solid var(--color-best-deal);
+    }
+
+    [dir="ltr"] .comparison-table tr.best-row td:first-child {
+      border-right: none;
+      border-left: 3px solid var(--color-best-deal);
+    }
+
+    .table-provider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .table-price {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .table-spread {
+      font-family: var(--font-mono);
+      color: var(--color-text-secondary);
+      direction: ltr;
+    }
+
+    .sort-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      margin-right: var(--space-1);
+    }
+
+    [dir="ltr"] .sort-btn {
+      margin-right: 0;
+      margin-left: var(--space-1);
+    }
+
+    /* ==================== FOOTER ==================== */
+    .footer {
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-6) 0;
+      margin-top: var(--space-8);
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .footer-links a {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    .footer-links a:hover {
+      color: var(--color-gold-500);
+    }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes price-flash {
+      0% { background-color: transparent; }
+      50% { background-color: var(--color-gold-100); }
+      100% { background-color: transparent; }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.3s var(--ease-out) forwards;
+    }
+
+    /* Staggered animation */
+    .cards-grid .price-card:nth-child(1) { animation-delay: 0ms; }
+    .cards-grid .price-card:nth-child(2) { animation-delay: 50ms; }
+    .cards-grid .price-card:nth-child(3) { animation-delay: 100ms; }
+    .cards-grid .price-card:nth-child(4) { animation-delay: 150ms; }
+    .cards-grid .price-card:nth-child(5) { animation-delay: 200ms; }
+    .cards-grid .price-card:nth-child(6) { animation-delay: 250ms; }
+    .cards-grid .price-card:nth-child(7) { animation-delay: 300ms; }
+    .cards-grid .price-card:nth-child(8) { animation-delay: 350ms; }
+    .cards-grid .price-card:nth-child(9) { animation-delay: 400ms; }
+    .cards-grid .price-card:nth-child(10) { animation-delay: 450ms; }
+
+    /* ==================== ALERTS MODAL ==================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: var(--space-4);
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      animation: fade-in 0.2s var(--ease-out);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      padding: var(--space-1);
+    }
+
+    .modal-body {
+      padding: var(--space-5);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      font-size: 0.875rem;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--color-gold-400);
+      box-shadow: var(--shadow-focus);
+    }
+
+    .modal-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-2);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 640px) {
+      .header-content {
+        flex-wrap: wrap;
+      }
+
+      .logo-text {
+        font-size: 1.25rem;
+      }
+
+      .stat-value {
+        font-size: 1.25rem;
+      }
+
+      .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* ==================== FAST BUY MENU ==================== */
+    .fast-buy-toggle {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      border: none;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      padding: var(--space-3) var(--space-2);
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      color: white;
+    }
+
+    [dir="ltr"] .fast-buy-toggle {
+      left: auto;
+      right: 0;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    }
+
+    .fast-buy-toggle:hover {
+      padding-right: var(--space-4);
+      box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+    }
+
+    [dir="ltr"] .fast-buy-toggle:hover {
+      padding-right: var(--space-2);
+      padding-left: var(--space-4);
+    }
+
+    .fast-buy-toggle-text {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    [dir="ltr"] .fast-buy-toggle-text {
+      writing-mode: vertical-lr;
+    }
+
+    .fast-buy-panel {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 360px;
+      max-width: 90vw;
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      z-index: 250;
+      transform: translateX(-100%);
+      transition: transform 0.3s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    [dir="ltr"] .fast-buy-panel {
+      left: auto;
+      right: 0;
+      border-right: none;
+      border-left: 1px solid var(--color-border);
+      transform: translateX(100%);
+    }
+
+    .fast-buy-panel.open {
+      transform: translateX(0);
+    }
+
+    .fast-buy-header {
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      padding: var(--space-4);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .fast-buy-title {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .fast-buy-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--space-2);
+      cursor: pointer;
+      color: white;
+      transition: background 0.2s;
+    }
+
+    .fast-buy-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .fast-buy-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+    }
+
+    .fast-buy-wallet {
+      background: linear-gradient(135deg, var(--color-gold-50), var(--color-gold-100));
+      border: 1px solid var(--color-gold-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .wallet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .wallet-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .wallet-label {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .wallet-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-gold-700);
+    }
+
+    .fast-buy-tabs {
+      display: flex;
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      padding: var(--space-1);
+      margin-bottom: var(--space-4);
+    }
+
+    .fast-buy-tab {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .fast-buy-tab.active {
+      background: var(--color-surface);
+      color: var(--color-gold-600);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .best-price-card {
+      background: var(--color-success-bg);
+      border: 2px solid var(--color-success);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .best-price-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-gold-400), var(--color-success));
+    }
+
+    .best-price-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--color-success);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-2);
+    }
+
+    .best-price-provider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .best-price-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-gold-600);
+    }
+
+    .best-price-info h4 {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: var(--space-1);
+    }
+
+    .best-price-info .price {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-success);
+    }
+
+    .fast-buy-amount {
+      margin-bottom: var(--space-4);
+    }
+
+    .fast-buy-amount-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    .fast-buy-amount-input {
+      width: 100%;
+      padding: var(--space-3);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      text-align: center;
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      transition: border-color 0.2s;
+    }
+
+    .fast-buy-amount-input:focus {
+      outline: none;
+      border-color: var(--color-gold-400);
+    }
+
+    .fast-buy-presets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .fast-buy-preset {
+      padding: var(--space-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .fast-buy-preset:hover {
+      border-color: var(--color-gold-400);
+      background: var(--color-gold-50);
+    }
+
+    .fast-buy-total {
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .fast-buy-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .fast-buy-total-row:last-child {
+      margin-bottom: 0;
+      padding-top: var(--space-2);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .fast-buy-total-row.final {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .fast-buy-total-row.final .value {
+      color: var(--color-gold-600);
+      font-family: var(--font-mono);
+    }
+
+    .fast-buy-btn {
+      width: 100%;
+      padding: var(--space-4);
+      background: linear-gradient(135deg, var(--color-success), #047857);
+      border: none;
+      border-radius: var(--radius-lg);
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .fast-buy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .fast-buy-btn:disabled {
+      background: var(--color-border);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Target Price Section */
+    .target-price-section {
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .target-price-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .target-price-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .target-price-input-group {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .target-price-input {
+      flex: 1;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+    }
+
+    .target-price-orders {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .target-order-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3);
+      background: var(--color-background);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .target-order-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .target-order-price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .target-order-amount {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .target-order-status {
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+
+    .target-order-status.active {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+
+    /* Universal Payment Section */
+    .universal-payment-section {
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .universal-payment-card {
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      color: white;
+      margin-bottom: var(--space-3);
+    }
+
+    .universal-payment-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .universal-payment-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .universal-payment-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .universal-payment-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .virtual-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .virtual-card-number {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-2);
+    }
+
+    .virtual-card-details {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+    }
+
+    .payment-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--color-background);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .payment-option:hover {
+      border-color: var(--color-gold-400);
+      background: var(--color-gold-50);
+    }
+
+    .payment-option-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gold-600);
+    }
+
+    .payment-option-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+
+    /* Fast Buy Panel Backdrop */
+    .fast-buy-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 240;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .fast-buy-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Universal Payment Modal */
+    .universal-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    .universal-modal.active {
+      display: flex;
+    }
+
+    .universal-modal-content {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .universal-modal-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .universal-modal-body {
+      padding: var(--space-5);
+    }
+
+    .universal-modal-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-2);
+      justify-content: flex-end;
+    }
+
+    .store-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .store-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-background);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .store-item:hover {
+      border-color: var(--color-gold-400);
+    }
+
+    .store-item.selected {
+      border-color: var(--color-gold-400);
+      background: var(--color-gold-50);
+    }
+
+    .store-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--color-gold-600);
+    }
+
+    .store-info {
+      flex: 1;
+    }
+
+    .store-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .store-category {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Temporary Navigation Bar -->
+  <div class="temp-nav" style="background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600)); padding: var(--space-2) 0;">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2);">
+      <div style="color: white; font-size: 0.75rem; font-weight: 500;">
+        <i data-lucide="info" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i>
+        <span data-fa="نسخه آزمایشی - برای تست پنل‌ها از دکمه‌های زیر استفاده کنید" data-en="Demo Version - Use buttons below to test panels">نسخه آزمایشی - برای تست پنل‌ها از دکمه‌های زیر استفاده کنید</span>
+      </div>
+      <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+        <a href="login.html" class="temp-nav-btn" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-md); color: white; text-decoration: none; font-size: 0.75rem; font-weight: 500; transition: all 0.2s;">
+          <i data-lucide="log-in" style="width: 14px; height: 14px;"></i>
+          <span data-fa="ورود / ثبت‌نام" data-en="Login / Register">ورود / ثبت‌نام</span>
+        </a>
+        <a href="user-panel.html" class="temp-nav-btn" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-md); color: white; text-decoration: none; font-size: 0.75rem; font-weight: 500; transition: all 0.2s;">
+          <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+          <span data-fa="پنل کاربری" data-en="User Panel">پنل کاربری</span>
+        </a>
+        <a href="admin-panel.html" class="temp-nav-btn" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,1); border-radius: var(--radius-md); color: var(--color-gold-700); text-decoration: none; font-size: 0.75rem; font-weight: 600; transition: all 0.2s;">
+          <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+          <span data-fa="پنل ادمین" data-en="Admin Panel">پنل ادمین</span>
+        </a>
+        <a href="guide.html" class="temp-nav-btn" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: rgba(16,185,129,0.9); border: 1px solid rgba(16,185,129,1); border-radius: var(--radius-md); color: white; text-decoration: none; font-size: 0.75rem; font-weight: 600; transition: all 0.2s;">
+          <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+          <span data-fa="راهنمای سرمایه‌گذاری" data-en="Investment Guide">راهنمای سرمایه‌گذاری</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">
+            <i data-lucide="coins" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div class="logo-text">
+            <span>Tala</span>fee
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-icon" id="alertsBtn" title="Price Alerts">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+          </button>
+
+          <div class="lang-toggle">
+            <button class="active" id="langFa">FA</button>
+            <button id="langEn">EN</button>
+          </div>
+
+          <button class="btn btn-icon" id="themeToggle" title="Toggle Theme">
+            <i data-lucide="sun" style="width: 18px; height: 18px;" id="themeIcon"></i>
+          </button>
+
+          <button class="btn btn-icon" title="Settings">
+            <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+          </button>
+
+          <button class="btn btn-primary refresh-btn" id="refreshBtn">
+            <i data-lucide="refresh-cw" class="refresh-icon" style="width: 16px; height: 16px;"></i>
+            <span class="refresh-text" data-fa="بروزرسانی" data-en="Refresh">بروزرسانی</span>
+            <span class="refresh-countdown" id="refreshCountdown"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <!-- Stats Section -->
+      <div class="stats-grid">
+        <div class="stat-card animate-fade-in">
+          <div class="stat-label">
+            <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+            <span data-fa="قیمت فعلی" data-en="Current Price">قیمت فعلی</span>
+          </div>
+          <div class="stat-value">149,370,000</div>
+          <div class="stat-change up">
+            <i data-lucide="arrow-up" style="width: 12px; height: 12px;"></i>
+            <span>+2.5% <span data-fa="از دیروز" data-en="from yesterday">از دیروز</span></span>
+          </div>
+        </div>
+
+        <div class="stat-card animate-fade-in">
+          <div class="stat-label">
+            <i data-lucide="arrow-up-circle" style="width: 14px; height: 14px;"></i>
+            <span data-fa="بالاترین امروز" data-en="Today's High">بالاترین امروز</span>
+          </div>
+          <div class="stat-value">155,200,000</div>
+          <div class="stat-change up">
+            <i data-lucide="arrow-up" style="width: 12px; height: 12px;"></i>
+            <span>+3.2%</span>
+          </div>
+        </div>
+
+        <div class="stat-card animate-fade-in">
+          <div class="stat-label">
+            <i data-lucide="arrow-down-circle" style="width: 14px; height: 14px;"></i>
+            <span data-fa="پایین‌ترین امروز" data-en="Today's Low">پایین‌ترین امروز</span>
+          </div>
+          <div class="stat-value">145,800,000</div>
+          <div class="stat-change down">
+            <i data-lucide="arrow-down" style="width: 12px; height: 12px;"></i>
+            <span>-1.8%</span>
+          </div>
+        </div>
+
+        <div class="stat-card animate-fade-in">
+          <div class="stat-label">
+            <i data-lucide="bar-chart-3" style="width: 14px; height: 14px;"></i>
+            <span data-fa="میانگین قیمت" data-en="Average Price">میانگین قیمت</span>
+          </div>
+          <div class="stat-value">150,500,000</div>
+          <div class="stat-change up">
+            <i data-lucide="minus" style="width: 12px; height: 12px;"></i>
+            <span data-fa="ثابت" data-en="Stable">ثابت</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-section animate-fade-in">
+        <div class="chart-header">
+          <h2 class="chart-title">
+            <i data-lucide="line-chart" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+            <span data-fa="نمودار روند قیمت" data-en="Price Trend Chart">نمودار روند قیمت</span>
+          </h2>
+          <div class="chart-tabs">
+            <button class="chart-tab" data-fa="۷ روز" data-en="7D">۷ روز</button>
+            <button class="chart-tab active" data-fa="۳۰ روز" data-en="30D">۳۰ روز</button>
+            <button class="chart-tab" data-fa="۳ ماه" data-en="3M">۳ ماه</button>
+            <button class="chart-tab" data-fa="سال" data-en="1Y">سال</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-placeholder" id="chartBars">
+            <!-- Bars will be generated by JS -->
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: var(--color-gold-400);"></div>
+            <span data-fa="گرم طلای ۱۸ عیار" data-en="18K Gold (Gram)">گرم طلای ۱۸ عیار</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #6366F1;"></div>
+            <span data-fa="میانگین بازار" data-en="Market Average">میانگین بازار</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bubble Card Section -->
+      <section class="bubble-section" id="bubbleSection">
+        <div class="bubble-card" id="bubbleCard">
+          <div class="bubble-header">
+            <div class="bubble-title">
+              <i data-lucide="activity" class="bubble-title-icon"></i>
+              <span data-fa="حباب قیمت طلا" data-en="Gold Price Bubble">حباب قیمت طلا</span>
+            </div>
+            <span class="bubble-status low" id="bubbleStatus" data-fa="در محدوده نرمال" data-en="Normal">در محدوده نرمال</span>
+          </div>
+
+          <div class="bubble-main">
+            <div class="bubble-indicator">
+              <span class="bubble-value neutral" id="bubbleValue">--</span>
+              <span class="bubble-label" data-fa="حباب طلای ۱۸ عیار" data-en="18K Gold Bubble">حباب طلای ۱۸ عیار</span>
+            </div>
+          </div>
+
+          <div class="bubble-details">
+            <div class="bubble-detail-item">
+              <span class="bubble-detail-label" data-fa="اونس جهانی طلا (دلار)" data-en="World Gold Ounce (USD)">اونس جهانی طلا (دلار)</span>
+              <span class="bubble-detail-value" id="worldGoldPrice">--</span>
+            </div>
+            <div class="bubble-detail-item">
+              <span class="bubble-detail-label" data-fa="نرخ دلار (ریال)" data-en="USD Rate (IRR)">نرخ دلار (ریال)</span>
+              <span class="bubble-detail-value" id="usdRate">--</span>
+            </div>
+            <div class="bubble-detail-item">
+              <span class="bubble-detail-label" data-fa="قیمت نظری گرم طلا" data-en="Theoretical Price">قیمت نظری گرم طلا</span>
+              <span class="bubble-detail-value" id="theoreticalPrice">--</span>
+            </div>
+            <div class="bubble-detail-item">
+              <span class="bubble-detail-label" data-fa="قیمت بازار گرم طلا" data-en="Market Price">قیمت بازار گرم طلا</span>
+              <span class="bubble-detail-value" id="marketPrice">--</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Price Cards Section -->
+      <section class="cards-section">
+        <div class="cards-header">
+          <h2 class="section-title">
+            <span data-fa="قیمت طلای ۱۸ عیار" data-en="18K Gold Prices">قیمت طلای ۱۸ عیار</span>
+          </h2>
+        </div>
+
+        <!-- Product Type Buttons -->
+        <div class="product-tabs" id="productTabs">
+          <button class="product-tab active" data-product="18k-gold" onclick="handleProductChange('18k-gold')">
+            <i data-lucide="circle" class="tab-icon"></i>
+            <span data-fa="طلای ۱۸ عیار" data-en="18K Gold">طلای ۱۸ عیار</span>
+          </button>
+          <button class="product-tab" data-product="24k-gold" onclick="handleProductChange('24k-gold')">
+            <i data-lucide="circle" class="tab-icon"></i>
+            <span data-fa="طلای ۲۴ عیار" data-en="24K Gold">طلای ۲۴ عیار</span>
+          </button>
+          <button class="product-tab" data-product="emami-coin" onclick="handleProductChange('emami-coin')">
+            <i data-lucide="hexagon" class="tab-icon"></i>
+            <span data-fa="سکه امامی" data-en="Emami Coin">سکه امامی</span>
+          </button>
+          <button class="product-tab" data-product="bahar-azadi" onclick="handleProductChange('bahar-azadi')">
+            <i data-lucide="hexagon" class="tab-icon"></i>
+            <span data-fa="بهار آزادی" data-en="Bahar Azadi">بهار آزادی</span>
+          </button>
+          <button class="product-tab" data-product="half-coin" onclick="handleProductChange('half-coin')">
+            <i data-lucide="octagon" class="tab-icon"></i>
+            <span data-fa="نیم سکه" data-en="Half Coin">نیم سکه</span>
+          </button>
+          <button class="product-tab" data-product="quarter-coin" onclick="handleProductChange('quarter-coin')">
+            <i data-lucide="square" class="tab-icon"></i>
+            <span data-fa="ربع سکه" data-en="Quarter Coin">ربع سکه</span>
+          </button>
+          <button class="product-tab" data-product="mesghal" onclick="handleProductChange('mesghal')">
+            <i data-lucide="diamond" class="tab-icon"></i>
+            <span data-fa="مثقال" data-en="Mesghal">مثقال</span>
+          </button>
+          <button class="product-tab" data-product="silver-999" onclick="handleProductChange('silver-999')">
+            <i data-lucide="circle-dot" class="tab-icon"></i>
+            <span data-fa="نقره ۹۹۹" data-en="Silver 999">نقره ۹۹۹</span>
+          </button>
+        </div>
+
+        <div class="cards-grid" id="priceCards">
+          <!-- Cards will be generated by JS -->
+        </div>
+      </section>
+
+      <!-- Comparison Table -->
+      <section class="table-section">
+        <div class="table-header">
+          <h2 class="section-title" style="margin-bottom: 0;">
+            <span data-fa="جدول مقایسه کامل" data-en="Full Comparison Table">جدول مقایسه کامل</span>
+          </h2>
+          <div class="btn" id="sortToggle">
+            <i data-lucide="arrow-up-down" style="width: 14px; height: 14px;"></i>
+            <span data-fa="مرتب‌سازی" data-en="Sort">مرتب‌سازی</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="comparison-table" id="comparisonTable">
+            <thead>
+              <tr>
+                <th data-fa="پلتفرم" data-en="Platform">پلتفرم</th>
+                <th data-fa="قیمت خرید" data-en="Buy Price">قیمت خرید</th>
+                <th data-fa="قیمت فروش" data-en="Sell Price">قیمت فروش</th>
+                <th data-fa="اختلاف" data-en="Spread">اختلاف</th>
+                <th data-fa="تغییر" data-en="Change">تغییر</th>
+                <th data-fa="آخرین بروزرسانی" data-en="Last Update">آخرین بروزرسانی</th>
+                <th data-fa="خرید" data-en="Buy">خرید</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Rows will be generated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i data-lucide="external-link" class="toast-icon"></i>
+    <span class="toast-text" id="toastText"></span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <!-- Affiliate Disclosure -->
+        <div class="affiliate-disclosure">
+          <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+          <div>
+            <span data-fa="افشای همکاری در فروش: این وبسایت از لینک‌های همکاری در فروش استفاده می‌کند. در صورت خرید از طریق این لینک‌ها، ما کمیسیون دریافت می‌کنیم بدون اینکه هزینه اضافی برای شما ایجاد شود."
+                  data-en="Affiliate Disclosure: This website uses affiliate links. We may earn a commission if you make a purchase through these links at no extra cost to you.">
+              افشای همکاری در فروش: این وبسایت از لینک‌های همکاری در فروش استفاده می‌کند. در صورت خرید از طریق این لینک‌ها، ما کمیسیون دریافت می‌کنیم بدون اینکه هزینه اضافی برای شما ایجاد شود.
+            </span>
+          </div>
+        </div>
+
+        <div class="footer-text" style="margin-top: var(--space-4);">
+          <span data-fa="طلافی - مقایسه قیمت طلا در پلتفرم‌های ایرانی" data-en="Talafee - Gold Price Comparison for Iranian Platforms">
+            طلافی - مقایسه قیمت طلا در پلتفرم‌های ایرانی
+          </span>
+        </div>
+        <div class="footer-links">
+          <a href="#" data-fa="درباره ما" data-en="About Us">درباره ما</a>
+          <a href="#" data-fa="تماس با ما" data-en="Contact">تماس با ما</a>
+          <a href="#" data-fa="قوانین استفاده" data-en="Terms of Use">قوانین استفاده</a>
+        </div>
+        <div class="footer-text" style="font-size: 0.625rem;">
+          &copy; 2026 Talafee. <span data-fa="تمام حقوق محفوظ است" data-en="All rights reserved">تمام حقوق محفوظ است</span>.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Alerts Modal -->
+  <div class="modal-backdrop" id="alertsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="bell" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+          <span data-fa="ایجاد هشدار قیمت" data-en="Create Price Alert">ایجاد هشدار قیمت</span>
+        </div>
+        <button class="modal-close" id="closeModal">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" data-fa="نوع طلا" data-en="Gold Type">نوع طلا</label>
+          <select class="form-select">
+            <option data-fa="گرم طلای ۱۸ عیار" data-en="18K Gold (Gram)">گرم طلای ۱۸ عیار</option>
+            <option data-fa="سکه امامی" data-en="Emami Coin">سکه امامی</option>
+            <option data-fa="نیم سکه" data-en="Half Coin">نیم سکه</option>
+            <option data-fa="ربع سکه" data-en="Quarter Coin">ربع سکه</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="شرط" data-en="Condition">شرط</label>
+          <select class="form-select">
+            <option data-fa="وقتی قیمت کمتر شد از" data-en="When price drops below">وقتی قیمت کمتر شد از</option>
+            <option data-fa="وقتی قیمت بیشتر شد از" data-en="When price rises above">وقتی قیمت بیشتر شد از</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="قیمت هدف (ریال)" data-en="Target Price (IRR)">قیمت هدف (ریال)</label>
+          <input type="text" class="form-input" placeholder="148,000,000" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="پلتفرم" data-en="Platform">پلتفرم</label>
+          <select class="form-select">
+            <option data-fa="همه پلتفرم‌ها" data-en="All Platforms">همه پلتفرم‌ها</option>
+            <option>Taline</option>
+            <option>Technogold</option>
+            <option>ZarGold</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="cancelAlert" data-fa="انصراف" data-en="Cancel">انصراف</button>
+        <button class="btn btn-primary" data-fa="ایجاد هشدار" data-en="Create Alert">ایجاد هشدار</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fast Buy Toggle Button -->
+  <button class="fast-buy-toggle" onclick="toggleFastBuyPanel()">
+    <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
+    <span class="fast-buy-toggle-text" data-fa="خرید سریع" data-en="Fast Buy">خرید سریع</span>
+  </button>
+
+  <!-- Fast Buy Backdrop -->
+  <div class="fast-buy-backdrop" id="fastBuyBackdrop" onclick="closeFastBuyPanel()"></div>
+
+  <!-- Fast Buy Panel -->
+  <div class="fast-buy-panel" id="fastBuyPanel">
+    <div class="fast-buy-header">
+      <div class="fast-buy-title">
+        <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
+        <span data-fa="خرید سریع طلا" data-en="Fast Buy Gold">خرید سریع طلا</span>
+      </div>
+      <button class="fast-buy-close" onclick="closeFastBuyPanel()">
+        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+      </button>
+    </div>
+
+    <div class="fast-buy-content">
+      <!-- Wallet Balance -->
+      <div class="fast-buy-wallet">
+        <div class="wallet-row">
+          <span class="wallet-label">
+            <i data-lucide="wallet" style="width: 14px; height: 14px;"></i>
+            <span data-fa="موجودی ریالی" data-en="Cash Balance">موجودی ریالی</span>
+          </span>
+          <span class="wallet-value">۲۵,۵۰۰,۰۰۰ <span style="font-size: 0.625rem;">ریال</span></span>
+        </div>
+        <div class="wallet-row">
+          <span class="wallet-label">
+            <i data-lucide="coins" style="width: 14px; height: 14px;"></i>
+            <span data-fa="موجودی طلا" data-en="Gold Balance">موجودی طلا</span>
+          </span>
+          <span class="wallet-value">۲.۳۵۰ <span style="font-size: 0.625rem;">گرم</span></span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="fast-buy-tabs">
+        <button class="fast-buy-tab active" onclick="switchFastBuyTab('instant')" data-fa="خرید آنی" data-en="Instant Buy">خرید آنی</button>
+        <button class="fast-buy-tab" onclick="switchFastBuyTab('target')" data-fa="قیمت هدف" data-en="Target Price">قیمت هدف</button>
+        <button class="fast-buy-tab" onclick="switchFastBuyTab('universal')" data-fa="پرداخت جهانی" data-en="Universal Pay">پرداخت جهانی</button>
+      </div>
+
+      <!-- Instant Buy Content -->
+      <div id="instantBuyContent">
+        <!-- Best Price Card -->
+        <div class="best-price-card">
+          <div class="best-price-badge">
+            <i data-lucide="trophy" style="width: 10px; height: 10px;"></i>
+            <span data-fa="بهترین قیمت" data-en="BEST PRICE">بهترین قیمت</span>
+          </div>
+          <div class="best-price-provider">
+            <div class="best-price-logo">TL</div>
+            <div class="best-price-info">
+              <h4 data-fa="تالین" data-en="Taline">تالین</h4>
+              <div class="price">۱۴۹,۲۰۰,۰۰۰</div>
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--color-text-secondary); display: flex; align-items: center; gap: var(--space-2);">
+            <i data-lucide="arrow-down" style="width: 12px; height: 12px; color: var(--color-success);"></i>
+            <span data-fa="۱۷۰,۰۰۰ ریال کمتر از بازار" data-en="170,000 IRR below market">۱۷۰,۰۰۰ ریال کمتر از بازار</span>
+          </div>
+        </div>
+
+        <!-- Amount Input -->
+        <div class="fast-buy-amount">
+          <label class="fast-buy-amount-label" data-fa="مقدار خرید (گرم)" data-en="Buy Amount (grams)">مقدار خرید (گرم)</label>
+          <input type="text" class="fast-buy-amount-input" id="fastBuyAmount" value="1.000" dir="ltr">
+          <div class="fast-buy-presets">
+            <button class="fast-buy-preset" onclick="setFastBuyAmount(0.5)">۰.۵</button>
+            <button class="fast-buy-preset" onclick="setFastBuyAmount(1)">۱</button>
+            <button class="fast-buy-preset" onclick="setFastBuyAmount(2)">۲</button>
+            <button class="fast-buy-preset" onclick="setFastBuyAmount(5)">۵</button>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="fast-buy-total">
+          <div class="fast-buy-total-row">
+            <span data-fa="قیمت واحد" data-en="Unit Price">قیمت واحد</span>
+            <span style="font-family: var(--font-mono);">۱۴۹,۲۰۰,۰۰۰</span>
+          </div>
+          <div class="fast-buy-total-row">
+            <span data-fa="کارمزد" data-en="Fee">کارمزد</span>
+            <span style="font-family: var(--font-mono);">۷۴۶,۰۰۰</span>
+          </div>
+          <div class="fast-buy-total-row final">
+            <span data-fa="جمع کل" data-en="Total">جمع کل</span>
+            <span class="value">۱۴۹,۹۴۶,۰۰۰</span>
+          </div>
+        </div>
+
+        <!-- Buy Button -->
+        <button class="fast-buy-btn" onclick="executeFastBuy()">
+          <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
+          <span data-fa="خرید فوری از کیف پول" data-en="Buy Now from Wallet">خرید فوری از کیف پول</span>
+        </button>
+      </div>
+
+      <!-- Target Price Content -->
+      <div id="targetPriceContent" style="display: none;">
+        <div class="target-price-section" style="margin-top: 0; padding-top: 0; border-top: none;">
+          <div class="target-price-header">
+            <div class="target-price-title">
+              <i data-lucide="target" style="width: 16px; height: 16px; color: var(--color-gold-400);"></i>
+              <span data-fa="خرید در قیمت هدف" data-en="Buy at Target Price">خرید در قیمت هدف</span>
+            </div>
+          </div>
+
+          <p style="font-size: 0.75rem; color: var(--color-text-tertiary); margin-bottom: var(--space-4);" data-fa="وقتی قیمت به هدف شما رسید، خرید خودکار انجام می‌شود" data-en="When price reaches your target, purchase will execute automatically">وقتی قیمت به هدف شما رسید، خرید خودکار انجام می‌شود</p>
+
+          <div class="form-group" style="margin-bottom: var(--space-3);">
+            <label style="display: block; font-size: 0.75rem; font-weight: 500; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="قیمت هدف (ریال)" data-en="Target Price (IRR)">قیمت هدف (ریال)</label>
+            <input type="text" class="target-price-input" id="targetPriceInput" placeholder="۱۴۸,۰۰۰,۰۰۰" dir="ltr" style="width: 100%;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: var(--space-3);">
+            <label style="display: block; font-size: 0.75rem; font-weight: 500; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="مقدار خرید (گرم)" data-en="Buy Amount (grams)">مقدار خرید (گرم)</label>
+            <input type="text" class="target-price-input" id="targetAmountInput" placeholder="۱.۰۰۰" dir="ltr" style="width: 100%;">
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-bottom: var(--space-4);" onclick="addTargetOrder()">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+            <span data-fa="ثبت سفارش هدف" data-en="Set Target Order">ثبت سفارش هدف</span>
+          </button>
+
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="سفارش‌های فعال" data-en="Active Orders">سفارش‌های فعال</div>
+
+          <div class="target-price-orders">
+            <div class="target-order-item">
+              <div class="target-order-info">
+                <div class="target-order-price">۱۴۸,۰۰۰,۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">ریال</span></div>
+                <div class="target-order-amount">۲ گرم • حداکثر ۲۹۶,۰۰۰,۰۰۰</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <span class="target-order-status active">در انتظار</span>
+                <button style="background: none; border: none; color: var(--color-danger); cursor: pointer; padding: var(--space-1);">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                </button>
+              </div>
+            </div>
+            <div class="target-order-item">
+              <div class="target-order-info">
+                <div class="target-order-price">۱۴۵,۰۰۰,۰۰۰ <span style="font-size: 0.625rem; color: var(--color-text-tertiary);">ریال</span></div>
+                <div class="target-order-amount">۱ گرم • حداکثر ۱۴۵,۰۰۰,۰۰۰</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <span class="target-order-status active">در انتظار</span>
+                <button style="background: none; border: none; color: var(--color-danger); cursor: pointer; padding: var(--space-1);">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universal Payment Content -->
+      <div id="universalPayContent" style="display: none;">
+        <div class="universal-payment-section" style="margin-top: 0; padding-top: 0; border-top: none;">
+          <!-- Virtual Card -->
+          <div class="universal-payment-card">
+            <div class="universal-payment-header">
+              <div class="universal-payment-icon">
+                <i data-lucide="credit-card" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="universal-payment-title" data-fa="کارت مجازی طلافی" data-en="Talafee Virtual Card">کارت مجازی طلافی</div>
+                <div class="universal-payment-subtitle" data-fa="خرید از همه فروشگاه‌ها با کیف پول" data-en="Shop anywhere with your wallet">خرید از همه فروشگاه‌ها با کیف پول</div>
+              </div>
+            </div>
+            <div class="virtual-card">
+              <div class="virtual-card-number">۶۳۶۲ •••• •••• ۸۵۴۱</div>
+              <div class="virtual-card-details">
+                <span>TALAFEE USER</span>
+                <span>۰۵/۲۸</span>
+              </div>
+            </div>
+            <button class="btn" style="width: 100%; background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); color: white;" onclick="generateNewCard()">
+              <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+              <span data-fa="ساخت کارت جدید" data-en="Generate New Card">ساخت کارت جدید</span>
+            </button>
+          </div>
+
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-3);" data-fa="روش پرداخت" data-en="Payment Method">روش پرداخت</div>
+
+          <!-- Payment Options -->
+          <div class="payment-options" style="margin-bottom: var(--space-4);">
+            <div class="payment-option" onclick="openUniversalPayModal('gold')">
+              <div class="payment-option-icon">
+                <i data-lucide="coins" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span class="payment-option-label" data-fa="پرداخت با طلا" data-en="Pay with Gold">پرداخت با طلا</span>
+            </div>
+            <div class="payment-option" onclick="openUniversalPayModal('cash')">
+              <div class="payment-option-icon">
+                <i data-lucide="banknote" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span class="payment-option-label" data-fa="پرداخت ریالی" data-en="Pay with Cash">پرداخت ریالی</span>
+            </div>
+            <div class="payment-option" onclick="openUniversalPayModal('mixed')">
+              <div class="payment-option-icon">
+                <i data-lucide="split" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span class="payment-option-label" data-fa="ترکیبی" data-en="Mixed Payment">ترکیبی</span>
+            </div>
+            <div class="payment-option" onclick="openUniversalPayModal('link')">
+              <div class="payment-option-icon">
+                <i data-lucide="link" style="width: 18px; height: 18px;"></i>
+              </div>
+              <span class="payment-option-label" data-fa="لینک پرداخت" data-en="Payment Link">لینک پرداخت</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-3);" data-fa="فروشگاه‌های پشتیبانی شده" data-en="Supported Stores">فروشگاه‌های پشتیبانی شده</div>
+
+          <!-- Store Logos -->
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4);">
+            <div style="width: 48px; height: 48px; background: var(--color-background); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; color: var(--color-text-secondary);">دیجی</div>
+            <div style="width: 48px; height: 48px; background: var(--color-background); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; color: var(--color-text-secondary);">آمازون</div>
+            <div style="width: 48px; height: 48px; background: var(--color-background); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; color: var(--color-text-secondary);">ترب</div>
+            <div style="width: 48px; height: 48px; background: var(--color-background); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; color: var(--color-text-secondary);">اسنپ</div>
+            <div style="width: 48px; height: 48px; background: var(--color-background); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; color: var(--color-text-secondary);">+۵۰</div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%;" onclick="openUniversalPayModal('new')">
+            <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i>
+            <span data-fa="شروع خرید جدید" data-en="Start New Purchase">شروع خرید جدید</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Payment Modal -->
+  <div class="universal-modal" id="universalPayModal">
+    <div class="universal-modal-content">
+      <div class="universal-modal-header">
+        <div style="font-weight: 600; display: flex; align-items: center; gap: var(--space-2);">
+          <i data-lucide="shopping-bag" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
+          <span data-fa="پرداخت جهانی طلافی" data-en="Talafee Universal Payment">پرداخت جهانی طلافی</span>
+        </div>
+        <button style="background: none; border: none; cursor: pointer; color: var(--color-text-tertiary);" onclick="closeUniversalPayModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="universal-modal-body">
+        <!-- Store Selection -->
+        <div style="margin-bottom: var(--space-4);">
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="انتخاب فروشگاه" data-en="Select Store">انتخاب فروشگاه</label>
+          <div class="store-list">
+            <div class="store-item selected">
+              <div class="store-logo">DK</div>
+              <div class="store-info">
+                <div class="store-name" data-fa="دیجی‌کالا" data-en="Digikala">دیجی‌کالا</div>
+                <div class="store-category" data-fa="فروشگاه آنلاین" data-en="Online Store">فروشگاه آنلاین</div>
+              </div>
+              <i data-lucide="check-circle" style="width: 18px; height: 18px; color: var(--color-success);"></i>
+            </div>
+            <div class="store-item">
+              <div class="store-logo">TR</div>
+              <div class="store-info">
+                <div class="store-name" data-fa="ترب" data-en="Torob">ترب</div>
+                <div class="store-category" data-fa="مقایسه قیمت" data-en="Price Comparison">مقایسه قیمت</div>
+              </div>
+            </div>
+            <div class="store-item">
+              <div class="store-logo">SN</div>
+              <div class="store-info">
+                <div class="store-name" data-fa="اسنپ‌مارکت" data-en="SnappMarket">اسنپ‌مارکت</div>
+                <div class="store-category" data-fa="سوپرمارکت آنلاین" data-en="Online Supermarket">سوپرمارکت آنلاین</div>
+              </div>
+            </div>
+            <div class="store-item">
+              <div class="store-logo">OT</div>
+              <div class="store-info">
+                <div class="store-name" data-fa="سایر فروشگاه‌ها" data-en="Other Stores">سایر فروشگاه‌ها</div>
+                <div class="store-category" data-fa="لینک پرداخت دستی" data-en="Manual Payment Link">لینک پرداخت دستی</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div style="margin-bottom: var(--space-4);">
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="مبلغ پرداخت (ریال)" data-en="Payment Amount (IRR)">مبلغ پرداخت (ریال)</label>
+          <input type="text" style="width: 100%; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 1rem; text-align: center; background: var(--color-surface); color: var(--color-text-primary);" placeholder="۰" dir="ltr">
+        </div>
+
+        <!-- Payment Method -->
+        <div style="margin-bottom: var(--space-4);">
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);" data-fa="منبع پرداخت" data-en="Payment Source">منبع پرداخت</label>
+          <div style="display: flex; gap: var(--space-2);">
+            <button class="btn" style="flex: 1; justify-content: center; background: var(--color-gold-50); border-color: var(--color-gold-400); color: var(--color-gold-700);">
+              <i data-lucide="coins" style="width: 14px; height: 14px;"></i>
+              <span data-fa="طلا" data-en="Gold">طلا</span>
+            </button>
+            <button class="btn" style="flex: 1; justify-content: center;">
+              <i data-lucide="banknote" style="width: 14px; height: 14px;"></i>
+              <span data-fa="ریال" data-en="Cash">ریال</span>
+            </button>
+            <button class="btn" style="flex: 1; justify-content: center;">
+              <i data-lucide="split" style="width: 14px; height: 14px;"></i>
+              <span data-fa="ترکیبی" data-en="Mixed">ترکیبی</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div style="background: var(--color-background); border-radius: var(--radius-md); padding: var(--space-4);">
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-3);" data-fa="خلاصه پرداخت" data-en="Payment Summary">خلاصه پرداخت</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+            <span style="font-size: 0.875rem; color: var(--color-text-secondary);" data-fa="مبلغ خرید" data-en="Purchase Amount">مبلغ خرید</span>
+            <span style="font-family: var(--font-mono);">۰</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+            <span style="font-size: 0.875rem; color: var(--color-text-secondary);" data-fa="معادل طلا" data-en="Gold Equivalent">معادل طلا</span>
+            <span style="font-family: var(--font-mono); color: var(--color-gold-600);">۰ گرم</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+            <span style="font-size: 0.875rem; color: var(--color-text-secondary);" data-fa="کارمزد" data-en="Fee">کارمزد</span>
+            <span style="font-family: var(--font-mono);">۰</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-top: var(--space-2); border-top: 1px solid var(--color-border);">
+            <span style="font-weight: 600;" data-fa="جمع کل" data-en="Total">جمع کل</span>
+            <span style="font-family: var(--font-mono); font-weight: 700; color: var(--color-gold-600);">۰</span>
+          </div>
+        </div>
+      </div>
+      <div class="universal-modal-footer">
+        <button class="btn" onclick="closeUniversalPayModal()" data-fa="انصراف" data-en="Cancel">انصراف</button>
+        <button class="btn btn-primary">
+          <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i>
+          <span data-fa="پرداخت و خرید" data-en="Pay & Purchase">پرداخت و خرید</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Talafee API Client for real-time prices -->
+  <script src="assets/js/api-client.js"></script>
+
+  <script>
+    // ==================== AFFILIATE CONFIGURATION ====================
+    // Real providers from crawler service
+    const AFFILIATE_CONFIG = {
+      taline: {
+        baseUrl: 'https://my.tlyn.ir',
+        affiliateParam: 'ref',
+        affiliateId: 'TALAFEE_TL_001',
+        buyPath: '/buy/gold-18k',
+        commission: '25%'
+      },
+      technogold: {
+        baseUrl: 'https://app.technogold.gold',
+        affiliateParam: 'partner',
+        affiliateId: 'TALAFEE_TG_001',
+        buyPath: '/trade/buy',
+        commission: '1%'
+      },
+      digigold: {
+        baseUrl: 'https://www.digikala.com/gold/',
+        affiliateParam: 'ref',
+        affiliateId: 'TALAFEE_DG',
+        buyPath: '',
+        commission: '0.5%'
+      },
+      miligold: {
+        baseUrl: 'https://milli.gold',
+        affiliateParam: 'ref',
+        affiliateId: 'TALAFEE_MG',
+        buyPath: '/app/buy',
+        commission: '1%'
+      },
+      talasea: {
+        baseUrl: 'https://talasea.ir',
+        affiliateParam: 'ref',
+        affiliateId: 'TALAFEE_TS',
+        buyPath: '/geram18',
+        commission: '1%'
+      },
+      melligold: {
+        baseUrl: 'https://melligold.com',
+        affiliateParam: 'ref',
+        affiliateId: 'TALAFEE_ML',
+        buyPath: '/buy',
+        commission: '1%'
+      }
+    };
+
+    // ==================== DATA ====================
+    // Real providers - populated from crawler API
+    let providers = [];
+
+    // ==================== UTILITIES ====================
+    function formatPrice(price) {
+      if (!price || isNaN(price)) return '---';
+      return price.toLocaleString('en-US');
+    }
+
+    function formatPricePersian(price) {
+      if (!price || isNaN(price)) return '---';
+      return price.toLocaleString('fa-IR');
+    }
+
+    function formatPriceWithUnit(price, productId) {
+      if (!price || isNaN(price)) return '---';
+      const productConfig = PRODUCT_CONFIG[productId];
+      const formatted = formatPrice(price);
+      if (currentLang === 'fa') {
+        const unit = productConfig?.unitFa || 'ریال';
+        return `${formatted}`;
+      } else {
+        return formatted;
+      }
+    }
+
+    function getProductUnit() {
+      const productConfig = PRODUCT_CONFIG[currentProductId];
+      if (!productConfig) return currentLang === 'fa' ? 'ریال' : 'IRR';
+
+      if (productConfig.unit === 'gram') {
+        return currentLang === 'fa' ? 'ریال/گرم' : 'IRR/gram';
+      } else if (productConfig.unit === 'piece') {
+        return currentLang === 'fa' ? 'ریال/عدد' : 'IRR/piece';
+      } else if (productConfig.unit === 'mesghal') {
+        return currentLang === 'fa' ? 'ریال/مثقال' : 'IRR/mesghal';
+      } else if (productConfig.unit === 'ounce') {
+        return currentLang === 'fa' ? 'ریال/اونس' : 'IRR/ounce';
+      }
+      return currentLang === 'fa' ? 'ریال' : 'IRR';
+    }
+
+    function findBestDeal(providers) {
+      if (!providers || providers.length === 0) {
+        return { id: -1, sellPrice: Infinity };
+      }
+      return providers.reduce((best, current) =>
+        current.sellPrice < best.sellPrice ? current : best
+      );
+    }
+
+    function renderBestDeal() {
+      if (providers.length === 0) return;
+
+      const bestDeal = findBestDeal(providers);
+      const avgPrice = providers.reduce((sum, p) => sum + p.sellPrice, 0) / providers.length;
+      const savings = Math.round(avgPrice - bestDeal.sellPrice);
+
+      // Update best price card
+      const bestPriceCard = document.querySelector('.best-price-card');
+      if (bestPriceCard) {
+        const logoEl = bestPriceCard.querySelector('.best-price-logo');
+        const nameEl = bestPriceCard.querySelector('.best-price-info h4');
+        const priceEl = bestPriceCard.querySelector('.best-price-info .price');
+        const savingsEl = bestPriceCard.querySelector('.best-price-card > div:last-child span');
+
+        if (logoEl) logoEl.textContent = bestDeal.logo || '--';
+        if (nameEl) nameEl.textContent = currentLang === 'fa' ? bestDeal.nameFa : bestDeal.name;
+        if (priceEl) priceEl.textContent = formatPricePersian(bestDeal.sellPrice);
+        if (savingsEl) {
+          const savingsText = currentLang === 'fa'
+            ? `${formatPricePersian(Math.abs(savings))} ریال ${savings > 0 ? 'کمتر از' : 'بیشتر از'} میانگین`
+            : `${formatPrice(Math.abs(savings))} IRR ${savings > 0 ? 'below' : 'above'} average`;
+          savingsEl.textContent = savingsText;
+        }
+      }
+    }
+
+    // ==================== AFFILIATE TRACKING ====================
+    const AffiliateTracker = {
+      sessionId: 'ses_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36),
+      clicks: [],
+
+      generateClickId() {
+        return 'clk_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+      },
+
+      buildAffiliateUrl(provider, element = 'buy_button') {
+        const config = AFFILIATE_CONFIG[provider.slug];
+        if (!config) return '#';
+
+        const clickId = this.generateClickId();
+        const url = new URL(config.baseUrl + config.buyPath);
+
+        // UTM Parameters
+        url.searchParams.set('utm_source', 'talafee');
+        url.searchParams.set('utm_medium', 'affiliate');
+        url.searchParams.set('utm_campaign', 'gold_comparison_2026');
+        url.searchParams.set('utm_content', element);
+        url.searchParams.set('utm_term', '18k_gold');
+
+        // Affiliate ID
+        url.searchParams.set(config.affiliateParam, config.affiliateId);
+
+        // Click tracking
+        url.searchParams.set('click_id', clickId);
+        url.searchParams.set('ts', Date.now());
+
+        return url.toString();
+      },
+
+      trackClick(provider, element = 'buy_button') {
+        const clickData = {
+          clickId: this.generateClickId(),
+          sessionId: this.sessionId,
+          provider: provider.slug,
+          providerName: provider.name,
+          element: element,
+          timestamp: new Date().toISOString(),
+          sellPrice: provider.sellPrice,
+          buyPrice: provider.buyPrice
+        };
+
+        this.clicks.push(clickData);
+
+        // Store in localStorage for persistence
+        const stored = JSON.parse(localStorage.getItem('talafee_clicks') || '[]');
+        stored.push(clickData);
+        if (stored.length > 100) stored.shift();
+        localStorage.setItem('talafee_clicks', JSON.stringify(stored));
+
+        // Log for demo (in production, send to analytics server)
+        console.log('Affiliate Click Tracked:', clickData);
+
+        return clickData;
+      },
+
+      handleBuyClick(provider, element = 'buy_button') {
+        // Track the click
+        const clickData = this.trackClick(provider, element);
+
+        // Build affiliate URL
+        const url = this.buildAffiliateUrl(provider, element);
+
+        // Show toast notification
+        this.showToast(provider);
+
+        // Open in new tab after short delay (for UX)
+        setTimeout(() => {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }, 300);
+
+        return false; // Prevent default link behavior
+      },
+
+      showToast(provider) {
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toastText');
+
+        const text = currentLang === 'fa'
+          ? `در حال انتقال به ${provider.nameFa}...`
+          : `Redirecting to ${provider.name}...`;
+
+        toastText.textContent = text;
+        toast.classList.add('show');
+
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      },
+
+      getStats() {
+        const stored = JSON.parse(localStorage.getItem('talafee_clicks') || '[]');
+        const byProvider = {};
+
+        stored.forEach(click => {
+          byProvider[click.provider] = (byProvider[click.provider] || 0) + 1;
+        });
+
+        return {
+          totalClicks: stored.length,
+          byProvider,
+          recentClicks: stored.slice(-10)
+        };
+      }
+    };
+
+    // Global click handler
+    function handleBuyClick(providerSlug, element = 'buy_button') {
+      const provider = providers.find(p => p.slug === providerSlug);
+      if (provider) {
+        AffiliateTracker.handleBuyClick(provider, element);
+      }
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    let currentLang = 'fa';
+
+    function renderPriceCards() {
+      const container = document.getElementById('priceCards');
+
+      // Show loading state if no providers
+      if (providers.length === 0) {
+        container.innerHTML = `
+          <div class="loading-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">
+              <i data-lucide="loader-2" style="width: 48px; height: 48px; animation: spin 1s linear infinite;"></i>
+            </div>
+            <div style="font-size: 1.1rem; color: var(--color-text-secondary);">
+              ${currentLang === 'fa' ? 'در حال دریافت قیمت‌ها...' : 'Loading prices...'}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--color-text-tertiary); margin-top: 8px;">
+              ${currentLang === 'fa' ? 'لطفاً صبر کنید' : 'Please wait'}
+            </div>
+          </div>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          </style>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const bestDeal = findBestDeal(providers);
+
+      container.innerHTML = providers.map(provider => {
+        const isBest = provider.id === bestDeal.id;
+        const spread = provider.buyPrice - provider.sellPrice;
+        const changeClass = provider.change >= 0 ? 'up' : 'down';
+        const changeIcon = provider.change >= 0 ? 'arrow-up' : 'arrow-down';
+
+        return `
+          <div class="price-card animate-fade-in ${isBest ? 'best-deal' : ''}">
+            <div class="card-header">
+              <div class="provider-info">
+                <div class="provider-logo">${provider.logo}</div>
+                <div class="provider-name">${currentLang === 'fa' ? provider.nameFa : provider.name}</div>
+              </div>
+              ${isBest ? `
+                <div class="best-badge">
+                  <i data-lucide="star" style="width: 10px; height: 10px;"></i>
+                  <span data-fa="بهترین قیمت" data-en="Best Deal">${currentLang === 'fa' ? 'بهترین قیمت' : 'Best Deal'}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="price-grid">
+              <div class="price-item">
+                <div class="price-label" data-fa="خرید" data-en="Buy">${currentLang === 'fa' ? 'خرید' : 'Buy'}</div>
+                <div class="price-value buy">${formatPrice(provider.buyPrice)}</div>
+              </div>
+              <div class="price-item">
+                <div class="price-label" data-fa="فروش" data-en="Sell">${currentLang === 'fa' ? 'فروش' : 'Sell'}</div>
+                <div class="price-value sell">${formatPrice(provider.sellPrice)}</div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="spread">
+                <span data-fa="اختلاف:" data-en="Spread:">${currentLang === 'fa' ? 'اختلاف:' : 'Spread:'}</span>
+                <span class="spread-value">${formatPrice(spread)}</span>
+              </div>
+              <div class="change-indicator ${changeClass}">
+                <i data-lucide="${changeIcon}" style="width: 12px; height: 12px;"></i>
+                ${Math.abs(provider.change)}%
+              </div>
+            </div>
+
+            <button class="btn-buy ${isBest ? 'best' : ''}" onclick="handleBuyClick('${provider.slug}', 'card_buy_button')">
+              <i data-lucide="shopping-cart" class="btn-buy-icon"></i>
+              <span data-fa="خرید از ${provider.nameFa}" data-en="Buy from ${provider.name}">
+                ${currentLang === 'fa' ? `خرید از ${provider.nameFa}` : `Buy from ${provider.name}`}
+              </span>
+              <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+            </button>
+
+            <div style="margin-top: var(--space-2); display: flex; justify-content: space-between; align-items: center;">
+              <div class="update-time">
+                <i data-lucide="clock" style="width: 10px; height: 10px;"></i>
+                <span>${provider.lastUpdate}</span>
+              </div>
+              <div class="update-time" style="color: var(--color-gold-500);">
+                <i data-lucide="percent" style="width: 10px; height: 10px;"></i>
+                <span>${AFFILIATE_CONFIG[provider.slug]?.commission || '1%'}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+
+      // Show loading state if no providers
+      if (providers.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+              ${currentLang === 'fa' ? 'در حال دریافت قیمت‌ها...' : 'Loading prices...'}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const bestDeal = findBestDeal(providers);
+
+      // Sort by sell price (best first)
+      const sorted = [...providers].sort((a, b) => a.sellPrice - b.sellPrice);
+
+      tbody.innerHTML = sorted.map(provider => {
+        const isBest = provider.id === bestDeal.id;
+        const spread = provider.buyPrice - provider.sellPrice;
+        const changeClass = provider.change >= 0 ? 'up' : 'down';
+        const changeIcon = provider.change >= 0 ? 'arrow-up' : 'arrow-down';
+
+        return `
+          <tr class="${isBest ? 'best-row' : ''}">
+            <td>
+              <div class="table-provider">
+                <div class="provider-logo">${provider.logo}</div>
+                <span>${currentLang === 'fa' ? provider.nameFa : provider.name}</span>
+                ${isBest ? '<i data-lucide="star" style="width: 12px; height: 12px; color: var(--color-gold-400);"></i>' : ''}
+              </div>
+            </td>
+            <td class="table-price" style="color: var(--color-success);">${formatPrice(provider.buyPrice)}</td>
+            <td class="table-price" style="color: var(--color-danger);">${formatPrice(provider.sellPrice)}</td>
+            <td class="table-spread">${formatPrice(spread)}</td>
+            <td>
+              <div class="change-indicator ${changeClass}">
+                <i data-lucide="${changeIcon}" style="width: 12px; height: 12px;"></i>
+                ${Math.abs(provider.change)}%
+              </div>
+            </td>
+            <td class="update-time">${provider.lastUpdate}</td>
+            <td>
+              <button class="btn-buy btn-buy-sm ${isBest ? 'best' : ''}" onclick="handleBuyClick('${provider.slug}', 'table_buy_button')">
+                <i data-lucide="shopping-cart" style="width: 14px; height: 14px;"></i>
+                <span data-fa="خرید" data-en="Buy">${currentLang === 'fa' ? 'خرید' : 'Buy'}</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderChart() {
+      const container = document.getElementById('chartBars');
+      const values = [145, 148, 152, 149, 151, 147, 150, 153, 155, 152, 149, 148, 150, 151, 149,
+                      147, 148, 150, 152, 154, 151, 149, 150, 152, 153, 151, 149, 150, 149, 150];
+
+      const max = Math.max(...values);
+      const min = Math.min(...values);
+
+      container.innerHTML = values.map((val, i) => {
+        const height = ((val - min) / (max - min)) * 80 + 20;
+        return `<div class="chart-bar" style="height: ${height}%;" data-value="${val}M"></div>`;
+      }).join('');
+    }
+
+    // ==================== LANGUAGE TOGGLE ====================
+    function updateLanguage(lang) {
+      currentLang = lang;
+      const dir = lang === 'fa' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+      document.documentElement.dir = dir;
+
+      // Update all translatable elements
+      document.querySelectorAll('[data-fa][data-en]').forEach(el => {
+        if (el.tagName === 'OPTION') {
+          el.textContent = el.dataset[lang];
+        } else if (el.tagName === 'INPUT') {
+          el.placeholder = el.dataset[lang];
+        } else {
+          el.textContent = el.dataset[lang];
+        }
+      });
+
+      // Update language toggle buttons
+      document.getElementById('langFa').classList.toggle('active', lang === 'fa');
+      document.getElementById('langEn').classList.toggle('active', lang === 'en');
+
+      // Re-render components
+      renderPriceCards();
+      renderTable();
+    }
+
+    // ==================== THEME TOGGLE ====================
+    function toggleTheme() {
+      const isDark = document.documentElement.dataset.theme === 'dark';
+      document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+
+      const icon = document.getElementById('themeIcon');
+      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initial render
+      renderPriceCards();
+      renderTable();
+      renderChart();
+      lucide.createIcons();
+
+      // Language toggle
+      document.getElementById('langFa').addEventListener('click', () => updateLanguage('fa'));
+      document.getElementById('langEn').addEventListener('click', () => updateLanguage('en'));
+
+      // Theme toggle
+      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+      // Alerts modal
+      document.getElementById('alertsBtn').addEventListener('click', () => {
+        document.getElementById('alertsModal').classList.add('active');
+      });
+
+      document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('alertsModal').classList.remove('active');
+      });
+
+      document.getElementById('cancelAlert').addEventListener('click', () => {
+        document.getElementById('alertsModal').classList.remove('active');
+      });
+
+      document.getElementById('alertsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'alertsModal') {
+          document.getElementById('alertsModal').classList.remove('active');
+        }
+      });
+
+      // Refresh button with loading state
+      document.getElementById('refreshBtn').addEventListener('click', () => {
+        manualRefresh();
+      });
+
+      // Chart tabs
+      document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          renderChart();
+        });
+      });
+    });
+
+    // ==================== FAST BUY PANEL ====================
+    function toggleFastBuyPanel() {
+      const panel = document.getElementById('fastBuyPanel');
+      const backdrop = document.getElementById('fastBuyBackdrop');
+      panel.classList.toggle('open');
+      backdrop.classList.toggle('open');
+      lucide.createIcons();
+    }
+
+    function closeFastBuyPanel() {
+      const panel = document.getElementById('fastBuyPanel');
+      const backdrop = document.getElementById('fastBuyBackdrop');
+      panel.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+
+    function switchFastBuyTab(tab) {
+      // Update tabs
+      document.querySelectorAll('.fast-buy-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update content
+      document.getElementById('instantBuyContent').style.display = tab === 'instant' ? 'block' : 'none';
+      document.getElementById('targetPriceContent').style.display = tab === 'target' ? 'block' : 'none';
+      document.getElementById('universalPayContent').style.display = tab === 'universal' ? 'block' : 'none';
+
+      lucide.createIcons();
+    }
+
+    function setFastBuyAmount(amount) {
+      document.getElementById('fastBuyAmount').value = amount.toFixed(3).replace('.', '.');
+      updateFastBuyTotal();
+    }
+
+    function updateFastBuyTotal() {
+      // This would calculate the total based on amount and price
+      // For demo purposes, we're using static values
+    }
+
+    function executeFastBuy() {
+      const amount = document.getElementById('fastBuyAmount').value;
+
+      // Show confirmation
+      if (confirm(currentLang === 'fa'
+        ? `آیا از خرید ${amount} گرم طلا از کیف پول اطمینان دارید؟`
+        : `Are you sure you want to buy ${amount}g gold from wallet?`)) {
+
+        // Show success toast
+        showToast(
+          currentLang === 'fa' ? 'خرید با موفقیت انجام شد!' : 'Purchase completed successfully!',
+          'success'
+        );
+        closeFastBuyPanel();
+      }
+    }
+
+    // ==================== TARGET PRICE ORDERS ====================
+    function addTargetOrder() {
+      const price = document.getElementById('targetPriceInput').value;
+      const amount = document.getElementById('targetAmountInput').value;
+
+      if (!price || !amount) {
+        showToast(
+          currentLang === 'fa' ? 'لطفاً قیمت و مقدار را وارد کنید' : 'Please enter price and amount',
+          'error'
+        );
+        return;
+      }
+
+      showToast(
+        currentLang === 'fa' ? 'سفارش هدف با موفقیت ثبت شد' : 'Target order created successfully',
+        'success'
+      );
+
+      // Clear inputs
+      document.getElementById('targetPriceInput').value = '';
+      document.getElementById('targetAmountInput').value = '';
+    }
+
+    // ==================== UNIVERSAL PAYMENT ====================
+    function openUniversalPayModal(type) {
+      document.getElementById('universalPayModal').classList.add('active');
+      lucide.createIcons();
+    }
+
+    function closeUniversalPayModal() {
+      document.getElementById('universalPayModal').classList.remove('active');
+    }
+
+    function generateNewCard() {
+      showToast(
+        currentLang === 'fa' ? 'کارت مجازی جدید ایجاد شد' : 'New virtual card generated',
+        'success'
+      );
+    }
+
+    // Close universal modal on backdrop click
+    document.getElementById('universalPayModal').addEventListener('click', (e) => {
+      if (e.target.id === 'universalPayModal') {
+        closeUniversalPayModal();
+      }
+    });
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        background: ${type === 'success' ? 'var(--color-success)' : type === 'error' ? 'var(--color-danger)' : 'var(--color-gold-500)'};
+        color: white;
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        font-weight: 500;
+        z-index: 500;
+        box-shadow: var(--shadow-lg);
+        animation: slideUp 0.3s ease-out;
+      `;
+      toast.textContent = message;
+
+      // Add animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideUp {
+          from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      document.body.appendChild(toast);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Store item selection
+    document.querySelectorAll('.store-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.store-item').forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        // Update checkmark icons
+        lucide.createIcons();
+      });
+    });
+
+    // ==================== LIVE PRICE INTEGRATION ====================
+    // Provider ID mapping from crawler service to frontend
+    const PROVIDER_ID_MAP = {
+      'taline': 'taline',
+      'technogold': 'technogold',
+      'digigold': 'digigold',
+      'miligold': 'miligold',
+      'talasea': 'talasea',
+      'melligold': 'melligold'
+    };
+
+    // Provider display config for crawler providers
+    const CRAWLER_PROVIDER_CONFIG = {
+      'taline': { name: 'Taline', nameFa: 'تالین', logo: 'TL', slug: 'taline', color: '#4CAF50' },
+      'technogold': { name: 'TechnoGold', nameFa: 'تکنوگلد', logo: 'TG', slug: 'technogold', color: '#2196F3' },
+      'digigold': { name: 'DigiGold', nameFa: 'دیجی‌گلد', logo: 'DG', slug: 'digigold', color: '#EF394E' },
+      'miligold': { name: 'MiliGold', nameFa: 'میلی‌گلد', logo: 'MG', slug: 'miligold', color: '#FFD700' },
+      'talasea': { name: 'TalaSea', nameFa: 'طلاسی', logo: 'TS', slug: 'talasea', color: '#1E88E5' },
+      'melligold': { name: 'MelliGold', nameFa: 'ملی‌گلد', logo: 'ML', slug: 'melligold', color: '#43A047' },
+      'bonbast': { name: 'Bonbast', nameFa: 'بن‌بست', logo: 'BB', slug: 'bonbast', color: '#8B4513' },
+      'alanchand': { name: 'AlanChand', nameFa: 'آلان‌چند', logo: 'AC', slug: 'alanchand', color: '#D4AF37' },
+      'tgju': { name: 'TGJU', nameFa: 'طلا و ارز', logo: 'TJ', slug: 'tgju', color: '#1565C0' },
+      'goldika': { name: 'Goldika', nameFa: 'گلدیکا', logo: 'GK', slug: 'goldika', color: '#FFC107' },
+      'daric': { name: 'Daric', nameFa: 'داریک', logo: 'DR', slug: 'daric', color: '#8E24AA' },
+      'goldis': { name: 'Goldis', nameFa: 'گلدیس', logo: 'GD', slug: 'goldis', color: '#00897B' }
+    };
+
+    // Product definitions for the selector
+    const PRODUCT_CONFIG = {
+      '18k-gold': { name: '18K Gold', nameFa: 'طلای ۱۸ عیار', unit: 'gram', unitFa: 'گرم', icon: 'circle' },
+      '24k-gold': { name: '24K Gold', nameFa: 'طلای ۲۴ عیار', unit: 'gram', unitFa: 'گرم', icon: 'circle' },
+      'emami-coin': { name: 'Emami Coin', nameFa: 'سکه امامی', unit: 'piece', unitFa: 'عدد', icon: 'hexagon' },
+      'bahar-azadi': { name: 'Bahar Azadi', nameFa: 'سکه بهار آزادی', unit: 'piece', unitFa: 'عدد', icon: 'hexagon' },
+      'half-coin': { name: 'Half Coin', nameFa: 'نیم سکه', unit: 'piece', unitFa: 'عدد', icon: 'octagon' },
+      'quarter-coin': { name: 'Quarter Coin', nameFa: 'ربع سکه', unit: 'piece', unitFa: 'عدد', icon: 'square' },
+      'gram-coin': { name: 'Gram Coin', nameFa: 'سکه گرمی', unit: 'piece', unitFa: 'عدد', icon: 'circle' },
+      'mesghal': { name: 'Mesghal', nameFa: 'مثقال طلا', unit: 'mesghal', unitFa: 'مثقال', icon: 'diamond' },
+      'gold-ounce': { name: 'Gold Ounce', nameFa: 'اونس طلا', unit: 'ounce', unitFa: 'اونس', icon: 'circle-dot' },
+      'silver-999': { name: 'Silver 999', nameFa: 'نقره ۹۹۹', unit: 'gram', unitFa: 'گرم', icon: 'circle' }
+    };
+
+    // Currently selected product
+    let currentProductId = '18k-gold';
+    let allPricesByProduct = {};
+
+    // Initialize live price updates
+    let livePricesEnabled = true;
+    let lastPriceUpdate = null;
+
+    function initLivePrices() {
+      if (typeof TalafeeAPI === 'undefined') {
+        console.warn('TalafeeAPI not loaded, using static data');
+        return;
+      }
+
+      // Initialize the API client - use same hostname as current page
+      const apiHost = window.location.hostname;
+      TalafeeAPI.init({
+        baseUrl: `http://${apiHost}:3001/api/v1`,
+        pollInterval: 30000, // 30 seconds
+        retryAttempts: 3
+      });
+
+      // Start polling for price updates
+      TalafeeAPI.startPolling((prices, error) => {
+        if (error) {
+          console.error('Failed to fetch live prices:', error);
+          updateConnectionStatus(false);
+          return;
+        }
+
+        updateConnectionStatus(true);
+        updateProvidersWithLiveData(prices);
+
+        // Reset countdown on successful auto-refresh
+        if (typeof startCountdown === 'function') {
+          startCountdown();
+        }
+      }, 30000);
+
+      // Listen for price updates
+      TalafeeAPI.on('prices', (prices) => {
+        console.log('Live prices received:', Object.keys(prices).length, 'products');
+      });
+
+      // Listen for errors
+      TalafeeAPI.on('error', (error) => {
+        console.error('Price update error:', error);
+      });
+
+      // Initial fetch
+      fetchLivePrices();
+    }
+
+    async function fetchLivePrices() {
+      if (typeof TalafeeAPI === 'undefined') return;
+
+      try {
+        const pricesByProduct = await TalafeeAPI.getPricesByProduct();
+        updateProvidersWithLiveData(pricesByProduct);
+        updateConnectionStatus(true);
+
+        // Also fetch bubble data
+        fetchBubbleData();
+      } catch (error) {
+        console.error('Failed to fetch initial prices:', error);
+        updateConnectionStatus(false);
+      }
+    }
+
+    // ==================== BUBBLE FUNCTIONS ====================
+
+    async function fetchBubbleData() {
+      const apiHost = window.location.hostname;
+      const bubbleUrl = `http://${apiHost}:3001/api/v1/bubble/summary`;
+
+      try {
+        const response = await fetch(bubbleUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.success && result.data) {
+          updateBubbleDisplay(result.data);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch bubble data:', error);
+        // Don't show error state, just leave default values
+      }
+    }
+
+    function updateBubbleDisplay(data) {
+      const bubbleValueEl = document.getElementById('bubbleValue');
+      const bubbleStatusEl = document.getElementById('bubbleStatus');
+      const worldGoldPriceEl = document.getElementById('worldGoldPrice');
+      const usdRateEl = document.getElementById('usdRate');
+      const theoreticalPriceEl = document.getElementById('theoreticalPrice');
+      const marketPriceEl = document.getElementById('marketPrice');
+
+      if (!bubbleValueEl) return;
+
+      // Update bubble value
+      const bubble = data.bubble18k;
+      const sign = bubble >= 0 ? '+' : '';
+      bubbleValueEl.textContent = `${sign}${bubble.toFixed(1)}%`;
+
+      // Update bubble value class
+      bubbleValueEl.classList.remove('positive', 'negative', 'neutral');
+      if (bubble > 1) {
+        bubbleValueEl.classList.add('positive');
+      } else if (bubble < -1) {
+        bubbleValueEl.classList.add('negative');
+      } else {
+        bubbleValueEl.classList.add('neutral');
+      }
+
+      // Update status badge
+      if (bubbleStatusEl) {
+        const status = data.bubbleStatus || getBubbleStatusLocal(bubble);
+        bubbleStatusEl.classList.remove('low', 'medium', 'high', 'extreme');
+        bubbleStatusEl.classList.add(status);
+
+        const statusTexts = {
+          low: { fa: 'نرمال', en: 'Normal' },
+          medium: { fa: 'متوسط', en: 'Medium' },
+          high: { fa: 'بالا', en: 'High' },
+          extreme: { fa: 'بحرانی', en: 'Extreme' }
+        };
+        const text = statusTexts[status] || statusTexts.low;
+        bubbleStatusEl.setAttribute('data-fa', text.fa);
+        bubbleStatusEl.setAttribute('data-en', text.en);
+        bubbleStatusEl.textContent = text.fa;
+      }
+
+      // Update detail values
+      if (worldGoldPriceEl && data.worldGoldOunceUSD) {
+        worldGoldPriceEl.textContent = `$${formatNumber(data.worldGoldOunceUSD)}`;
+      }
+
+      if (usdRateEl && data.usdToIRR) {
+        usdRateEl.textContent = formatPrice(data.usdToIRR);
+      }
+
+      if (theoreticalPriceEl && data.theoretical18kPerGram) {
+        theoreticalPriceEl.textContent = formatPrice(data.theoretical18kPerGram);
+      }
+
+      if (marketPriceEl && data.market18kPerGram) {
+        marketPriceEl.textContent = formatPrice(data.market18kPerGram);
+      }
+    }
+
+    function getBubbleStatusLocal(bubble) {
+      const absBubble = Math.abs(bubble);
+      if (absBubble < 3) return 'low';
+      if (absBubble < 7) return 'medium';
+      if (absBubble < 15) return 'high';
+      return 'extreme';
+    }
+
+    function formatNumber(num) {
+      if (num === null || num === undefined) return '--';
+      return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    }
+
+    function formatPrice(price) {
+      if (price === null || price === undefined) return '--';
+      // Convert to Tomans and format
+      const tomans = price / 10;
+      return tomans.toLocaleString('fa-IR') + ' تومان';
+    }
+
+    // ==================== END BUBBLE FUNCTIONS ====================
+
+    function updateProvidersWithLiveData(pricesByProduct) {
+      if (!pricesByProduct) return;
+
+      // Store all prices for product switching
+      allPricesByProduct = pricesByProduct;
+
+      // Update product selector with available products
+      updateProductSelector(Object.keys(pricesByProduct));
+
+      // Update display for currently selected product
+      updateDisplayForProduct(currentProductId);
+
+      // Update stats cards
+      updateStatsCards(pricesByProduct);
+    }
+
+    function updateDisplayForProduct(productId) {
+      const productPrices = allPricesByProduct[productId] || [];
+
+      if (productPrices.length === 0) {
+        console.log(`No prices available for ${productId}`);
+        providers = [];
+        renderPriceCards();
+        renderTable();
+        return;
+      }
+
+      // Clear and rebuild providers array with live data
+      providers = [];
+
+      productPrices.forEach((price, index) => {
+        const config = CRAWLER_PROVIDER_CONFIG[price.providerId];
+        if (!config) {
+          console.log('Unknown provider:', price.providerId);
+          return;
+        }
+
+        providers.push({
+          id: index + 1,
+          name: config.name,
+          nameFa: config.nameFa,
+          slug: config.slug,
+          logo: config.logo,
+          color: config.color,
+          buyPrice: price.buyPrice,
+          sellPrice: price.sellPrice,
+          change: price.priceChangePercent || 0,
+          lastUpdate: formatTime(new Date(price.fetchedAt)),
+          isLive: true,
+          dailyHigh: price.dailyHigh,
+          dailyLow: price.dailyLow,
+          direction: price.direction
+        });
+      });
+
+      console.log(`Updated providers for ${productId}:`, providers.length, 'providers');
+
+      // Re-render UI
+      lastPriceUpdate = new Date();
+      renderPriceCards();
+      renderTable();
+      renderBestDeal();
+      updateLastUpdateTime();
+    }
+
+    function updateProductSelector(availableProducts) {
+      const tabs = document.querySelectorAll('.product-tab');
+      if (!tabs.length) return;
+
+      // Update tab states based on available products
+      tabs.forEach(tab => {
+        const productId = tab.dataset.product;
+        const hasData = availableProducts.includes(productId);
+        const priceCount = allPricesByProduct[productId]?.length || 0;
+
+        if (hasData && priceCount > 0) {
+          tab.classList.remove('disabled');
+          // Add price count badge
+          let badge = tab.querySelector('.tab-badge');
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'tab-badge';
+            tab.appendChild(badge);
+          }
+          badge.textContent = priceCount;
+        } else {
+          tab.classList.add('disabled');
+          // Remove badge if exists
+          const badge = tab.querySelector('.tab-badge');
+          if (badge) badge.remove();
+        }
+      });
+
+      // If current product has no data, switch to first available
+      if (!availableProducts.includes(currentProductId) || !allPricesByProduct[currentProductId]?.length) {
+        const firstAvailable = availableProducts.find(p => allPricesByProduct[p]?.length > 0);
+        if (firstAvailable && firstAvailable !== currentProductId) {
+          handleProductChange(firstAvailable);
+        }
+      }
+    }
+
+    function updateStatsCards(pricesByProduct) {
+      // Get 18k gold prices for main stats
+      const gold18Prices = pricesByProduct['18k-gold'] || [];
+
+      if (gold18Prices.length === 0) return;
+
+      // Calculate stats
+      const prices = gold18Prices.map(p => p.sellPrice);
+      const avgPrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      const priceRange = maxPrice - minPrice;
+
+      // Update stat cards
+      const statElements = {
+        avgPrice: document.querySelector('.stat-card:nth-child(1) .stat-value'),
+        minPrice: document.querySelector('.stat-card:nth-child(2) .stat-value'),
+        maxPrice: document.querySelector('.stat-card:nth-child(3) .stat-value'),
+        providers: document.querySelector('.stat-card:nth-child(4) .stat-value')
+      };
+
+      if (statElements.avgPrice) statElements.avgPrice.textContent = formatPrice(avgPrice);
+      if (statElements.minPrice) statElements.minPrice.textContent = formatPrice(minPrice);
+      if (statElements.maxPrice) statElements.maxPrice.textContent = formatPrice(maxPrice);
+      if (statElements.providers) statElements.providers.textContent = gold18Prices.length;
+    }
+
+    function handleProductChange(productId) {
+      currentProductId = productId;
+      updateDisplayForProduct(productId);
+
+      // Update active tab
+      document.querySelectorAll('.product-tab').forEach(tab => {
+        if (tab.dataset.product === productId) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      // Update section title
+      const productConfig = PRODUCT_CONFIG[productId];
+      if (productConfig) {
+        const titleEl = document.querySelector('.cards-section .section-title span');
+        if (titleEl) {
+          const faText = `قیمت ${productConfig.nameFa}`;
+          const enText = `${productConfig.name} Prices`;
+          titleEl.setAttribute('data-fa', faText);
+          titleEl.setAttribute('data-en', enText);
+          titleEl.textContent = currentLang === 'fa' ? faText : enText;
+        }
+      }
+
+      // Re-initialize icons after tab change
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+
+      // Log for debugging
+      console.log(`Switched to product: ${productId}, found ${providers.length} providers`);
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function updateConnectionStatus(connected) {
+      const statusEl = document.getElementById('connectionStatus');
+      if (!statusEl) {
+        // Create status indicator if it doesn't exist
+        const header = document.querySelector('.main-header') || document.querySelector('header');
+        if (header) {
+          const status = document.createElement('div');
+          status.id = 'connectionStatus';
+          status.style.cssText = `
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+          `;
+          document.body.appendChild(status);
+        }
+      }
+
+      const el = document.getElementById('connectionStatus');
+      if (el) {
+        if (connected) {
+          el.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:var(--color-success);"></span> Live`;
+          el.style.background = 'var(--color-success-bg)';
+          el.style.color = 'var(--color-success)';
+        } else {
+          el.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:var(--color-danger);"></span> Offline`;
+          el.style.background = 'var(--color-danger-bg)';
+          el.style.color = 'var(--color-danger)';
+        }
+      }
+    }
+
+    function updateLastUpdateTime() {
+      const timeEl = document.getElementById('lastUpdateTime');
+      if (timeEl && lastPriceUpdate) {
+        timeEl.textContent = formatTime(lastPriceUpdate);
+      }
+    }
+
+    // Initialize live prices after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLivePrices);
+    } else {
+      // Small delay to ensure API client is loaded
+      setTimeout(initLivePrices, 100);
+    }
+
+    // ==================== REFRESH BUTTON & COUNTDOWN ====================
+    let countdownInterval = null;
+    let nextRefreshTime = null;
+    let isRefreshing = false;
+    const REFRESH_INTERVAL = 30; // seconds
+
+    function startCountdown() {
+      // Clear any existing interval
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      nextRefreshTime = Date.now() + (REFRESH_INTERVAL * 1000);
+
+      countdownInterval = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((nextRefreshTime - Date.now()) / 1000));
+        updateCountdownDisplay(remaining);
+
+        if (remaining <= 0) {
+          // Auto refresh triggered by polling, reset countdown
+          nextRefreshTime = Date.now() + (REFRESH_INTERVAL * 1000);
+        }
+      }, 1000);
+
+      // Initial display
+      updateCountdownDisplay(REFRESH_INTERVAL);
+    }
+
+    function updateCountdownDisplay(seconds) {
+      const countdownEl = document.getElementById('refreshCountdown');
+      if (countdownEl && !isRefreshing) {
+        countdownEl.textContent = seconds > 0 ? `${seconds}s` : '';
+      }
+    }
+
+    function setRefreshLoading(loading) {
+      const btn = document.getElementById('refreshBtn');
+      const countdownEl = document.getElementById('refreshCountdown');
+      const textEl = btn?.querySelector('.refresh-text');
+
+      isRefreshing = loading;
+
+      if (btn) {
+        if (loading) {
+          btn.classList.add('loading');
+          if (countdownEl) countdownEl.textContent = '';
+          if (textEl) {
+            textEl.setAttribute('data-original-fa', textEl.getAttribute('data-fa'));
+            textEl.setAttribute('data-original-en', textEl.getAttribute('data-en'));
+            textEl.textContent = currentLang === 'fa' ? 'در حال بروزرسانی...' : 'Refreshing...';
+          }
+        } else {
+          btn.classList.remove('loading');
+          if (textEl) {
+            const originalFa = textEl.getAttribute('data-original-fa') || 'بروزرسانی';
+            const originalEn = textEl.getAttribute('data-original-en') || 'Refresh';
+            textEl.textContent = currentLang === 'fa' ? originalFa : originalEn;
+          }
+          // Restart countdown after refresh completes
+          startCountdown();
+        }
+      }
+    }
+
+    async function manualRefresh() {
+      if (isRefreshing) return;
+
+      setRefreshLoading(true);
+
+      try {
+        await fetchLivePrices();
+        showToast(currentLang === 'fa' ? 'قیمت‌ها بروزرسانی شد' : 'Prices refreshed', 'success');
+      } catch (error) {
+        console.error('Manual refresh failed:', error);
+        showToast(currentLang === 'fa' ? 'خطا در بروزرسانی' : 'Refresh failed', 'error');
+      } finally {
+        // Small delay to show loading state
+        setTimeout(() => {
+          setRefreshLoading(false);
+        }, 500);
+      }
+    }
+
+    // Start countdown when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      startCountdown();
+    });
+
+    // Manual refresh function (legacy support)
+    function refreshPrices() {
+      manualRefresh();
+    }
+  </script>
+</body>
+</html>

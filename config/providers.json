@@ -1,0 +1,599 @@
+{
+  "providers": {
+    "digigold": {
+      "id": "digigold",
+      "name": {
+        "fa": "دیجی‌گلد",
+        "en": "DigiGold"
+      },
+      "shortName": "DG",
+      "url": "https://www.digikala.com/gold",
+      "apiUrl": "https://api.digikala.com",
+      "logo": "/assets/images/providers/digigold.svg",
+      "color": "#EF394E",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "silver-999"]
+    },
+    "taline": {
+      "id": "taline",
+      "name": {
+        "fa": "تالین",
+        "en": "Taline"
+      },
+      "shortName": "TL",
+      "url": "https://my.tlyn.ir",
+      "apiUrl": "https://api.tlyn.ir",
+      "logo": "/assets/images/providers/taline.svg",
+      "color": "#4CAF50",
+      "features": ["instant-buy", "wallet", "api-access"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "23:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "ref",
+        "id": "TALAFEE_TALINE_001",
+        "commission": {
+          "type": "revenue_share",
+          "rate": 0.25
+        },
+        "cookieDuration": 30
+      },
+      "products": ["18k-gold", "24k-gold", "emami-coin", "half-coin", "quarter-coin", "gold-bar", "mesghal", "gold-ounce"]
+    },
+    "miligold": {
+      "id": "miligold",
+      "name": {
+        "fa": "میلی‌گلد",
+        "en": "MiliGold"
+      },
+      "shortName": "MG",
+      "url": "https://milli.gold",
+      "apiUrl": "https://milli.gold/api",
+      "logo": "/assets/images/providers/miligold.svg",
+      "color": "#FFD700",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold"]
+    },
+    "talasea": {
+      "id": "talasea",
+      "name": {
+        "fa": "طلاسی",
+        "en": "TalaSea"
+      },
+      "shortName": "TS",
+      "url": "https://talasea.ir",
+      "apiUrl": "https://api.talasea.ir",
+      "logo": "/assets/images/providers/talasea.svg",
+      "color": "#1E88E5",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold"]
+    },
+    "melligold": {
+      "id": "melligold",
+      "name": {
+        "fa": "ملی‌گلد",
+        "en": "MelliGold"
+      },
+      "shortName": "ML",
+      "url": "https://melligold.com",
+      "apiUrl": "https://melligold.com/api",
+      "logo": "/assets/images/providers/melligold.svg",
+      "color": "#43A047",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold", "emami-coin", "half-coin", "quarter-coin", "bahar-azadi"]
+    },
+    "technogold": {
+      "id": "technogold",
+      "name": {
+        "fa": "تکنوگلد",
+        "en": "Technogold"
+      },
+      "shortName": "TG",
+      "url": "https://app.technogold.gold",
+      "apiUrl": "https://api.technogold.gold",
+      "logo": "/assets/images/providers/technogold.svg",
+      "color": "#2196F3",
+      "features": ["instant-buy", "wallet", "price-alerts"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "partner",
+        "id": "TALAFEE_TG_001",
+        "commission": {
+          "type": "cps",
+          "rate": 0.01
+        },
+        "cookieDuration": 60
+      },
+      "products": ["18k-gold", "24k-gold", "emami-coin", "half-coin", "quarter-coin", "bahar-azadi", "gram-coin", "mesghal", "silver-999"]
+    },
+    "bonbast": {
+      "id": "bonbast",
+      "name": {
+        "fa": "بن‌بست",
+        "en": "Bonbast"
+      },
+      "shortName": "BB",
+      "url": "https://www.bonbast.com",
+      "apiUrl": "https://www.bonbast.com/json",
+      "logo": "/assets/images/providers/bonbast.svg",
+      "color": "#8B4513",
+      "features": ["market-rates"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "mesghal", "emami-coin", "bahar-azadi", "half-coin", "quarter-coin", "gram-coin"]
+    },
+    "alanchand": {
+      "id": "alanchand",
+      "name": {
+        "fa": "آلان‌چند",
+        "en": "AlanChand"
+      },
+      "shortName": "AC",
+      "url": "https://alanchand.com",
+      "apiUrl": "https://alanchand.com",
+      "logo": "/assets/images/providers/alanchand.svg",
+      "color": "#D4AF37",
+      "features": ["market-rates"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "mesghal", "emami-coin", "half-coin", "quarter-coin"]
+    },
+    "tgju": {
+      "id": "tgju",
+      "name": {
+        "fa": "طلا و ارز",
+        "en": "TGJU"
+      },
+      "shortName": "TG",
+      "url": "https://www.tgju.org",
+      "apiUrl": "https://www.tgju.org",
+      "logo": "/assets/images/providers/tgju.svg",
+      "color": "#1565C0",
+      "features": ["market-rates", "world-prices"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold", "mesghal", "emami-coin", "bahar-azadi", "half-coin", "quarter-coin", "gram-coin"]
+    },
+    "goldika": {
+      "id": "goldika",
+      "name": {
+        "fa": "گلدیکا",
+        "en": "Goldika"
+      },
+      "shortName": "GK",
+      "url": "https://goldika.ir",
+      "apiUrl": "https://goldika.ir",
+      "logo": "/assets/images/providers/goldika.svg",
+      "color": "#FFC107",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold"]
+    },
+    "daric": {
+      "id": "daric",
+      "name": {
+        "fa": "داریک",
+        "en": "Daric"
+      },
+      "shortName": "DR",
+      "url": "https://daric.gold",
+      "apiUrl": "https://daric.gold",
+      "logo": "/assets/images/providers/daric.svg",
+      "color": "#8E24AA",
+      "features": ["instant-buy", "wallet", "licensed"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold", "emami-coin", "half-coin", "quarter-coin"]
+    },
+    "goldis": {
+      "id": "goldis",
+      "name": {
+        "fa": "گلدیس",
+        "en": "Goldis"
+      },
+      "shortName": "GD",
+      "url": "https://goldis.ir",
+      "apiUrl": "https://goldis.ir",
+      "logo": "/assets/images/providers/goldis.svg",
+      "color": "#00897B",
+      "features": ["instant-buy", "wallet", "delivery"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold"]
+    },
+    "zargold": {
+      "id": "zargold",
+      "name": {
+        "fa": "زرگلد",
+        "en": "ZarGold"
+      },
+      "shortName": "ZG",
+      "url": "https://zargold.ir",
+      "apiUrl": "https://api.zargold.ir",
+      "logo": "/assets/images/providers/zargold.svg",
+      "color": "#FF9800",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:30",
+        "end": "21:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "aff",
+        "id": "TLF_ZG",
+        "commission": {
+          "type": "cpa",
+          "amount": 500000
+        },
+        "cookieDuration": 14
+      },
+      "products": ["18k-gold", "emami-coin", "half-coin", "quarter-coin"]
+    },
+    "goldiran": {
+      "id": "goldiran",
+      "name": {
+        "fa": "گلدایران",
+        "en": "GoldIran"
+      },
+      "shortName": "GI",
+      "url": "https://goldiran.com",
+      "apiUrl": "https://api.goldiran.com",
+      "logo": "/assets/images/providers/goldiran.svg",
+      "color": "#9C27B0",
+      "features": ["instant-buy", "wallet", "api-access"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:30",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "emami-coin", "half-coin"]
+    },
+    "talamarket": {
+      "id": "talamarket",
+      "name": {
+        "fa": "طلامارکت",
+        "en": "TalaMarket"
+      },
+      "shortName": "TM",
+      "url": "https://talamarket.ir",
+      "apiUrl": "https://api.talamarket.ir",
+      "logo": "/assets/images/providers/talamarket.svg",
+      "color": "#E91E63",
+      "features": ["instant-buy"],
+      "tradingHours": {
+        "start": "10:00",
+        "end": "20:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "emami-coin"]
+    },
+    "tala-bazar": {
+      "id": "tala-bazar",
+      "name": {
+        "fa": "طلابازار",
+        "en": "TalaBazar"
+      },
+      "shortName": "TB",
+      "url": "https://talabazar.com",
+      "apiUrl": "https://api.talabazar.com",
+      "logo": "/assets/images/providers/talabazar.svg",
+      "color": "#795548",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "21:30",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "ref",
+        "id": "TALAFEE_TB",
+        "commission": {
+          "type": "hybrid",
+          "cpa": 300000,
+          "rate": 0.005
+        },
+        "cookieDuration": 30
+      },
+      "products": ["18k-gold", "emami-coin", "half-coin", "quarter-coin", "gold-bar"]
+    },
+    "zar-exchange": {
+      "id": "zar-exchange",
+      "name": {
+        "fa": "زراکسچنج",
+        "en": "ZarExchange"
+      },
+      "shortName": "ZE",
+      "url": "https://zarexchange.ir",
+      "apiUrl": "https://api.zarexchange.ir",
+      "logo": "/assets/images/providers/zarexchange.svg",
+      "color": "#00BCD4",
+      "features": ["instant-buy", "price-alerts"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "22:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "emami-coin"]
+    },
+    "sekke-online": {
+      "id": "sekke-online",
+      "name": {
+        "fa": "سکه آنلاین",
+        "en": "SekkeOnline"
+      },
+      "shortName": "SO",
+      "url": "https://sekkeonline.com",
+      "apiUrl": "https://api.sekkeonline.com",
+      "logo": "/assets/images/providers/sekkeonline.svg",
+      "color": "#607D8B",
+      "features": ["instant-buy", "wallet"],
+      "tradingHours": {
+        "start": "09:30",
+        "end": "21:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "affiliate",
+        "id": "TALAFEE_SO_001",
+        "commission": {
+          "type": "cps",
+          "rate": 0.008
+        },
+        "cookieDuration": 21
+      },
+      "products": ["emami-coin", "half-coin", "quarter-coin", "bahar-azadi"]
+    },
+    "gold-plus": {
+      "id": "gold-plus",
+      "name": {
+        "fa": "گلدپلاس",
+        "en": "GoldPlus"
+      },
+      "shortName": "GP",
+      "url": "https://goldplus.ir",
+      "apiUrl": "https://api.goldplus.ir",
+      "logo": "/assets/images/providers/goldplus.svg",
+      "color": "#FF5722",
+      "features": ["instant-buy", "wallet", "api-access"],
+      "tradingHours": {
+        "start": "08:30",
+        "end": "23:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": true,
+        "param": "ref",
+        "id": "TALAFEE_GP",
+        "commission": {
+          "type": "revenue_share",
+          "rate": 0.20
+        },
+        "cookieDuration": 45
+      },
+      "products": ["18k-gold", "emami-coin", "half-coin", "quarter-coin", "gold-bar", "mesghal"]
+    },
+    "ons-gold": {
+      "id": "ons-gold",
+      "name": {
+        "fa": "انس گلد",
+        "en": "OnsGold"
+      },
+      "shortName": "OG",
+      "url": "https://onsgold.com",
+      "apiUrl": "https://api.onsgold.com",
+      "logo": "/assets/images/providers/onsgold.svg",
+      "color": "#3F51B5",
+      "features": ["instant-buy"],
+      "tradingHours": {
+        "start": "09:00",
+        "end": "21:00",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold", "24k-gold", "gold-ounce"]
+    }
+  },
+  "products": {
+    "18k-gold": {
+      "id": "18k-gold",
+      "name": {
+        "fa": "طلای ۱۸ عیار",
+        "en": "18K Gold"
+      },
+      "unit": "gram",
+      "purity": 750,
+      "icon": "circle"
+    },
+    "24k-gold": {
+      "id": "24k-gold",
+      "name": {
+        "fa": "طلای ۲۴ عیار",
+        "en": "24K Gold"
+      },
+      "unit": "gram",
+      "purity": 999,
+      "icon": "circle"
+    },
+    "emami-coin": {
+      "id": "emami-coin",
+      "name": {
+        "fa": "سکه امامی",
+        "en": "Emami Coin"
+      },
+      "unit": "piece",
+      "weight": 8.133,
+      "icon": "hexagon"
+    },
+    "half-coin": {
+      "id": "half-coin",
+      "name": {
+        "fa": "نیم سکه",
+        "en": "Half Coin"
+      },
+      "unit": "piece",
+      "weight": 4.066,
+      "icon": "octagon"
+    },
+    "quarter-coin": {
+      "id": "quarter-coin",
+      "name": {
+        "fa": "ربع سکه",
+        "en": "Quarter Coin"
+      },
+      "unit": "piece",
+      "weight": 2.033,
+      "icon": "square"
+    },
+    "bahar-azadi": {
+      "id": "bahar-azadi",
+      "name": {
+        "fa": "سکه بهار آزادی",
+        "en": "Bahar Azadi Coin"
+      },
+      "unit": "piece",
+      "weight": 8.133,
+      "icon": "hexagon"
+    },
+    "gold-bar": {
+      "id": "gold-bar",
+      "name": {
+        "fa": "شمش طلا",
+        "en": "Gold Bar"
+      },
+      "unit": "gram",
+      "purity": 999,
+      "icon": "rectangle"
+    },
+    "mesghal": {
+      "id": "mesghal",
+      "name": {
+        "fa": "مثقال طلا",
+        "en": "Mesghal"
+      },
+      "unit": "mesghal",
+      "weight": 4.6083,
+      "icon": "diamond"
+    },
+    "gold-ounce": {
+      "id": "gold-ounce",
+      "name": {
+        "fa": "اونس طلا",
+        "en": "Gold Ounce"
+      },
+      "unit": "ounce",
+      "weight": 31.1035,
+      "icon": "circle-dot"
+    },
+    "gram-coin": {
+      "id": "gram-coin",
+      "name": {
+        "fa": "سکه گرمی",
+        "en": "Gram Coin"
+      },
+      "unit": "piece",
+      "weight": 1,
+      "icon": "circle"
+    },
+    "silver-999": {
+      "id": "silver-999",
+      "name": {
+        "fa": "نقره ۹۹۹",
+        "en": "Silver 999"
+      },
+      "unit": "gram",
+      "purity": 999,
+      "icon": "circle"
+    }
+  }
+}
