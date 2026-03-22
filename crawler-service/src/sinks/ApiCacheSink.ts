@@ -4,6 +4,8 @@ import { logger } from '../utils/index.js';
 import type { BubbleService } from '../services/BubbleService.js';
 import type { TGJUProvider } from '../providers/TGJUProvider.js';
 import { getInvestmentGuideService } from '../services/InvestmentGuideService.js';
+import { getPriceAccuracyTracker } from '../services/PriceAccuracyTracker.js';
+import { getTrustScoreService } from '../services/TrustScoreService.js';
 
 interface CacheEntry {
   prices: NormalizedPrice[];
@@ -57,6 +59,18 @@ export class ApiCacheSink implements IResultSink {
         history.shift();
       }
       this.priceHistory.set(historyKey, history);
+    }
+
+    // Track price accuracy for trust system
+    const accuracyTracker = getPriceAccuracyTracker();
+    accuracyTracker.trackPrices(providerId, prices);
+
+    // Track price spreads for best_spread badge
+    const trustService = getTrustScoreService();
+    for (const price of prices) {
+      if (price.buyPrice > 0 && price.sellPrice > 0) {
+        trustService.trackPriceSpread(providerId, price.buyPrice, price.sellPrice);
+      }
     }
 
     logger.debug(`Cached ${prices.length} prices`, {

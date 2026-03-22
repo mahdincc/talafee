@@ -182,6 +182,35 @@ const TalafeeAPI = (function () {
   }
 
   /**
+   * Get trust ranking of all providers
+   * @returns {Promise<Object>} - Trust ranking data
+   */
+  async function getTrustRanking() {
+    const response = await request('/trust/ranking');
+    return response;
+  }
+
+  /**
+   * Get trust score for a specific provider
+   * @param {string} providerId - Provider ID
+   * @returns {Promise<Object>} - Provider trust score
+   */
+  async function getTrustScore(providerId) {
+    const response = await request(`/trust/scores/${providerId}`);
+    return response;
+  }
+
+  /**
+   * Get badges for a provider
+   * @param {string} providerId - Provider ID
+   * @returns {Promise<Object>} - Provider badges
+   */
+  async function getProviderBadges(providerId) {
+    const response = await request(`/trust/badges/${providerId}`);
+    return response;
+  }
+
+  /**
    * Trigger a manual price crawl
    * @returns {Promise<Object>} - Crawl status
    */
@@ -341,6 +370,9 @@ const TalafeeAPI = (function () {
     getPriceHistory,
     getHealth,
     getProvidersHealth,
+    getTrustRanking,
+    getTrustScore,
+    getProviderBadges,
     triggerCrawl,
     startPolling,
     stopPolling,

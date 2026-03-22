@@ -22,6 +22,11 @@ export class SqliteSink implements IResultSink {
   }
 
   private createTables(): void {
+    this.createCoreTables();
+    this.createTrustTables();
+  }
+
+  private createCoreTables(): void {
     this.db!.exec(`
       CREATE TABLE IF NOT EXISTS prices (
         id TEXT PRIMARY KEY,
@@ -80,6 +85,548 @@ export class SqliteSink implements IResultSink {
       CREATE INDEX IF NOT EXISTS idx_provider_runs_run_id
         ON provider_runs(run_id);
     `);
+  }
+
+  private createTrustTables(): void {
+    this.db!.exec(`
+      -- Provider trust scores (calculated periodically)
+      CREATE TABLE IF NOT EXISTS provider_trust_scores (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        overall_score REAL NOT NULL,
+        price_accuracy_score REAL NOT NULL,
+        uptime_score REAL NOT NULL,
+        review_score REAL NOT NULL,
+        freshness_score REAL NOT NULL,
+        calculated_at TEXT NOT NULL,
+        factors_json TEXT,
+        UNIQUE(provider_id, calculated_at)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_trust_scores_provider
+        ON provider_trust_scores(provider_id);
+
+      CREATE INDEX IF NOT EXISTS idx_trust_scores_date
+        ON provider_trust_scores(calculated_at);
+
+      -- User reviews
+      CREATE TABLE IF NOT EXISTS provider_reviews (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        user_id TEXT,
+        user_fingerprint TEXT NOT NULL,
+        rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+        title TEXT,
+        content TEXT,
+        pros TEXT,
+        cons TEXT,
+        transaction_verified INTEGER DEFAULT 0,
+        helpful_count INTEGER DEFAULT 0,
+        report_count INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active',
+        created_at TEXT NOT NULL,
+        updated_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_reviews_provider
+        ON provider_reviews(provider_id);
+
+      CREATE INDEX IF NOT EXISTS idx_reviews_status
+        ON provider_reviews(status);
+
+      CREATE INDEX IF NOT EXISTS idx_reviews_created
+        ON provider_reviews(created_at);
+
+      -- Review votes
+      CREATE TABLE IF NOT EXISTS review_votes (
+        id TEXT PRIMARY KEY,
+        review_id TEXT NOT NULL,
+        user_fingerprint TEXT NOT NULL,
+        vote_type TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(review_id, user_fingerprint)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_votes_review
+        ON review_votes(review_id);
+
+      -- Provider badges
+      CREATE TABLE IF NOT EXISTS provider_badges (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        badge_type TEXT NOT NULL,
+        badge_label TEXT NOT NULL,
+        badge_label_fa TEXT NOT NULL,
+        description TEXT,
+        description_fa TEXT,
+        awarded_at TEXT NOT NULL,
+        expires_at TEXT,
+        auto_generated INTEGER DEFAULT 1,
+        UNIQUE(provider_id, badge_type)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_badges_provider
+        ON provider_badges(provider_id);
+
+      -- Price accuracy log
+      CREATE TABLE IF NOT EXISTS price_accuracy_log (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        product_id TEXT NOT NULL,
+        provider_price REAL NOT NULL,
+        market_average REAL NOT NULL,
+        deviation_percent REAL NOT NULL,
+        logged_at TEXT NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_accuracy_provider_date
+        ON price_accuracy_log(provider_id, logged_at);
+
+      CREATE INDEX IF NOT EXISTS idx_accuracy_product
+        ON price_accuracy_log(product_id);
+
+      -- Provider warnings
+      CREATE TABLE IF NOT EXISTS provider_warnings (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        warning_type TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        message TEXT NOT NULL,
+        message_fa TEXT NOT NULL,
+        active INTEGER DEFAULT 1,
+        created_at TEXT NOT NULL,
+        resolved_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_warnings_active
+        ON provider_warnings(provider_id, active);
+
+      -- Provider uptime tracking
+      CREATE TABLE IF NOT EXISTS provider_uptime_log (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        check_time TEXT NOT NULL,
+        is_online INTEGER NOT NULL,
+        response_time_ms INTEGER,
+        error_message TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_uptime_provider_time
+        ON provider_uptime_log(provider_id, check_time);
+    `);
+
+    logger.info('Trust system tables initialized');
+  }
+
+  // ==================== Trust System Methods ====================
+
+  // Price Accuracy Methods
+  logPriceAccuracy(
+    providerId: string,
+    productId: string,
+    providerPrice: number,
+    marketAverage: number
+  ): void {
+    if (!this.db || marketAverage === 0) return;
+
+    const deviation = ((providerPrice - marketAverage) / marketAverage) * 100;
+    const id = `acc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    this.db.prepare(`
+      INSERT INTO price_accuracy_log (id, provider_id, product_id, provider_price, market_average, deviation_percent, logged_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(id, providerId, productId, providerPrice, marketAverage, deviation, new Date().toISOString());
+  }
+
+  getPriceAccuracyStats(providerId: string, days: number = 7): PriceAccuracyStats | undefined {
+    if (!this.db) return undefined;
+
+    const row = this.db.prepare(`
+      SELECT
+        COUNT(*) as sample_count,
+        AVG(deviation_percent) as avg_deviation,
+        AVG(ABS(deviation_percent)) as avg_abs_deviation,
+        MIN(deviation_percent) as min_deviation,
+        MAX(deviation_percent) as max_deviation
+      FROM price_accuracy_log
+      WHERE provider_id = ?
+        AND logged_at > datetime('now', '-' || ? || ' days')
+    `).get(providerId, days) as PriceAccuracyStatsRow | undefined;
+
+    if (!row || row.sample_count === 0) return undefined;
+
+    return {
+      sampleCount: row.sample_count,
+      avgDeviation: row.avg_deviation,
+      avgAbsDeviation: row.avg_abs_deviation,
+      minDeviation: row.min_deviation,
+      maxDeviation: row.max_deviation,
+    };
+  }
+
+  // Uptime Methods
+  logUptimeCheck(
+    providerId: string,
+    isOnline: boolean,
+    responseTimeMs?: number,
+    errorMessage?: string
+  ): void {
+    if (!this.db) return;
+
+    const id = `up_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    this.db.prepare(`
+      INSERT INTO provider_uptime_log (id, provider_id, check_time, is_online, response_time_ms, error_message)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(id, providerId, new Date().toISOString(), isOnline ? 1 : 0, responseTimeMs ?? null, errorMessage ?? null);
+  }
+
+  getUptimeStats(providerId: string, days: number = 30): UptimeStats | undefined {
+    if (!this.db) return undefined;
+
+    const row = this.db.prepare(`
+      SELECT
+        COUNT(*) as total_checks,
+        SUM(is_online) as online_checks,
+        AVG(response_time_ms) as avg_response_time
+      FROM provider_uptime_log
+      WHERE provider_id = ?
+        AND check_time > datetime('now', '-' || ? || ' days')
+    `).get(providerId, days) as UptimeStatsRow | undefined;
+
+    if (!row || row.total_checks === 0) return undefined;
+
+    return {
+      totalChecks: row.total_checks,
+      onlineChecks: row.online_checks,
+      uptimePercent: (row.online_checks / row.total_checks) * 100,
+      avgResponseTimeMs: row.avg_response_time,
+    };
+  }
+
+  // Trust Score Methods
+  saveTrustScore(score: TrustScoreRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT OR REPLACE INTO provider_trust_scores
+        (id, provider_id, overall_score, price_accuracy_score, uptime_score, review_score, freshness_score, calculated_at, factors_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      score.id,
+      score.providerId,
+      score.overallScore,
+      score.priceAccuracyScore,
+      score.uptimeScore,
+      score.reviewScore,
+      score.freshnessScore,
+      score.calculatedAt,
+      score.factorsJson ?? null
+    );
+  }
+
+  getLatestTrustScore(providerId: string): TrustScoreRecord | undefined {
+    if (!this.db) return undefined;
+
+    const row = this.db.prepare(`
+      SELECT * FROM provider_trust_scores
+      WHERE provider_id = ?
+      ORDER BY calculated_at DESC
+      LIMIT 1
+    `).get(providerId) as TrustScoreRow | undefined;
+
+    return row ? this.rowToTrustScore(row) : undefined;
+  }
+
+  getAllLatestTrustScores(): TrustScoreRecord[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT t1.* FROM provider_trust_scores t1
+      INNER JOIN (
+        SELECT provider_id, MAX(calculated_at) as max_date
+        FROM provider_trust_scores
+        GROUP BY provider_id
+      ) t2 ON t1.provider_id = t2.provider_id AND t1.calculated_at = t2.max_date
+      ORDER BY t1.overall_score DESC
+    `).all() as TrustScoreRow[];
+
+    return rows.map(row => this.rowToTrustScore(row));
+  }
+
+  getTrustScoreHistory(providerId: string, days: number = 7): TrustScoreRecord[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT * FROM provider_trust_scores
+      WHERE provider_id = ?
+        AND calculated_at > datetime('now', '-' || ? || ' days')
+      ORDER BY calculated_at ASC
+    `).all(providerId, days) as TrustScoreRow[];
+
+    return rows.map(row => this.rowToTrustScore(row));
+  }
+
+  // Badge Methods
+  saveBadge(badge: BadgeRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT OR REPLACE INTO provider_badges
+        (id, provider_id, badge_type, badge_label, badge_label_fa, description, description_fa, awarded_at, expires_at, auto_generated)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      badge.id,
+      badge.providerId,
+      badge.badgeType,
+      badge.badgeLabel,
+      badge.badgeLabelFa,
+      badge.description ?? null,
+      badge.descriptionFa ?? null,
+      badge.awardedAt,
+      badge.expiresAt ?? null,
+      badge.autoGenerated ? 1 : 0
+    );
+  }
+
+  getProviderBadges(providerId: string): BadgeRecord[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT * FROM provider_badges
+      WHERE provider_id = ?
+        AND (expires_at IS NULL OR expires_at > datetime('now'))
+    `).all(providerId) as BadgeRow[];
+
+    return rows.map(row => this.rowToBadge(row));
+  }
+
+  removeBadge(providerId: string, badgeType: string): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      DELETE FROM provider_badges
+      WHERE provider_id = ? AND badge_type = ?
+    `).run(providerId, badgeType);
+  }
+
+  // Warning Methods
+  createWarning(warning: WarningRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT INTO provider_warnings
+        (id, provider_id, warning_type, severity, message, message_fa, active, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+    `).run(
+      warning.id,
+      warning.providerId,
+      warning.warningType,
+      warning.severity,
+      warning.message,
+      warning.messageFa,
+      warning.createdAt
+    );
+  }
+
+  getActiveWarnings(providerId?: string): WarningRecord[] {
+    if (!this.db) return [];
+
+    let query = `SELECT * FROM provider_warnings WHERE active = 1`;
+    const params: string[] = [];
+
+    if (providerId) {
+      query += ` AND provider_id = ?`;
+      params.push(providerId);
+    }
+
+    query += ` ORDER BY created_at DESC`;
+
+    const rows = this.db.prepare(query).all(...params) as WarningRow[];
+    return rows.map(row => this.rowToWarning(row));
+  }
+
+  resolveWarning(warningId: string): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      UPDATE provider_warnings
+      SET active = 0, resolved_at = ?
+      WHERE id = ?
+    `).run(new Date().toISOString(), warningId);
+  }
+
+  // Review Methods
+  saveReview(review: ReviewRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT INTO provider_reviews
+        (id, provider_id, user_id, user_fingerprint, rating, title, content, pros, cons, transaction_verified, helpful_count, report_count, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      review.id,
+      review.providerId,
+      review.userId ?? null,
+      review.userFingerprint,
+      review.rating,
+      review.title ?? null,
+      review.content ?? null,
+      review.pros ?? null,
+      review.cons ?? null,
+      review.transactionVerified ? 1 : 0,
+      review.helpfulCount,
+      review.reportCount,
+      review.status,
+      review.createdAt,
+      review.updatedAt ?? null
+    );
+  }
+
+  getProviderReviews(providerId: string, limit: number = 50, offset: number = 0): ReviewRecord[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT * FROM provider_reviews
+      WHERE provider_id = ? AND status = 'active'
+      ORDER BY helpful_count DESC, created_at DESC
+      LIMIT ? OFFSET ?
+    `).all(providerId, limit, offset) as ReviewRow[];
+
+    return rows.map(row => this.rowToReview(row));
+  }
+
+  getReviewStats(providerId: string): ReviewStats | undefined {
+    if (!this.db) return undefined;
+
+    const row = this.db.prepare(`
+      SELECT
+        COUNT(*) as total_reviews,
+        AVG(rating) as avg_rating,
+        SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
+        SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as four_star,
+        SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as three_star,
+        SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
+        SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
+      FROM provider_reviews
+      WHERE provider_id = ? AND status = 'active'
+    `).get(providerId) as ReviewStatsRow | undefined;
+
+    if (!row || row.total_reviews === 0) return undefined;
+
+    return {
+      totalReviews: row.total_reviews,
+      avgRating: row.avg_rating,
+      distribution: {
+        5: row.five_star,
+        4: row.four_star,
+        3: row.three_star,
+        2: row.two_star,
+        1: row.one_star,
+      },
+    };
+  }
+
+  incrementReviewHelpful(reviewId: string): void {
+    if (!this.db) return;
+    this.db.prepare(`UPDATE provider_reviews SET helpful_count = helpful_count + 1 WHERE id = ?`).run(reviewId);
+  }
+
+  incrementReviewReport(reviewId: string): void {
+    if (!this.db) return;
+    this.db.prepare(`UPDATE provider_reviews SET report_count = report_count + 1 WHERE id = ?`).run(reviewId);
+  }
+
+  checkReviewRateLimit(fingerprint: string, hours: number = 24): number {
+    if (!this.db) return 0;
+
+    const row = this.db.prepare(`
+      SELECT COUNT(*) as count
+      FROM provider_reviews
+      WHERE user_fingerprint = ?
+        AND created_at > datetime('now', '-' || ? || ' hours')
+    `).get(fingerprint, hours) as { count: number };
+
+    return row.count;
+  }
+
+  saveReviewVote(reviewId: string, fingerprint: string, voteType: string): boolean {
+    if (!this.db) return false;
+
+    try {
+      const id = `vote_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      this.db.prepare(`
+        INSERT INTO review_votes (id, review_id, user_fingerprint, vote_type, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(id, reviewId, fingerprint, voteType, new Date().toISOString());
+      return true;
+    } catch {
+      return false; // Duplicate vote
+    }
+  }
+
+  // Helper methods for row conversion
+  private rowToTrustScore(row: TrustScoreRow): TrustScoreRecord {
+    return {
+      id: row.id,
+      providerId: row.provider_id,
+      overallScore: row.overall_score,
+      priceAccuracyScore: row.price_accuracy_score,
+      uptimeScore: row.uptime_score,
+      reviewScore: row.review_score,
+      freshnessScore: row.freshness_score,
+      calculatedAt: row.calculated_at,
+      factorsJson: row.factors_json ?? undefined,
+    };
+  }
+
+  private rowToBadge(row: BadgeRow): BadgeRecord {
+    return {
+      id: row.id,
+      providerId: row.provider_id,
+      badgeType: row.badge_type,
+      badgeLabel: row.badge_label,
+      badgeLabelFa: row.badge_label_fa,
+      description: row.description ?? undefined,
+      descriptionFa: row.description_fa ?? undefined,
+      awardedAt: row.awarded_at,
+      expiresAt: row.expires_at ?? undefined,
+      autoGenerated: row.auto_generated === 1,
+    };
+  }
+
+  private rowToWarning(row: WarningRow): WarningRecord {
+    return {
+      id: row.id,
+      providerId: row.provider_id,
+      warningType: row.warning_type,
+      severity: row.severity as 'low' | 'medium' | 'high' | 'critical',
+      message: row.message,
+      messageFa: row.message_fa,
+      active: row.active === 1,
+      createdAt: row.created_at,
+      resolvedAt: row.resolved_at ?? undefined,
+    };
+  }
+
+  private rowToReview(row: ReviewRow): ReviewRecord {
+    return {
+      id: row.id,
+      providerId: row.provider_id,
+      userId: row.user_id ?? undefined,
+      userFingerprint: row.user_fingerprint,
+      rating: row.rating,
+      title: row.title ?? undefined,
+      content: row.content ?? undefined,
+      pros: row.pros ?? undefined,
+      cons: row.cons ?? undefined,
+      transactionVerified: row.transaction_verified === 1,
+      helpfulCount: row.helpful_count,
+      reportCount: row.report_count,
+      status: row.status as 'active' | 'hidden' | 'flagged',
+      createdAt: row.created_at,
+      updatedAt: row.updated_at ?? undefined,
+    };
   }
 
   async onPricesFetched(
@@ -329,4 +876,166 @@ interface PriceRow {
   provider_updated_at: string;
   fetched_at: string;
   correlation_id: string;
+}
+
+// Trust System Types
+export interface PriceAccuracyStats {
+  sampleCount: number;
+  avgDeviation: number;
+  avgAbsDeviation: number;
+  minDeviation: number;
+  maxDeviation: number;
+}
+
+interface PriceAccuracyStatsRow {
+  sample_count: number;
+  avg_deviation: number;
+  avg_abs_deviation: number;
+  min_deviation: number;
+  max_deviation: number;
+}
+
+export interface UptimeStats {
+  totalChecks: number;
+  onlineChecks: number;
+  uptimePercent: number;
+  avgResponseTimeMs: number | null;
+}
+
+interface UptimeStatsRow {
+  total_checks: number;
+  online_checks: number;
+  avg_response_time: number | null;
+}
+
+export interface TrustScoreRecord {
+  id: string;
+  providerId: string;
+  overallScore: number;
+  priceAccuracyScore: number;
+  uptimeScore: number;
+  reviewScore: number;
+  freshnessScore: number;
+  calculatedAt: string;
+  factorsJson?: string;
+}
+
+interface TrustScoreRow {
+  id: string;
+  provider_id: string;
+  overall_score: number;
+  price_accuracy_score: number;
+  uptime_score: number;
+  review_score: number;
+  freshness_score: number;
+  calculated_at: string;
+  factors_json: string | null;
+}
+
+export interface BadgeRecord {
+  id: string;
+  providerId: string;
+  badgeType: string;
+  badgeLabel: string;
+  badgeLabelFa: string;
+  description?: string;
+  descriptionFa?: string;
+  awardedAt: string;
+  expiresAt?: string;
+  autoGenerated: boolean;
+}
+
+interface BadgeRow {
+  id: string;
+  provider_id: string;
+  badge_type: string;
+  badge_label: string;
+  badge_label_fa: string;
+  description: string | null;
+  description_fa: string | null;
+  awarded_at: string;
+  expires_at: string | null;
+  auto_generated: number;
+}
+
+export interface WarningRecord {
+  id: string;
+  providerId: string;
+  warningType: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  messageFa: string;
+  active: boolean;
+  createdAt: string;
+  resolvedAt?: string;
+}
+
+interface WarningRow {
+  id: string;
+  provider_id: string;
+  warning_type: string;
+  severity: string;
+  message: string;
+  message_fa: string;
+  active: number;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+export interface ReviewRecord {
+  id: string;
+  providerId: string;
+  userId?: string;
+  userFingerprint: string;
+  rating: number;
+  title?: string;
+  content?: string;
+  pros?: string;
+  cons?: string;
+  transactionVerified: boolean;
+  helpfulCount: number;
+  reportCount: number;
+  status: 'active' | 'hidden' | 'flagged';
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface ReviewRow {
+  id: string;
+  provider_id: string;
+  user_id: string | null;
+  user_fingerprint: string;
+  rating: number;
+  title: string | null;
+  content: string | null;
+  pros: string | null;
+  cons: string | null;
+  transaction_verified: number;
+  helpful_count: number;
+  report_count: number;
+  status: string;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface ReviewStats {
+  totalReviews: number;
+  avgRating: number;
+  distribution: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+}
+
+interface ReviewStatsRow {
+  total_reviews: number;
+  avg_rating: number;
+  five_star: number;
+  four_star: number;
+  three_star: number;
+  two_star: number;
+  one_star: number;
 }

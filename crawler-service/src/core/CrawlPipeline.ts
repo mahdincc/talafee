@@ -8,6 +8,8 @@ import type {
 } from './models/index.js';
 import { HealthStatus, CrawlErrorType } from './models/index.js';
 import { logger } from '../utils/index.js';
+import type { SqliteSink } from '../sinks/SqliteSink.js';
+import { getTrustScoreService } from '../services/TrustScoreService.js';
 
 export class CrawlPipeline {
   private providers: IProvider[] = [];
@@ -15,9 +17,18 @@ export class CrawlPipeline {
   private isRunning = false;
   private lastRunSummary?: CrawlRunSummary;
   private startedAt: Date;
+  private uptimeTracker: SqliteSink | null = null;
 
   constructor() {
     this.startedAt = new Date();
+  }
+
+  /**
+   * Set up uptime tracking using SqliteSink
+   */
+  setUptimeTracker(dbSink: SqliteSink): void {
+    this.uptimeTracker = dbSink;
+    logger.info('Uptime tracking enabled');
   }
 
   registerProvider(provider: IProvider): void {
@@ -74,6 +85,8 @@ export class CrawlPipeline {
       try {
         const result = await provider.fetchPrices(correlationId);
 
+        const durationMs = Date.now() - providerStartTime;
+
         if (result.success && result.data) {
           for (const sink of this.sinks) {
             await sink.onPricesFetched(provider.providerId, result.data, correlationId);
@@ -82,37 +95,57 @@ export class CrawlPipeline {
           totalPricesCollected += result.data.length;
           successfulProviders++;
 
+          // Log successful uptime check
+          this.uptimeTracker?.logUptimeCheck(provider.providerId, true, durationMs);
+
+          // Track response time for trust score badges
+          getTrustScoreService().trackResponseTime(provider.providerId, durationMs);
+
           providerResults.set(provider.providerId, {
             providerId: provider.providerId,
             success: true,
             priceCount: result.data.length,
-            durationMs: Date.now() - providerStartTime,
+            durationMs,
             attempts: result.attemptCount,
           });
         } else {
           failedProviders++;
 
+          // Log failed uptime check
+          this.uptimeTracker?.logUptimeCheck(
+            provider.providerId,
+            false,
+            durationMs,
+            result.error?.message
+          );
+
           providerResults.set(provider.providerId, {
             providerId: provider.providerId,
             success: false,
             priceCount: 0,
-            durationMs: Date.now() - providerStartTime,
+            durationMs,
             attempts: result.attemptCount,
             error: result.error,
           });
         }
       } catch (error) {
+        const durationMs = Date.now() - providerStartTime;
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         failedProviders++;
+
+        // Log failed uptime check for unexpected error
+        this.uptimeTracker?.logUptimeCheck(provider.providerId, false, durationMs, errorMessage);
 
         providerResults.set(provider.providerId, {
           providerId: provider.providerId,
           success: false,
           priceCount: 0,
-          durationMs: Date.now() - providerStartTime,
+          durationMs,
           attempts: 1,
           error: {
             type: CrawlErrorType.Unknown,
-            message: error instanceof Error ? error.message : String(error),
+            message: errorMessage,
             retryable: false,
             timestamp: new Date(),
           },
@@ -121,7 +154,7 @@ export class CrawlPipeline {
         logger.error(`Unexpected error from provider`, {
           providerId: provider.providerId,
           correlationId,
-          error: error instanceof Error ? error.message : String(error),
+          error: errorMessage,
         });
       }
     });

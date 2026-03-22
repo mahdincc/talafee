@@ -2061,6 +2061,10 @@
           <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
           <span data-fa="راهنمای سرمایه‌گذاری" data-en="Investment Guide">راهنمای سرمایه‌گذاری</span>
         </a>
+        <a href="trust.html" class="temp-nav-btn" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: rgba(212,175,55,0.9); border: 1px solid rgba(212,175,55,1); border-radius: var(--radius-md); color: white; text-decoration: none; font-size: 0.75rem; font-weight: 600; transition: all 0.2s;">
+          <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
+          <span data-fa="اعتبار فروشندگان" data-en="Trust Scores">اعتبار فروشندگان</span>
+        </a>
       </div>
     </div>
   </div>
@@ -3031,7 +3035,10 @@
             <div class="card-header">
               <div class="provider-info">
                 <div class="provider-logo">${provider.logo}</div>
-                <div class="provider-name">${currentLang === 'fa' ? provider.nameFa : provider.name}</div>
+                <div>
+                  <div class="provider-name">${currentLang === 'fa' ? provider.nameFa : provider.name}</div>
+                  ${getTrustBadgeHtml(provider.providerId || provider.slug)}
+                </div>
               </div>
               ${isBest ? `
                 <div class="best-badge">
@@ -3119,7 +3126,10 @@
             <td>
               <div class="table-provider">
                 <div class="provider-logo">${provider.logo}</div>
-                <span>${currentLang === 'fa' ? provider.nameFa : provider.name}</span>
+                <div style="display: flex; flex-direction: column;">
+                  <span>${currentLang === 'fa' ? provider.nameFa : provider.name}</span>
+                  ${getTrustBadgeHtml(provider.providerId || provider.slug)}
+                </div>
                 ${isBest ? '<i data-lucide="star" style="width: 12px; height: 12px; color: var(--color-gold-400);"></i>' : ''}
               </div>
             </td>
@@ -3444,6 +3454,10 @@
     let currentProductId = '18k-gold';
     let allPricesByProduct = {};
 
+    // Trust scores cache
+    let trustScoresCache = {};
+    let trustBadgesCache = {};
+
     // Initialize live price updates
     let livePricesEnabled = true;
     let lastPriceUpdate = null;
@@ -3501,12 +3515,96 @@
         updateProvidersWithLiveData(pricesByProduct);
         updateConnectionStatus(true);
 
-        // Also fetch bubble data
+        // Also fetch bubble data and trust data
         fetchBubbleData();
+        fetchTrustData();
       } catch (error) {
         console.error('Failed to fetch initial prices:', error);
         updateConnectionStatus(false);
       }
+    }
+
+    async function fetchTrustData() {
+      if (typeof TalafeeAPI === 'undefined') return;
+
+      try {
+        const rankingData = await TalafeeAPI.getTrustRanking();
+        if (rankingData.success && rankingData.providers) {
+          // Cache trust scores and badges by provider ID
+          rankingData.providers.forEach(p => {
+            trustScoresCache[p.providerId] = {
+              score: p.overallScore,
+              trend: p.trend,
+              rank: rankingData.providers.indexOf(p) + 1
+            };
+            trustBadgesCache[p.providerId] = p.badges || [];
+          });
+          console.log('[Trust] Cached trust data for', Object.keys(trustScoresCache).length, 'providers');
+
+          // Re-render to show badges
+          renderPriceCards();
+          renderTable();
+        }
+      } catch (error) {
+        console.log('[Trust] Failed to fetch trust data:', error.message);
+      }
+    }
+
+    function getTrustBadgeHtml(providerId) {
+      const badges = trustBadgesCache[providerId] || [];
+      const score = trustScoresCache[providerId]?.score;
+
+      if (!score && badges.length === 0) return '';
+
+      const badgeIcons = {
+        'verified': { icon: '✓', label: 'تایید شده', color: '#10B981' },
+        'best_accuracy': { icon: '🎯', label: 'دقیق‌ترین', color: '#3B82F6' },
+        'fast_updates': { icon: '⚡', label: 'سریع', color: '#F59E0B' },
+        'high_rated': { icon: '⭐', label: 'محبوب', color: '#D4AF37' },
+        'reliable': { icon: '🛡️', label: 'قابل اعتماد', color: '#059669' },
+        'best_spread': { icon: '💰', label: 'بهترین اسپرد', color: '#A21CAF' }
+      };
+
+      let html = '<div class="trust-badges" style="display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;">';
+
+      // Show first 2 badges max
+      const displayBadges = badges.slice(0, 2);
+      displayBadges.forEach(badge => {
+        const badgeType = typeof badge === 'string' ? badge : badge.badgeType;
+        const config = badgeIcons[badgeType];
+        if (config) {
+          html += `<span style="
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 2px 6px;
+            background: ${config.color}15;
+            color: ${config.color};
+            border-radius: 9999px;
+            font-size: 10px;
+            white-space: nowrap;
+          ">${config.icon}</span>`;
+        }
+      });
+
+      // Add trust score if available
+      if (score) {
+        const scoreColor = score >= 80 ? '#10B981' : score >= 60 ? '#D4AF37' : score >= 40 ? '#F59E0B' : '#EF4444';
+        html += `<span style="
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 6px;
+          background: ${scoreColor}15;
+          color: ${scoreColor};
+          border-radius: 9999px;
+          font-size: 10px;
+          font-family: var(--font-mono);
+          font-weight: 600;
+        ">${score}</span>`;
+      }
+
+      html += '</div>';
+      return html;
     }
 
     // ==================== BUBBLE FUNCTIONS ====================
@@ -3653,6 +3751,7 @@
 
         providers.push({
           id: index + 1,
+          providerId: price.providerId,
           name: config.name,
           nameFa: config.nameFa,
           slug: config.slug,

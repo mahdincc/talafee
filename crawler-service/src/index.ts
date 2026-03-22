@@ -4,6 +4,9 @@ import { SqliteSink, ApiCacheSink } from './sinks/index.js';
 import { startServer } from './api/server.js';
 import { logger } from './utils/index.js';
 import { getBubbleService } from './services/BubbleService.js';
+import { getTrustScoreService } from './services/TrustScoreService.js';
+import { getPriceAccuracyTracker } from './services/PriceAccuracyTracker.js';
+import { getReviewService } from './services/ReviewService.js';
 
 async function main(): Promise<void> {
   logger.info('Starting Talafee Gold Price Crawler Service');
@@ -30,6 +33,26 @@ async function main(): Promise<void> {
 
   // Set up bubble service integration after each crawl
   cacheSink.setBubbleServiceIntegration(bubbleService, tgjuProvider);
+
+  // Initialize trust system services
+  const trustService = getTrustScoreService();
+  trustService.initialize(dbSink);
+
+  // Seed dummy data if no trust data exists
+  const existingScores = trustService.getProviderRanking();
+  if (existingScores.length === 0) {
+    logger.info('No trust data found, seeding dummy data for demo...');
+    trustService.seedDummyData();
+  }
+
+  const accuracyTracker = getPriceAccuracyTracker();
+  accuracyTracker.initialize(dbSink);
+
+  const reviewService = getReviewService();
+  reviewService.initialize(dbSink);
+
+  // Set up uptime tracking in pipeline
+  pipeline.setUptimeTracker(dbSink);
 
   await pipeline.initialize();
 

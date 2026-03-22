@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import type { CrawlPipeline, Scheduler } from '../core/index.js';
 import type { ApiCacheSink, SqliteSink } from '../sinks/index.js';
-import { createPricesRouter, createHistoryRouter, createHealthRouter, createProductsRouter, bubbleRouter, guideRouter } from './routes/index.js';
+import { createPricesRouter, createHistoryRouter, createHealthRouter, createProductsRouter, bubbleRouter, guideRouter, trustRouter } from './routes/index.js';
 import { logger } from '../utils/index.js';
 import config from '../../config/crawler.config.js';
 
@@ -105,6 +105,17 @@ export function createServer(deps: ServerDependencies): Express {
         guideIndicators: '/api/v1/guide/indicators',
         guideTips: '/api/v1/guide/tips',
         guideSummary: '/api/v1/guide/summary',
+        trust: '/api/v1/trust',
+        trustScores: '/api/v1/trust/scores',
+        trustScoreByProvider: '/api/v1/trust/scores/:providerId',
+        trustRanking: '/api/v1/trust/ranking',
+        trustBadges: '/api/v1/trust/badges/:providerId',
+        trustWarnings: '/api/v1/trust/warnings',
+        trustAccuracy: '/api/v1/trust/accuracy/:providerId',
+        trustReviews: '/api/v1/trust/reviews/:providerId',
+        trustReviewsSubmit: '/api/v1/trust/reviews (POST)',
+        trustReviewsVote: '/api/v1/trust/reviews/:reviewId/vote (POST)',
+        trustComparison: '/api/v1/trust/comparison',
       },
       timestamp: new Date().toISOString(),
     });
@@ -121,6 +132,7 @@ export function createServer(deps: ServerDependencies): Express {
   app.use('/api/v1/products', productsRouter);
   app.use('/api/v1/bubble', bubbleRouter);
   app.use('/api/v1/guide', guideRouter);
+  app.use('/api/v1/trust', trustRouter);
 
   app.use((_req: Request, res: Response) => {
     res.status(404).json({

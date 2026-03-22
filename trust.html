@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talafee - Provider Trust & Reviews</title>
+  <style>
+    :root {
+      --gold-primary: #d4af37;
+      --gold-dark: #b8941f;
+      --gold-light: #f4e4ba;
+      --bg-dark: #1a1a2e;
+      --bg-card: #16213e;
+      --bg-card-light: #1f3460;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --success: #00c853;
+      --warning: #ffc107;
+      --danger: #ff5252;
+      --info: #2196f3;
+      --excellent: #00c853;
+      --good: #8bc34a;
+      --fair: #ffc107;
+      --poor: #ff5252;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0f0f23 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+      position: relative;
+    }
+
+    .header h1 {
+      color: var(--gold-primary);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: var(--gold-primary);
+      text-decoration: none;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-link:hover {
+      color: var(--gold-light);
+    }
+
+    /* Summary Stats */
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--gold-primary);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--gold-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+      border-color: var(--gold-primary);
+    }
+
+    /* Provider Ranking Table */
+    .ranking-table {
+      background: var(--bg-card);
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .ranking-header {
+      display: grid;
+      grid-template-columns: 60px 1fr 120px 150px 120px;
+      padding: 15px 20px;
+      background: var(--bg-card-light);
+      font-weight: 600;
+      color: var(--gold-primary);
+      gap: 15px;
+    }
+
+    .ranking-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 120px 150px 120px;
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .ranking-row:hover {
+      background: var(--bg-card-light);
+    }
+
+    .rank-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--gold-primary);
+      text-align: center;
+    }
+
+    .rank-number.top-3 {
+      color: var(--gold-light);
+    }
+
+    .provider-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .provider-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .provider-badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold-primary);
+    }
+
+    .badge.verified { background: rgba(0, 200, 83, 0.2); color: var(--success); }
+    .badge.reliable { background: rgba(33, 150, 243, 0.2); color: var(--info); }
+    .badge.fast { background: rgba(255, 193, 7, 0.2); color: var(--warning); }
+
+    /* Score Display */
+    .score-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .score-circle.excellent { background: rgba(0, 200, 83, 0.2); color: var(--excellent); border: 2px solid var(--excellent); }
+    .score-circle.good { background: rgba(139, 195, 74, 0.2); color: var(--good); border: 2px solid var(--good); }
+    .score-circle.fair { background: rgba(255, 193, 7, 0.2); color: var(--fair); border: 2px solid var(--fair); }
+    .score-circle.poor { background: rgba(255, 82, 82, 0.2); color: var(--poor); border: 2px solid var(--poor); }
+
+    .tier-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Star Rating */
+    .star-rating {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .star {
+      color: var(--gold-primary);
+      font-size: 1rem;
+    }
+
+    .star.empty {
+      color: var(--text-secondary);
+    }
+
+    .review-count {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+
+    /* Trend Indicator */
+    .trend {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+    }
+
+    .trend.improving { color: var(--success); }
+    .trend.stable { color: var(--text-secondary); }
+    .trend.declining { color: var(--danger); }
+
+    /* Provider Detail Panel */
+    .detail-panel {
+      display: none;
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 2px solid var(--gold-primary);
+    }
+
+    .detail-panel.active {
+      display: block;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .detail-title {
+      font-size: 1.8rem;
+      color: var(--gold-primary);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: var(--text-primary);
+    }
+
+    /* Score Breakdown */
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .breakdown-item {
+      background: var(--bg-card-light);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .breakdown-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .breakdown-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .breakdown-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .breakdown-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+      margin-top: 30px;
+    }
+
+    .reviews-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .write-review-btn {
+      padding: 12px 24px;
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .write-review-btn:hover {
+      background: var(--gold-light);
+    }
+
+    .review-card {
+      background: var(--bg-card-light);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .review-rating {
+      display: flex;
+      gap: 3px;
+    }
+
+    .review-date {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .review-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .review-content {
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .review-helpful {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .helpful-btn {
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 5px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .helpful-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .verified-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--success);
+      font-size: 0.85rem;
+    }
+
+    /* Review Form Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      color: var(--gold-primary);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-card-light);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .rating-input {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .rating-star {
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+
+    .rating-star.active {
+      color: var(--gold-primary);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+
+    .btn-submit {
+      padding: 12px 30px;
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .btn-cancel {
+      padding: 12px 30px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--text-secondary);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* Warnings Section */
+    .warnings-section {
+      margin-bottom: 30px;
+    }
+
+    .warning-card {
+      background: rgba(255, 82, 82, 0.1);
+      border: 1px solid var(--danger);
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .warning-icon {
+      font-size: 1.5rem;
+      color: var(--danger);
+    }
+
+    .warning-content {
+      flex: 1;
+    }
+
+    .warning-provider {
+      font-weight: 600;
+    }
+
+    .warning-message {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .warning-severity {
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .warning-severity.high { background: var(--danger); color: white; }
+    .warning-severity.medium { background: var(--warning); color: var(--bg-dark); }
+    .warning-severity.low { background: var(--info); color: white; }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Last Updated */
+    .last-updated {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 30px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .ranking-header,
+      .ranking-row {
+        grid-template-columns: 40px 1fr 80px;
+      }
+
+      .ranking-header > *:nth-child(4),
+      .ranking-header > *:nth-child(5),
+      .ranking-row > *:nth-child(4),
+      .ranking-row > *:nth-child(5) {
+        display: none;
+      }
+
+      .back-link {
+        position: static;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .detail-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="index.html" class="back-link">
+      <span>&#8592;</span> Back to Prices / بازگشت به قیمت‌ها
+    </a>
+    <h1>Provider Trust & Reviews</h1>
+    <p>امتیاز اعتماد و نظرات ارائه‌دهندگان</p>
+  </div>
+
+  <div class="container">
+    <!-- Summary Stats -->
+    <div class="summary-stats" id="summaryStats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalProviders">-</div>
+        <div class="stat-label">Total Providers / ارائه‌دهندگان</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgScore">-</div>
+        <div class="stat-label">Average Score / میانگین امتیاز</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="excellentCount">-</div>
+        <div class="stat-label">Excellent Providers / عالی</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="warningCount">-</div>
+        <div class="stat-label">Active Warnings / هشدارها</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="ranking">Rankings / رتبه‌بندی</button>
+      <button class="tab-btn" data-tab="warnings">Warnings / هشدارها</button>
+      <button class="tab-btn" data-tab="comparison">Comparison / مقایسه</button>
+    </div>
+
+    <!-- Warnings Section -->
+    <div class="warnings-section" id="warningsSection" style="display: none;">
+      <div id="warningsList">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading warnings...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider Detail Panel -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <div>
+          <h2 class="detail-title" id="detailProviderName">Provider Name</h2>
+          <div class="provider-badges" id="detailBadges"></div>
+        </div>
+        <button class="close-btn" onclick="closeDetailPanel()">&times;</button>
+      </div>
+
+      <!-- Score Breakdown -->
+      <div class="breakdown-grid" id="breakdownGrid">
+        <div class="breakdown-item">
+          <div class="breakdown-label">Price Accuracy / دقت قیمت</div>
+          <div class="breakdown-bar">
+            <div class="breakdown-fill" id="accuracyFill" style="width: 0%"></div>
+          </div>
+          <div class="breakdown-value" id="accuracyScore">-</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">Uptime / آپتایم</div>
+          <div class="breakdown-bar">
+            <div class="breakdown-fill" id="uptimeFill" style="width: 0%"></div>
+          </div>
+          <div class="breakdown-value" id="uptimeScore">-</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">Reviews / نظرات</div>
+          <div class="breakdown-bar">
+            <div class="breakdown-fill" id="reviewsFill" style="width: 0%"></div>
+          </div>
+          <div class="breakdown-value" id="reviewsScore">-</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">Freshness / تازگی</div>
+          <div class="breakdown-bar">
+            <div class="breakdown-fill" id="freshnessFill" style="width: 0%"></div>
+          </div>
+          <div class="breakdown-value" id="freshnessScore">-</div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="reviews-section">
+        <div class="reviews-header">
+          <h3>Reviews / نظرات</h3>
+          <button class="write-review-btn" onclick="openReviewModal()">Write Review / ثبت نظر</button>
+        </div>
+        <div id="reviewsList">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading reviews...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider Ranking Table -->
+    <div class="ranking-table" id="rankingSection">
+      <div class="ranking-header">
+        <div>Rank</div>
+        <div>Provider / ارائه‌دهنده</div>
+        <div>Score / امتیاز</div>
+        <div>Reviews / نظرات</div>
+        <div>Trend / روند</div>
+      </div>
+      <div id="rankingList">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading providers...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="last-updated" id="lastUpdated">
+      Last updated: -
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+      <h2 class="modal-title">Write a Review / ثبت نظر</h2>
+      <form id="reviewForm">
+        <input type="hidden" id="reviewProviderId" value="">
+
+        <div class="form-group">
+          <label class="form-label">Rating / امتیاز *</label>
+          <div class="rating-input" id="ratingInput">
+            <span class="rating-star" data-value="1">&#9733;</span>
+            <span class="rating-star" data-value="2">&#9733;</span>
+            <span class="rating-star" data-value="3">&#9733;</span>
+            <span class="rating-star" data-value="4">&#9733;</span>
+            <span class="rating-star" data-value="5">&#9733;</span>
+          </div>
+          <input type="hidden" id="reviewRating" value="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Title (Optional) / عنوان</label>
+          <input type="text" class="form-input" id="reviewTitle" maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your Review / نظر شما</label>
+          <textarea class="form-input form-textarea" id="reviewContent" minlength="10" maxlength="2000" placeholder="Share your experience with this provider..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Submit / ارسال</button>
+          <button type="button" class="btn-cancel" onclick="closeReviewModal()">Cancel / لغو</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/js/trust-client.js"></script>
+  <script>
+    // Initialize Trust Client
+    const API_BASE = 'http://localhost:3001/api/v1';
+    let trustClient;
+    let currentProviderId = null;
+
+    // Generate a simple fingerprint for demo purposes
+    function generateFingerprint() {
+      const stored = localStorage.getItem('userFingerprint');
+      if (stored) return stored;
+      const fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('userFingerprint', fp);
+      return fp;
+    }
+
+    const userFingerprint = generateFingerprint();
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', async () => {
+      trustClient = new TrustClient(API_BASE);
+      await loadRanking();
+      await loadWarnings();
+      setupTabs();
+      setupRatingInput();
+      setupReviewForm();
+    });
+
+    // Tab Navigation
+    function setupTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tab = btn.dataset.tab;
+          document.getElementById('rankingSection').style.display = tab === 'ranking' ? 'block' : 'none';
+          document.getElementById('warningsSection').style.display = tab === 'warnings' ? 'block' : 'none';
+          document.getElementById('detailPanel').classList.remove('active');
+        });
+      });
+    }
+
+    // Load Provider Ranking
+    async function loadRanking() {
+      try {
+        const data = await trustClient.getRanking();
+        if (data.success) {
+          renderRanking(data.data.ranking);
+          updateSummaryStats(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to load ranking:', error);
+        document.getElementById('rankingList').innerHTML = '<div class="loading">Failed to load data</div>';
+      }
+    }
+
+    // Render Ranking Table
+    function renderRanking(ranking) {
+      const container = document.getElementById('rankingList');
+
+      if (!ranking || ranking.length === 0) {
+        container.innerHTML = '<div class="loading">No providers found</div>';
+        return;
+      }
+
+      container.innerHTML = ranking.map(provider => `
+        <div class="ranking-row" onclick="showProviderDetail('${provider.providerId}')">
+          <div class="rank-number ${provider.rank <= 3 ? 'top-3' : ''}">${provider.rank}</div>
+          <div class="provider-info">
+            <div class="provider-name">${provider.providerName}</div>
+            <div class="provider-badges">
+              ${provider.badges.map(b => `<span class="badge ${b.badgeType}">${b.badgeLabel}</span>`).join('')}
+            </div>
+          </div>
+          <div class="score-display">
+            <div class="score-circle ${provider.tier}">${Math.round(provider.overallScore)}</div>
+            <span class="tier-label">${provider.tier}</span>
+          </div>
+          <div class="star-rating">
+            ${renderStars(provider.breakdown.reviews.score / 20)}
+            <span class="review-count">(${getReviewCount(provider.breakdown.reviews.details)})</span>
+          </div>
+          <div class="trend ${provider.trend}">
+            ${getTrendIcon(provider.trend)} ${getTrendLabel(provider.trend)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render star rating
+    function renderStars(rating) {
+      const fullStars = Math.floor(rating);
+      const emptyStars = 5 - fullStars;
+      return '&#9733;'.repeat(fullStars) + '<span class="star empty">' + '&#9733;'.repeat(emptyStars) + '</span>';
+    }
+
+    // Extract review count from details string
+    function getReviewCount(details) {
+      const match = details.match(/(\d+) reviews/);
+      return match ? match[1] : '0';
+    }
+
+    // Get trend icon
+    function getTrendIcon(trend) {
+      switch (trend) {
+        case 'improving': return '&#8593;';
+        case 'declining': return '&#8595;';
+        default: return '&#8594;';
+      }
+    }
+
+    // Get trend label
+    function getTrendLabel(trend) {
+      switch (trend) {
+        case 'improving': return 'Up';
+        case 'declining': return 'Down';
+        default: return 'Stable';
+      }
+    }
+
+    // Update summary stats
+    function updateSummaryStats(data) {
+      document.getElementById('totalProviders').textContent = data.ranking.length;
+
+      const avgScore = data.ranking.reduce((sum, p) => sum + p.overallScore, 0) / data.ranking.length;
+      document.getElementById('avgScore').textContent = avgScore.toFixed(1);
+
+      const excellentCount = data.ranking.filter(p => p.tier === 'excellent').length;
+      document.getElementById('excellentCount').textContent = excellentCount;
+
+      document.getElementById('lastUpdated').textContent =
+        'Last updated: ' + new Date(data.lastUpdated).toLocaleString();
+    }
+
+    // Load Warnings
+    async function loadWarnings() {
+      try {
+        const data = await trustClient.getWarnings();
+        if (data.success) {
+          renderWarnings(data.data.warnings);
+          document.getElementById('warningCount').textContent = data.data.totalWarnings;
+        }
+      } catch (error) {
+        console.error('Failed to load warnings:', error);
+      }
+    }
+
+    // Render Warnings
+    function renderWarnings(warnings) {
+      const container = document.getElementById('warningsList');
+
+      if (!warnings || warnings.length === 0) {
+        container.innerHTML = '<div class="loading">No active warnings</div>';
+        return;
+      }
+
+      container.innerHTML = warnings.map(warning => `
+        <div class="warning-card">
+          <div class="warning-icon">&#9888;</div>
+          <div class="warning-content">
+            <div class="warning-provider">${warning.providerId}</div>
+            <div class="warning-message">${warning.message}</div>
+          </div>
+          <span class="warning-severity ${warning.severity}">${warning.severity.toUpperCase()}</span>
+        </div>
+      `).join('');
+    }
+
+    // Show Provider Detail
+    async function showProviderDetail(providerId) {
+      currentProviderId = providerId;
+      const panel = document.getElementById('detailPanel');
+      panel.classList.add('active');
+
+      try {
+        const [scoreData, reviewsData] = await Promise.all([
+          trustClient.getProviderScore(providerId),
+          trustClient.getProviderReviews(providerId)
+        ]);
+
+        if (scoreData.success) {
+          const score = scoreData.data;
+          document.getElementById('detailProviderName').textContent = score.providerName;
+          document.getElementById('reviewProviderId').value = providerId;
+
+          // Render badges
+          document.getElementById('detailBadges').innerHTML =
+            score.badges.map(b => `<span class="badge ${b.badgeType}">${b.badgeLabel}</span>`).join('');
+
+          // Update breakdown bars
+          updateBreakdownBar('accuracy', score.breakdown.priceAccuracy.score);
+          updateBreakdownBar('uptime', score.breakdown.uptime.score);
+          updateBreakdownBar('reviews', score.breakdown.reviews.score);
+          updateBreakdownBar('freshness', score.breakdown.freshness.score);
+        }
+
+        if (reviewsData.success) {
+          renderReviews(reviewsData.data.reviews);
+        }
+      } catch (error) {
+        console.error('Failed to load provider details:', error);
+      }
+
+      // Scroll to detail panel
+      panel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Update breakdown bar
+    function updateBreakdownBar(type, score) {
+      const fill = document.getElementById(type + 'Fill');
+      const value = document.getElementById(type + 'Score');
+
+      fill.style.width = score + '%';
+      fill.style.background = getScoreColor(score);
+      value.textContent = score + '%';
+    }
+
+    // Get color based on score
+    function getScoreColor(score) {
+      if (score >= 85) return 'var(--excellent)';
+      if (score >= 70) return 'var(--good)';
+      if (score >= 50) return 'var(--fair)';
+      return 'var(--poor)';
+    }
+
+    // Render Reviews
+    function renderReviews(reviews) {
+      const container = document.getElementById('reviewsList');
+
+      if (!reviews || reviews.length === 0) {
+        container.innerHTML = '<div class="loading">No reviews yet. Be the first to review!</div>';
+        return;
+      }
+
+      container.innerHTML = reviews.map(review => `
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-rating">${'&#9733;'.repeat(review.rating)}</div>
+            <div class="review-date">${formatDate(review.createdAt)}</div>
+          </div>
+          ${review.title ? `<div class="review-title">${escapeHtml(review.title)}</div>` : ''}
+          ${review.content ? `<div class="review-content">${escapeHtml(review.content)}</div>` : ''}
+          <div class="review-footer">
+            <div class="review-helpful">
+              <button class="helpful-btn" onclick="voteReview('${review.id}', 'helpful')">
+                &#128077; Helpful (${review.helpfulCount})
+              </button>
+              <button class="helpful-btn" onclick="voteReview('${review.id}', 'report')">
+                &#128681; Report
+              </button>
+            </div>
+            ${review.transactionVerified ? '<div class="verified-badge">&#10003; Verified</div>' : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Format date
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString();
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Close detail panel
+    function closeDetailPanel() {
+      document.getElementById('detailPanel').classList.remove('active');
+      currentProviderId = null;
+    }
+
+    // Rating Input Setup
+    function setupRatingInput() {
+      const stars = document.querySelectorAll('.rating-star');
+      stars.forEach(star => {
+        star.addEventListener('click', () => {
+          const value = parseInt(star.dataset.value);
+          document.getElementById('reviewRating').value = value;
+          stars.forEach((s, i) => {
+            s.classList.toggle('active', i < value);
+          });
+        });
+      });
+    }
+
+    // Open Review Modal
+    function openReviewModal() {
+      if (!currentProviderId) return;
+      document.getElementById('reviewModal').classList.add('active');
+    }
+
+    // Close Review Modal
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.remove('active');
+      document.getElementById('reviewForm').reset();
+      document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('active'));
+    }
+
+    // Setup Review Form
+    function setupReviewForm() {
+      document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const rating = parseInt(document.getElementById('reviewRating').value);
+        if (rating < 1 || rating > 5) {
+          alert('Please select a rating');
+          return;
+        }
+
+        const submission = {
+          providerId: currentProviderId,
+          rating: rating,
+          title: document.getElementById('reviewTitle').value,
+          content: document.getElementById('reviewContent').value,
+          userFingerprint: userFingerprint
+        };
+
+        try {
+          const result = await trustClient.submitReview(submission);
+          if (result.success) {
+            alert('Review submitted successfully!');
+            closeReviewModal();
+            showProviderDetail(currentProviderId); // Refresh reviews
+          } else {
+            alert('Error: ' + (result.error || 'Failed to submit review'));
+          }
+        } catch (error) {
+          alert('Failed to submit review: ' + error.message);
+        }
+      });
+    }
+
+    // Vote on review
+    async function voteReview(reviewId, voteType) {
+      try {
+        const result = await trustClient.voteReview(reviewId, userFingerprint, voteType);
+        if (result.success) {
+          showProviderDetail(currentProviderId); // Refresh reviews
+        } else {
+          alert(result.error || 'Failed to vote');
+        }
+      } catch (error) {
+        alert('Failed to vote: ' + error.message);
+      }
+    }
+
+    // Auto-refresh every 5 minutes
+    setInterval(() => {
+      loadRanking();
+      loadWarnings();
+    }, 300000);
+  </script>
+</body>
+</html>

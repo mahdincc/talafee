@@ -2,13 +2,16 @@ import cron from 'node-cron';
 import type { CrawlPipeline } from './CrawlPipeline.js';
 import { logger } from '../utils/index.js';
 import config from '../../config/crawler.config.js';
+import { getTrustScoreService } from '../services/TrustScoreService.js';
 
 export class Scheduler {
   private pipeline: CrawlPipeline;
   private priceUpdateTask?: cron.ScheduledTask;
   private healthCheckTask?: cron.ScheduledTask;
+  private trustScoreTask?: cron.ScheduledTask;
   private isRunning = false;
   private nextCrawlAt?: Date;
+  private lastTrustScoreUpdate?: Date;
 
   constructor(pipeline: CrawlPipeline) {
     this.pipeline = pipeline;
@@ -65,12 +68,55 @@ export class Scheduler {
       }
     );
 
+    // Trust score calculation - runs every hour
+    this.trustScoreTask = cron.schedule(
+      '0 * * * *', // Every hour at minute 0
+      async () => {
+        try {
+          await this.calculateTrustScores();
+        } catch (error) {
+          logger.error(`Trust score calculation failed`, {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      },
+      {
+        scheduled: true,
+        timezone: 'Asia/Tehran',
+      }
+    );
+
     this.isRunning = true;
     this.updateNextCrawlTime();
 
     logger.info(`Scheduler started successfully`);
 
     this.runInitialCrawl();
+  }
+
+  /**
+   * Calculate trust scores for all providers
+   */
+  async calculateTrustScores(): Promise<void> {
+    logger.info('Calculating trust scores for all providers');
+    const trustService = getTrustScoreService();
+    const scores = trustService.calculateAllScores();
+    this.lastTrustScoreUpdate = new Date();
+
+    logger.info('Trust scores calculated', {
+      providerCount: scores.length,
+      avgScore: scores.length > 0
+        ? Math.round(scores.reduce((sum, s) => sum + s.overallScore, 0) / scores.length * 10) / 10
+        : 0,
+    });
+  }
+
+  /**
+   * Manually trigger trust score calculation
+   */
+  async triggerTrustScoreUpdate(): Promise<void> {
+    logger.info('Manual trust score update triggered');
+    await this.calculateTrustScores();
   }
 
   stop(): void {
@@ -83,6 +129,7 @@ export class Scheduler {
 
     this.priceUpdateTask?.stop();
     this.healthCheckTask?.stop();
+    this.trustScoreTask?.stop();
     this.isRunning = false;
 
     logger.info(`Scheduler stopped`);
@@ -94,6 +141,7 @@ export class Scheduler {
       nextCrawlAt: this.nextCrawlAt,
       lastCrawlAt: this.pipeline.getLastRunSummary()?.completedAt,
       isCrawling: this.pipeline.isCurrentlyRunning(),
+      lastTrustScoreUpdate: this.lastTrustScoreUpdate,
     };
   }
 
@@ -125,4 +173,5 @@ export interface SchedulerStatus {
   nextCrawlAt?: Date;
   lastCrawlAt?: Date;
   isCrawling: boolean;
+  lastTrustScoreUpdate?: Date;
 }
