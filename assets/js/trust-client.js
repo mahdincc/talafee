@@ -3,8 +3,18 @@
  * Handles all API calls for provider trust scores and reviews
  */
 
+function resolveTrustDefaultBaseUrl() {
+  if (typeof window === 'undefined') return '/api/v1';
+  const { protocol, hostname } = window.location;
+  if (protocol === 'file:') return 'http://localhost:3001/api/v1';
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3001/api/v1';
+  }
+  return '/api/v1';
+}
+
 class TrustClient {
-  constructor(baseUrl = 'http://localhost:3001/api/v1') {
+  constructor(baseUrl = resolveTrustDefaultBaseUrl()) {
     this.baseUrl = baseUrl;
   }
 

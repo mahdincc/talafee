@@ -3477,10 +3477,8 @@
         return;
       }
 
-      // Initialize the API client - use same hostname as current page
-      const apiHost = window.location.hostname;
+      // Let TalafeeAPI auto-detect baseUrl (relative /api/v1 in prod, localhost:3001 in dev)
       TalafeeAPI.init({
-        baseUrl: `http://${apiHost}:3001/api/v1`,
         pollInterval: 30000, // 30 seconds
         retryAttempts: 3
       });

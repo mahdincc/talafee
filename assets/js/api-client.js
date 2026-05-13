@@ -6,8 +6,19 @@
 const TalafeeAPI = (function () {
   'use strict';
 
+  function resolveDefaultBaseUrl() {
+    if (typeof window === 'undefined') return '/api/v1';
+    const { protocol, hostname } = window.location;
+    if (protocol === 'file:') return 'http://localhost:3001/api/v1';
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3001/api/v1';
+    }
+    // Production / any other host: same-origin path (nginx-proxied)
+    return '/api/v1';
+  }
+
   const DEFAULT_CONFIG = {
-    baseUrl: 'http://localhost:3001/api/v1',
+    baseUrl: resolveDefaultBaseUrl(),
     timeout: 10000,
     retryAttempts: 3,
     retryDelay: 1000,
