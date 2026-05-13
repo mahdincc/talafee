@@ -48,3 +48,16 @@ temp/
 .cache/
 .npm/
 crawlers/
+
+# Secrets — never commit private keys or SSH material
+*.pem
+*.key
+id_rsa*
+
+# Local Claude Code workspace + agent-managed scratch dirs
+.claude/
+.local-backup-*/
+.vps-snapshot/
+
+# Misc local-only
+tasks.txt
