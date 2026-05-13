@@ -188,7 +188,8 @@ class TrustPageController {
       'bankgold': 'بانک گلد',
       'gold24': 'گلد ۲۴',
       'zarino': 'زرینو',
-      'goldiran': 'گلد ایران'
+      'goldiran': 'گلد ایران',
+      'wallgold': 'وال‌گلد'
     };
   }
 

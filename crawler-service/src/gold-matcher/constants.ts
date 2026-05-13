@@ -351,6 +351,13 @@ export const PROVIDER_SYMBOL_MAPS: ProviderSymbolMap[] = [
       { symbol: 'QUARTER-COIN', productId: 'quarter-coin', priceUnit: 'piece', priceMultiplier: 10 },
     ],
   },
+  {
+    providerId: 'wallgold',
+    mappings: [
+      // Wallgold quotes in Toman per gram; WallGoldProvider already converts to Rial.
+      { symbol: 'GLD_18C_750TMN', productId: '18k-gold', priceUnit: 'gram', priceMultiplier: 1 },
+    ],
+  },
 ];
 
 /**

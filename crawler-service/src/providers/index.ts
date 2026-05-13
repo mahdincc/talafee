@@ -10,6 +10,7 @@ export { TGJUProvider } from './TGJUProvider.js';
 export { GoldikaProvider } from './GoldikaProvider.js';
 export { DaricProvider } from './DaricProvider.js';
 export { GoldisProvider } from './GoldisProvider.js';
+export { WallGoldProvider } from './WallGoldProvider.js';
 
 import type { IProvider } from '../core/interfaces/index.js';
 import { DigiGoldProvider } from './DigiGoldProvider.js';
@@ -24,6 +25,7 @@ import { TGJUProvider } from './TGJUProvider.js';
 import { GoldikaProvider } from './GoldikaProvider.js';
 import { DaricProvider } from './DaricProvider.js';
 import { GoldisProvider } from './GoldisProvider.js';
+import { WallGoldProvider } from './WallGoldProvider.js';
 
 export function createAllProviders(): IProvider[] {
   return [
@@ -39,6 +41,7 @@ export function createAllProviders(): IProvider[] {
     new GoldikaProvider(),
     new DaricProvider(),
     new GoldisProvider(),
+    new WallGoldProvider(),
   ];
 }
 
@@ -68,6 +71,8 @@ export function createProviderById(providerId: string): IProvider | undefined {
       return new DaricProvider();
     case 'goldis':
       return new GoldisProvider();
+    case 'wallgold':
+      return new WallGoldProvider();
     default:
       return undefined;
   }

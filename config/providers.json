@@ -482,6 +482,28 @@
         "enabled": false
       },
       "products": ["18k-gold", "24k-gold", "gold-ounce"]
+    },
+    "wallgold": {
+      "id": "wallgold",
+      "name": {
+        "fa": "وال‌گلد",
+        "en": "WallGold"
+      },
+      "shortName": "WG",
+      "url": "https://wallgold.ir",
+      "apiUrl": "https://api.wallgold.ir/api/v1",
+      "logo": "/assets/images/providers/wallgold.svg",
+      "color": "#D4A017",
+      "features": ["instant-buy", "wallet", "physical-delivery"],
+      "tradingHours": {
+        "start": "00:00",
+        "end": "23:59",
+        "timezone": "Asia/Tehran"
+      },
+      "affiliate": {
+        "enabled": false
+      },
+      "products": ["18k-gold"]
     }
   },
   "products": {

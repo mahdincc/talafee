@@ -208,6 +208,17 @@ const config: CrawlerConfig = {
         minDelayMs: 2000,
       },
     },
+    wallgold: {
+      id: 'wallgold',
+      name: 'WallGold',
+      enabled: true,
+      apiUrl: 'https://api.wallgold.ir/api/v1',
+      timeout: 10000,
+      rateLimit: {
+        maxConcurrent: 2,
+        minDelayMs: 500,
+      },
+    },
   },
 };
 
