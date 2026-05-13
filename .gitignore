@@ -55,7 +55,10 @@ crawlers/
 id_rsa*
 
 # Local Claude Code workspace + agent-managed scratch dirs
-.claude/
+.claude/*
+# ...but DO commit shared conventions so every clone (and every new chat) sees them
+!.claude/conventions/
+!.claude/conventions/**
 .local-backup-*/
 .vps-snapshot/
 
