@@ -50,7 +50,7 @@ GET /prices
         "id": "price_001",
         "provider": {
           "id": "taline",
-          "name": "تالین",
+          "name": "طلاین",
           "logo": "https://..."
         },
         "product": {

@@ -375,127 +375,6 @@
       color: var(--color-danger);
     }
 
-    /* ==================== CHART SECTION ==================== */
-    .chart-section {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-5);
-      margin-bottom: var(--space-6);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .chart-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--space-4);
-      flex-wrap: wrap;
-      gap: var(--space-3);
-    }
-
-    .chart-title {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .chart-tabs {
-      display: flex;
-      gap: var(--space-1);
-      background: var(--color-background);
-      padding: var(--space-1);
-      border-radius: var(--radius-md);
-    }
-
-    .chart-tab {
-      padding: var(--space-2) var(--space-3);
-      border: none;
-      background: transparent;
-      color: var(--color-text-secondary);
-      font-size: 0.75rem;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all var(--duration-fast) var(--ease-out);
-    }
-
-    .chart-tab.active {
-      background: var(--color-surface);
-      color: var(--color-gold-600);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .chart-container {
-      height: 300px;
-      position: relative;
-    }
-
-    .chart-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      padding: var(--space-4);
-      gap: 2px;
-    }
-
-    .chart-bar {
-      flex: 1;
-      background: linear-gradient(to top, var(--color-gold-400), var(--color-gold-200));
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-      min-width: 8px;
-      max-width: 40px;
-      transition: all var(--duration-normal) var(--ease-out);
-      position: relative;
-    }
-
-    .chart-bar:hover {
-      background: linear-gradient(to top, var(--color-gold-500), var(--color-gold-300));
-      transform: scaleY(1.02);
-    }
-
-    .chart-bar::after {
-      content: attr(data-value);
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.625rem;
-      color: var(--color-text-tertiary);
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity var(--duration-fast) var(--ease-out);
-    }
-
-    .chart-bar:hover::after {
-      opacity: 1;
-    }
-
-    .chart-legend {
-      display: flex;
-      justify-content: center;
-      gap: var(--space-6);
-      margin-top: var(--space-4);
-      padding-top: var(--space-4);
-      border-top: 1px solid var(--color-border-subtle);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      font-size: 0.75rem;
-      color: var(--color-text-secondary);
-    }
-
-    .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
     /* ==================== BUBBLE CARD ==================== */
     .bubble-card {
       display: flex;
@@ -1363,11 +1242,6 @@
       .stat-value {
         font-size: 1.25rem;
       }
-
-      .chart-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
     }
 
     /* ==================== FAST BUY MENU ==================== */
@@ -2113,85 +1987,43 @@
   <!-- Main Content -->
   <main class="main">
     <div class="container">
-      <!-- Stats Section -->
+      <!-- Stats Section. All values are based on provider BUY prices
+           (قیمت خرید) — the price the user pays to buy gold. -->
       <div class="stats-grid">
-        <div class="stat-card animate-fade-in">
+        <div class="stat-card animate-fade-in" id="statCurrent">
           <div class="stat-label">
             <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
-            <span data-fa="قیمت فعلی" data-en="Current Price">قیمت فعلی</span>
+            <span data-fa="قیمت فعلی (بهترین خرید)" data-en="Current (Best Buy)">قیمت فعلی (بهترین خرید)</span>
           </div>
-          <div class="stat-value">149,370,000</div>
-          <div class="stat-change up">
-            <i data-lucide="arrow-up" style="width: 12px; height: 12px;"></i>
-            <span>+2.5% <span data-fa="از دیروز" data-en="from yesterday">از دیروز</span></span>
-          </div>
+          <div class="stat-value">--</div>
+          <div class="stat-change" data-role="change"></div>
         </div>
 
-        <div class="stat-card animate-fade-in">
+        <div class="stat-card animate-fade-in" id="statHigh">
           <div class="stat-label">
             <i data-lucide="arrow-up-circle" style="width: 14px; height: 14px;"></i>
-            <span data-fa="بالاترین امروز" data-en="Today's High">بالاترین امروز</span>
+            <span data-fa="بالاترین قیمت خرید" data-en="Highest Buy">بالاترین قیمت خرید</span>
           </div>
-          <div class="stat-value">155,200,000</div>
-          <div class="stat-change up">
-            <i data-lucide="arrow-up" style="width: 12px; height: 12px;"></i>
-            <span>+3.2%</span>
-          </div>
+          <div class="stat-value">--</div>
+          <div class="stat-change" data-role="change"></div>
         </div>
 
-        <div class="stat-card animate-fade-in">
+        <div class="stat-card animate-fade-in" id="statLow">
           <div class="stat-label">
             <i data-lucide="arrow-down-circle" style="width: 14px; height: 14px;"></i>
-            <span data-fa="پایین‌ترین امروز" data-en="Today's Low">پایین‌ترین امروز</span>
+            <span data-fa="پایین‌ترین قیمت خرید" data-en="Lowest Buy">پایین‌ترین قیمت خرید</span>
           </div>
-          <div class="stat-value">145,800,000</div>
-          <div class="stat-change down">
-            <i data-lucide="arrow-down" style="width: 12px; height: 12px;"></i>
-            <span>-1.8%</span>
-          </div>
+          <div class="stat-value">--</div>
+          <div class="stat-change" data-role="change"></div>
         </div>
 
-        <div class="stat-card animate-fade-in">
+        <div class="stat-card animate-fade-in" id="statAverage">
           <div class="stat-label">
             <i data-lucide="bar-chart-3" style="width: 14px; height: 14px;"></i>
-            <span data-fa="میانگین قیمت" data-en="Average Price">میانگین قیمت</span>
+            <span data-fa="میانگین قیمت خرید" data-en="Average Buy">میانگین قیمت خرید</span>
           </div>
-          <div class="stat-value">150,500,000</div>
-          <div class="stat-change up">
-            <i data-lucide="minus" style="width: 12px; height: 12px;"></i>
-            <span data-fa="ثابت" data-en="Stable">ثابت</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Chart Section -->
-      <div class="chart-section animate-fade-in">
-        <div class="chart-header">
-          <h2 class="chart-title">
-            <i data-lucide="line-chart" style="width: 18px; height: 18px; color: var(--color-gold-400);"></i>
-            <span data-fa="نمودار روند قیمت" data-en="Price Trend Chart">نمودار روند قیمت</span>
-          </h2>
-          <div class="chart-tabs">
-            <button class="chart-tab" data-fa="۷ روز" data-en="7D">۷ روز</button>
-            <button class="chart-tab active" data-fa="۳۰ روز" data-en="30D">۳۰ روز</button>
-            <button class="chart-tab" data-fa="۳ ماه" data-en="3M">۳ ماه</button>
-            <button class="chart-tab" data-fa="سال" data-en="1Y">سال</button>
-          </div>
-        </div>
-        <div class="chart-container">
-          <div class="chart-placeholder" id="chartBars">
-            <!-- Bars will be generated by JS -->
-          </div>
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <div class="legend-dot" style="background: var(--color-gold-400);"></div>
-            <span data-fa="گرم طلای ۱۸ عیار" data-en="18K Gold (Gram)">گرم طلای ۱۸ عیار</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background: #6366F1;"></div>
-            <span data-fa="میانگین بازار" data-en="Market Average">میانگین بازار</span>
-          </div>
+          <div class="stat-value">--</div>
+          <div class="stat-change" data-role="change"></div>
         </div>
       </div>
 
@@ -2462,7 +2294,7 @@
           <div class="best-price-provider">
             <div class="best-price-logo">TL</div>
             <div class="best-price-info">
-              <h4 data-fa="تالین" data-en="Taline">تالین</h4>
+              <h4 data-fa="طلاین" data-en="Taline">طلاین</h4>
               <div class="price">۱۴۹,۲۰۰,۰۰۰</div>
             </div>
           </div>
@@ -2848,12 +2680,17 @@
       return currentLang === 'fa' ? 'ریال' : 'IRR';
     }
 
+    // "Best deal" = cheapest provider TO BUY FROM = lowest buyPrice.
+    // sellPrice is the dealer's bid (what users get when SELLING gold to
+    // them) and is irrelevant for a buy-comparison page. Sorting by
+    // sellPrice was wrong because it would unfairly rank a provider with
+    // a low bid (e.g. Taline) ahead of one with a lower ask (e.g. Miligold).
     function findBestDeal(providers) {
       if (!providers || providers.length === 0) {
-        return { id: -1, sellPrice: Infinity };
+        return { id: -1, buyPrice: Infinity };
       }
       return providers.reduce((best, current) =>
-        current.sellPrice < best.sellPrice ? current : best
+        current.buyPrice < best.buyPrice ? current : best
       );
     }
 
@@ -2861,8 +2698,8 @@
       if (providers.length === 0) return;
 
       const bestDeal = findBestDeal(providers);
-      const avgPrice = providers.reduce((sum, p) => sum + p.sellPrice, 0) / providers.length;
-      const savings = Math.round(avgPrice - bestDeal.sellPrice);
+      const avgPrice = providers.reduce((sum, p) => sum + p.buyPrice, 0) / providers.length;
+      const savings = Math.round(avgPrice - bestDeal.buyPrice);
 
       // Update best price card
       const bestPriceCard = document.querySelector('.best-price-card');
@@ -2874,7 +2711,7 @@
 
         if (logoEl) logoEl.textContent = bestDeal.logo || '--';
         if (nameEl) nameEl.textContent = currentLang === 'fa' ? bestDeal.nameFa : bestDeal.name;
-        if (priceEl) priceEl.textContent = formatPricePersian(bestDeal.sellPrice);
+        if (priceEl) priceEl.textContent = formatPricePersian(bestDeal.buyPrice);
         if (savingsEl) {
           const savingsText = currentLang === 'fa'
             ? `${formatPricePersian(Math.abs(savings))} ریال ${savings > 0 ? 'کمتر از' : 'بیشتر از'} میانگین`
@@ -3119,8 +2956,8 @@
 
       const bestDeal = findBestDeal(providers);
 
-      // Sort by sell price (best first)
-      const sorted = [...providers].sort((a, b) => a.sellPrice - b.sellPrice);
+      // Sort by buy price ascending (cheapest to buy from = best for user)
+      const sorted = [...providers].sort((a, b) => a.buyPrice - b.buyPrice);
 
       tbody.innerHTML = sorted.map(provider => {
         const isBest = provider.id === bestDeal.id;
@@ -3161,20 +2998,6 @@
       }).join('');
 
       lucide.createIcons();
-    }
-
-    function renderChart() {
-      const container = document.getElementById('chartBars');
-      const values = [145, 148, 152, 149, 151, 147, 150, 153, 155, 152, 149, 148, 150, 151, 149,
-                      147, 148, 150, 152, 154, 151, 149, 150, 152, 153, 151, 149, 150, 149, 150];
-
-      const max = Math.max(...values);
-      const min = Math.min(...values);
-
-      container.innerHTML = values.map((val, i) => {
-        const height = ((val - min) / (max - min)) * 80 + 20;
-        return `<div class="chart-bar" style="height: ${height}%;" data-value="${val}M"></div>`;
-      }).join('');
     }
 
     // ==================== LANGUAGE TOGGLE ====================
@@ -3219,7 +3042,6 @@
       // Initial render
       renderPriceCards();
       renderTable();
-      renderChart();
       lucide.createIcons();
 
       // Language toggle
@@ -3251,15 +3073,6 @@
       // Refresh button with loading state
       document.getElementById('refreshBtn').addEventListener('click', () => {
         manualRefresh();
-      });
-
-      // Chart tabs
-      document.querySelectorAll('.chart-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          renderChart();
-        });
       });
     });
 
@@ -3430,7 +3243,7 @@
 
     // Provider display config for crawler providers
     const CRAWLER_PROVIDER_CONFIG = {
-      'taline': { name: 'Taline', nameFa: 'تالین', logo: 'TL', slug: 'taline', color: '#4CAF50' },
+      'taline': { name: 'Taline', nameFa: 'طلاین', logo: 'TL', slug: 'taline', color: '#4CAF50' },
       'technogold': { name: 'TechnoGold', nameFa: 'تکنوگلد', logo: 'TG', slug: 'technogold', color: '#2196F3' },
       'digigold': { name: 'DigiGold', nameFa: 'دیجی‌گلد', logo: 'DG', slug: 'digigold', color: '#EF394E' },
       'miligold': { name: 'MiliGold', nameFa: 'میلی‌گلد', logo: 'MG', slug: 'miligold', color: '#FFD700' },
@@ -3477,8 +3290,13 @@
         return;
       }
 
-      // Let TalafeeAPI auto-detect baseUrl (relative /api/v1 in prod, localhost:3001 in dev)
+      // Initialize the API client - relative path in prod (nginx proxy), direct port in dev
+      const apiPort = window.location.port;
+      const apiBaseUrl = (!apiPort || apiPort === '80' || apiPort === '443')
+        ? '/api/v1'
+        : `http://${window.location.hostname}:3001/api/v1`;
       TalafeeAPI.init({
+        baseUrl: apiBaseUrl,
         pollInterval: 30000, // 30 seconds
         retryAttempts: 3
       });
@@ -3617,8 +3435,11 @@
     // ==================== BUBBLE FUNCTIONS ====================
 
     async function fetchBubbleData() {
-      const apiHost = window.location.hostname;
-      const bubbleUrl = `http://${apiHost}:3001/api/v1/bubble/summary`;
+      const apiPort = window.location.port;
+      const apiBaseUrl = (!apiPort || apiPort === '80' || apiPort === '443')
+        ? '/api/v1'
+        : `http://${window.location.hostname}:3001/api/v1`;
+      const bubbleUrl = `${apiBaseUrl}/bubble/summary`;
 
       try {
         const response = await fetch(bubbleUrl);
@@ -3712,8 +3533,11 @@
 
     function formatPrice(price) {
       if (price === null || price === undefined) return '--';
-      // Convert to Tomans and format
-      const tomans = price / 10;
+      // Convert Rials → Tomans. Round to integer so the formatter never
+      // shows a trailing "/6" decimal when the Rials value isn't a clean
+      // multiple of 10 (e.g. 195,703,986 Rials → 19,570,399 Toman, not
+      // 19,570,398.6).
+      const tomans = Math.round(price / 10);
       return tomans.toLocaleString('fa-IR') + ' تومان';
     }
 
@@ -3823,30 +3647,52 @@
     }
 
     function updateStatsCards(pricesByProduct) {
-      // Get 18k gold prices for main stats
+      // All four stat cards are based on BUY prices (قیمت خرید) — the
+      // price the user actually pays to buy gold from each provider.
+      // sellPrice would be the dealer-bid (what users get when selling)
+      // and is irrelevant for these dashboard headlines.
       const gold18Prices = pricesByProduct['18k-gold'] || [];
-
       if (gold18Prices.length === 0) return;
 
-      // Calculate stats
-      const prices = gold18Prices.map(p => p.sellPrice);
-      const avgPrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
-      const priceRange = maxPrice - minPrice;
+      const buyPrices = gold18Prices
+        .map((p) => p.buyPrice)
+        .filter((v) => typeof v === 'number' && v > 0);
+      if (buyPrices.length === 0) return;
 
-      // Update stat cards
-      const statElements = {
-        avgPrice: document.querySelector('.stat-card:nth-child(1) .stat-value'),
-        minPrice: document.querySelector('.stat-card:nth-child(2) .stat-value'),
-        maxPrice: document.querySelector('.stat-card:nth-child(3) .stat-value'),
-        providers: document.querySelector('.stat-card:nth-child(4) .stat-value')
-      };
+      const minPrice = Math.min(...buyPrices);
+      const maxPrice = Math.max(...buyPrices);
+      const avgPrice = Math.round(
+        buyPrices.reduce((a, b) => a + b, 0) / buyPrices.length
+      );
+      const currentPrice = minPrice; // "current" = cheapest provider to buy from
 
-      if (statElements.avgPrice) statElements.avgPrice.textContent = formatPrice(avgPrice);
-      if (statElements.minPrice) statElements.minPrice.textContent = formatPrice(minPrice);
-      if (statElements.maxPrice) statElements.maxPrice.textContent = formatPrice(maxPrice);
-      if (statElements.providers) statElements.providers.textContent = gold18Prices.length;
+      setStat('statCurrent', currentPrice, null);
+      setStat('statHigh', maxPrice, ((maxPrice - avgPrice) / avgPrice) * 100);
+      setStat('statLow', minPrice, ((minPrice - avgPrice) / avgPrice) * 100);
+      setStat('statAverage', avgPrice, null);
+    }
+
+    function setStat(cardId, valueRials, deltaPercent) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      const valEl = card.querySelector('.stat-value');
+      const changeEl = card.querySelector('[data-role="change"]');
+      if (valEl) valEl.textContent = formatPrice(valueRials);
+      if (!changeEl) return;
+      if (deltaPercent === null || !Number.isFinite(deltaPercent)) {
+        changeEl.className = 'stat-change';
+        changeEl.innerHTML = '';
+        return;
+      }
+      const up = deltaPercent > 0.01;
+      const down = deltaPercent < -0.01;
+      changeEl.className = 'stat-change ' + (up ? 'up' : down ? 'down' : '');
+      const icon = up ? 'arrow-up' : down ? 'arrow-down' : 'minus';
+      const sign = deltaPercent > 0 ? '+' : '';
+      changeEl.innerHTML =
+        '<i data-lucide="' + icon + '" style="width:12px;height:12px;"></i>' +
+        '<span>' + sign + deltaPercent.toFixed(1) + '%</span>';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     function handleProductChange(productId) {

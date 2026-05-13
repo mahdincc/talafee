@@ -169,7 +169,7 @@ Edit `config/providers.json` to:
 
 | پلتفرم | وضعیت |
 |--------|--------|
-| تالین (Taline) | ✅ فعال |
+| طلاین (Taline) | ✅ فعال |
 | تکنوگلد (Technogold) | ✅ فعال |
 | زرگلد (ZarGold) | ✅ فعال |
 | گلدایران (GoldIran) | ✅ فعال |
