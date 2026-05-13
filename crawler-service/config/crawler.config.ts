@@ -145,7 +145,7 @@ const config: CrawlerConfig = {
     bonbast: {
       id: 'bonbast',
       name: 'Bonbast',
-      enabled: true,
+      enabled: false,
       apiUrl: 'https://www.bonbast.com/json',
       timeout: 15000,
       rateLimit: {
@@ -156,7 +156,7 @@ const config: CrawlerConfig = {
     alanchand: {
       id: 'alanchand',
       name: 'AlanChand',
-      enabled: true,
+      enabled: false,
       apiUrl: 'https://alanchand.com/',
       timeout: 15000,
       rateLimit: {
@@ -179,7 +179,7 @@ const config: CrawlerConfig = {
       id: 'goldika',
       name: 'Goldika',
       enabled: true,
-      apiUrl: 'https://goldika.ir/gold',
+      apiUrl: 'https://goldika.ir/gold/18k',
       timeout: 15000,
       rateLimit: {
         maxConcurrent: 1,

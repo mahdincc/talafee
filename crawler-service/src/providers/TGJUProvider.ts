@@ -119,8 +119,12 @@ export class TGJUProvider extends BaseProvider {
         }
       }
 
-      // Extract world gold ounce and USD rate for bubble calculation
+      // Extract world gold ounce and USD rate for bubble calculation.
+      // The USD rate is fetched from its dedicated profile page (more
+      // reliable than scraping the busy main page); main-page regex is
+      // used as a fallback only.
       await this.extractWorldPrices(html, correlationId);
+      await this.refreshUsdRateFromProfile(correlationId);
 
       this.logger.info(`Fetched ${prices.length} prices from TGJU`, {
         correlationId,
@@ -241,6 +245,89 @@ export class TGJUProvider extends BaseProvider {
       }
     } catch (error) {
       this.logger.warn('Failed to extract world prices from TGJU', {
+        correlationId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  /**
+   * Fetch the USD/IRR rate from its dedicated TGJU profile page.
+   *
+   * The profile page exposes the current rate via a stable, machine-
+   * targetable selector:
+   *   <span class="price" data-col="info.last_trade.PDrCotVal">1,560,000</span>
+   *
+   * This is far more reliable than the main-page regex, which has been
+   * known to grab whatever number landed near the word "دلار" (e.g.
+   * change-percentage cells, sidebar widgets, related-row prices).
+   */
+  private async refreshUsdRateFromProfile(correlationId: string): Promise<void> {
+    try {
+      const response = await axios.get(
+        'https://www.tgju.org/profile/price_dollar_rl',
+        {
+          headers: {
+            Accept: 'text/html,application/xhtml+xml',
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+            'Accept-Language': 'fa-IR,fa;q=0.9,en;q=0.8',
+          },
+          timeout: this.providerConfig.timeout,
+        }
+      );
+
+      const html = response.data as string;
+
+      // Primary selector: the structured data-col attribute used by TGJU's
+      // own JS to bind the live price.
+      const primary = html.match(
+        /data-col="info\.last_trade\.PDrCotVal"[^>]*>\s*([۰-۹\d,،.]+)/
+      );
+
+      let rawMatch = primary && primary[1] ? primary[1] : null;
+
+      if (!rawMatch) {
+        // Fallback: any <span class="price">…</span> on the page.
+        const fallback = html.match(
+          /<span[^>]*class="[^"]*\bprice\b[^"]*"[^>]*>\s*([۰-۹\d,،.]+)/
+        );
+        rawMatch = fallback && fallback[1] ? fallback[1] : null;
+      }
+
+      if (!rawMatch) {
+        this.logger.warn('USD profile page returned no parseable rate', {
+          correlationId,
+        });
+        return;
+      }
+
+      const cleaned = this.normalizePersianNumber(rawMatch).replace(/[,،]/g, '');
+      const usdToIRR = parseFloat(cleaned);
+
+      // Sanity range: USD/IRR in Rials. Below 500k is impossibly low,
+      // above 10M is implausibly high. Anything outside means we
+      // captured the wrong field.
+      if (!Number.isFinite(usdToIRR) || usdToIRR < 500_000 || usdToIRR > 10_000_000) {
+        this.logger.warn('USD profile rate out of expected range', {
+          correlationId,
+          rawMatch,
+          parsed: usdToIRR,
+        });
+        return;
+      }
+
+      // Preserve goldOunceUSD if it was already extracted from main page.
+      const goldOunceUSD = this.worldPriceData?.goldOunceUSD ?? 0;
+      this.worldPriceData = { goldOunceUSD, usdToIRR };
+
+      this.logger.info('Refreshed USD/IRR from dedicated TGJU profile page', {
+        correlationId,
+        usdToIRR,
+        source: 'profile/price_dollar_rl',
+      });
+    } catch (error) {
+      this.logger.warn('Failed to fetch USD profile page', {
         correlationId,
         error: error instanceof Error ? error.message : String(error),
       });

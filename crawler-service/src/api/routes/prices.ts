@@ -70,7 +70,7 @@ export function createPricesRouter(
       }
 
       for (const productId of Object.keys(grouped)) {
-        grouped[productId]!.sort((a, b) => a.sellPrice - b.sellPrice);
+        grouped[productId]!.sort((a, b) => a.buyPrice - b.buyPrice);
       }
 
       res.json({
@@ -99,7 +99,11 @@ export function createPricesRouter(
         });
       }
 
-      const sorted = [...prices].sort((a, b) => a.sellPrice - b.sellPrice);
+      // Sort by buyPrice ascending: lowest dealer-ask = cheapest for the
+      // user to BUY from. Sorting by sellPrice (dealer-bid) was wrong —
+      // it would mark a provider with a wide spread as "best" even when
+      // their ask is higher than competitors.
+      const sorted = [...prices].sort((a, b) => a.buyPrice - b.buyPrice);
 
       res.json({
         success: true,
@@ -128,7 +132,11 @@ export function createPricesRouter(
         });
       }
 
-      const sorted = [...prices].sort((a, b) => a.sellPrice - b.sellPrice);
+      // Sort by buyPrice ascending: lowest dealer-ask = cheapest for the
+      // user to BUY from. Sorting by sellPrice (dealer-bid) was wrong —
+      // it would mark a provider with a wide spread as "best" even when
+      // their ask is higher than competitors.
+      const sorted = [...prices].sort((a, b) => a.buyPrice - b.buyPrice);
       const bestPrice = sorted[0]!;
       const worstPrice = sorted[sorted.length - 1]!;
 
@@ -140,9 +148,9 @@ export function createPricesRouter(
         avgPrice: price.avgPrice,
         spread: price.buyPrice - price.sellPrice,
         spreadPercent: ((price.buyPrice - price.sellPrice) / price.sellPrice) * 100,
-        differenceFromBest: price.sellPrice - bestPrice.sellPrice,
+        differenceFromBest: price.buyPrice - bestPrice.buyPrice,
         differencePercent:
-          ((price.sellPrice - bestPrice.sellPrice) / bestPrice.sellPrice) * 100,
+          ((price.buyPrice - bestPrice.buyPrice) / bestPrice.buyPrice) * 100,
         dailyHigh: price.dailyHigh,
         dailyLow: price.dailyLow,
         priceChangePercent: price.priceChangePercent,
@@ -155,15 +163,17 @@ export function createPricesRouter(
         productId,
         best: {
           providerId: bestPrice.providerId,
+          buyPrice: bestPrice.buyPrice,
           sellPrice: bestPrice.sellPrice,
         },
         worst: {
           providerId: worstPrice.providerId,
+          buyPrice: worstPrice.buyPrice,
           sellPrice: worstPrice.sellPrice,
         },
-        priceRange: worstPrice.sellPrice - bestPrice.sellPrice,
+        priceRange: worstPrice.buyPrice - bestPrice.buyPrice,
         priceRangePercent:
-          ((worstPrice.sellPrice - bestPrice.sellPrice) / bestPrice.sellPrice) * 100,
+          ((worstPrice.buyPrice - bestPrice.buyPrice) / bestPrice.buyPrice) * 100,
         comparison,
         count: comparison.length,
         timestamp: new Date().toISOString(),

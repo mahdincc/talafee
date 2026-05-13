@@ -73,14 +73,15 @@ export class TalineProvider extends BaseProvider {
 
       const providerUpdatedAt = new Date(item.price.date_time);
 
-      // Taline prices are in Tomans per gram (* 1000 to get full Tomans, then * 10 for Rials)
-      // e.g., 15004 = 15,004 Tomans * 10 = 150,040 Rials per gram
-      // But looking at actual API: values like 176831 are already in Tomans per gram
-      // Multiply by 10 to convert to Rials per gram
-      const buyPricePerGram = item.price.buy * 10;
-      const sellPricePerGram = item.price.sell * 10;
-      const dailyHighPerGram = item.max_price?.buy ? item.max_price.buy * 10 : undefined;
-      const dailyLowPerGram = item.min_price?.buy ? item.min_price.buy * 10 : undefined;
+      // Pass raw values through; createNormalizedPrice's central
+      // normalizer rescales to Rials based on the expected per-product
+      // range. The previous hard-coded × 10 was wrong: Taline's API
+      // already returns Rials, so multiplying produced 10× inflated
+      // numbers (~175M Toman/gram).
+      const buyPricePerGram = item.price.buy;
+      const sellPricePerGram = item.price.sell;
+      const dailyHighPerGram = item.max_price?.buy;
+      const dailyLowPerGram = item.min_price?.buy;
 
       prices.push(
         this.createNormalizedPrice({

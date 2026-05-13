@@ -1,30 +1,38 @@
 import axios from 'axios';
 import { BaseProvider } from '../core/BaseProvider.js';
-import type { NormalizedPrice, ProductId } from '../core/models/index.js';
+import type { NormalizedPrice } from '../core/models/index.js';
 import { NoAuthStrategy } from '../auth/index.js';
 
-interface GoldikaProductConfig {
-  pattern: RegExp;
-  productId: ProductId;
+/**
+ * Goldika provider.
+ *
+ * Goldika's true price API requires authentication, so we cannot hit it
+ * directly. However, the public market page at https://goldika.ir/gold/18k
+ * embeds a Next.js `__NEXT_DATA__` blob with the dehydrated React Query
+ * cache, including a `chart-data` query containing daily OHLC candles up
+ * to (and including) the current day. The most recent candle's `close`
+ * value is the latest 18k gram price in Rials.
+ *
+ * Previous regex/HTML scraping approach was unreliable — it kept matching
+ * stray digits ("2000", "30") near the page's textual mentions of 18k gold
+ * and produced bogus prices (3 Toman, 20M Toman). Pulling the structured
+ * Next.js data is exact.
+ */
+
+interface ChartCandle {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
 }
 
-// Persian digit mapping
-const PERSIAN_DIGITS: Record<string, string> = {
-  '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
-  '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
-};
+interface NextDataQuery {
+  queryKey: unknown;
+  state?: { data?: unknown };
+}
 
-// Patterns to extract prices from Goldika HTML/JSON
-const GOLDIKA_PRODUCTS: GoldikaProductConfig[] = [
-  {
-    pattern: /طلای?\s*۱۸\s*عیار[\s\S]*?([۰-۹\d,،]+)/i,
-    productId: '18k-gold',
-  },
-  {
-    pattern: /طلای?\s*۲۴\s*عیار[\s\S]*?([۰-۹\d,،]+)/i,
-    productId: '24k-gold',
-  },
-];
+const PAGE_URL_18K = 'https://goldika.ir/gold/18k';
 
 export class GoldikaProvider extends BaseProvider {
   readonly providerId = 'goldika';
@@ -39,55 +47,51 @@ export class GoldikaProvider extends BaseProvider {
     const prices: NormalizedPrice[] = [];
 
     try {
-      // Try to fetch the gold price page
-      const response = await axios.get('https://goldika.ir/gold', {
+      const response = await axios.get<string>(PAGE_URL_18K, {
         headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+          Accept: 'text/html,application/xhtml+xml,application/xml',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
           'Accept-Language': 'fa-IR,fa;q=0.9,en;q=0.8',
         },
         timeout: this.providerConfig.timeout,
+        responseType: 'text',
       });
 
-      const html = response.data as string;
+      const html = response.data;
+      const candle = this.extractLatestCandleFromNextData(html);
 
-      // Try to find JSON data in script tags
-      const jsonPattern = /__NEXT_DATA__[\s\S]*?<script[^>]*>([\s\S]*?)<\/script>/i;
-      const jsonMatch = html.match(jsonPattern);
-
-      if (jsonMatch) {
-        // Parse Next.js data if available
-        try {
-          const nextDataPattern = /<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i;
-          const nextMatch = html.match(nextDataPattern);
-          if (nextMatch && nextMatch[1]) {
-            const data = JSON.parse(nextMatch[1]);
-            const extractedPrices = this.extractFromNextData(data, correlationId);
-            prices.push(...extractedPrices);
-          }
-        } catch (e) {
-          this.logger.debug('Failed to parse Next.js data', { correlationId });
-        }
+      if (!candle) {
+        this.logger.warn('Goldika: no chart-data candle found in page', {
+          correlationId,
+          page: PAGE_URL_18K,
+        });
+        return prices;
       }
 
-      // Fallback: Extract from HTML patterns
-      if (prices.length === 0) {
-        for (const config of GOLDIKA_PRODUCTS) {
-          try {
-            const price = this.extractFromHtml(html, config, correlationId);
-            if (price) {
-              prices.push(price);
-            }
-          } catch (err) {
-            this.logger.debug(`Failed to extract ${config.productId} from Goldika`, {
-              correlationId,
-              error: err instanceof Error ? err.message : String(err),
-            });
-          }
-        }
-      }
+      // The candle's `close` is the most recent intraday price in Rials.
+      // Goldika displays a single market price (no buy/sell spread on the
+      // public chart), so we report it on both sides.
+      const priceRials = candle.close;
 
-      this.logger.info(`Fetched ${prices.length} prices from Goldika`, { correlationId });
+      prices.push(
+        this.createNormalizedPrice({
+          symbol: 'GOLD18',
+          productId: '18k-gold',
+          buyPrice: priceRials,
+          sellPrice: priceRials,
+          dailyHigh: candle.high,
+          dailyLow: candle.low,
+          providerUpdatedAt: this.parseDate(candle.date),
+          correlationId,
+        })
+      );
+
+      this.logger.info(`Fetched ${prices.length} prices from Goldika`, {
+        correlationId,
+        date: candle.date,
+        close: candle.close,
+      });
     } catch (error) {
       this.logger.warn('Failed to fetch Goldika prices', {
         correlationId,
@@ -98,89 +102,66 @@ export class GoldikaProvider extends BaseProvider {
     return prices;
   }
 
-  private extractFromNextData(data: unknown, correlationId: string): NormalizedPrice[] {
-    const prices: NormalizedPrice[] = [];
+  /**
+   * Pull the latest daily candle from the page's Next.js dehydrated cache.
+   * Returns null if the page structure has changed and no candle was found.
+   */
+  private extractLatestCandleFromNextData(html: string): ChartCandle | null {
+    const match = html.match(
+      /<script id="__NEXT_DATA__" type="application\/json">([\s\S]+?)<\/script>/
+    );
+    if (!match || !match[1]) return null;
 
+    let data: unknown;
     try {
-      // Navigate through Next.js data structure to find prices
-      const dataObj = data as Record<string, unknown>;
-      const props = dataObj?.['props'] as Record<string, unknown> | undefined;
-      const pageProps = props?.['pageProps'] as Record<string, unknown> | undefined;
-
-      if (pageProps && typeof pageProps === 'object') {
-        // Look for price data in various possible locations
-        const priceData = (pageProps['prices'] || pageProps['goldPrice'] || pageProps['data']) as Record<string, unknown> | undefined;
-
-        if (priceData && typeof priceData === 'object') {
-          // Extract 18k gold price
-          const gold18 = priceData['gold18'] || priceData['18k'];
-          if (gold18 && typeof gold18 === 'number') {
-            prices.push(this.createNormalizedPrice({
-              symbol: 'GOLD18',
-              productId: '18k-gold',
-              buyPrice: gold18,
-              sellPrice: gold18,
-              correlationId,
-            }));
-          }
-
-          // Extract 24k gold price
-          const gold24 = priceData['gold24'] || priceData['24k'];
-          if (gold24 && typeof gold24 === 'number') {
-            prices.push(this.createNormalizedPrice({
-              symbol: 'GOLD24',
-              productId: '24k-gold',
-              buyPrice: gold24,
-              sellPrice: gold24,
-              correlationId,
-            }));
-          }
-        }
-      }
-    } catch (error) {
-      this.logger.debug('Error extracting from Next.js data', {
-        correlationId,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-
-    return prices;
-  }
-
-  private extractFromHtml(
-    html: string,
-    config: GoldikaProductConfig,
-    correlationId: string
-  ): NormalizedPrice | null {
-    const match = html.match(config.pattern);
-    if (!match || !match[1]) {
+      data = JSON.parse(match[1]);
+    } catch {
       return null;
     }
 
-    const priceStr = this.normalizePersianNumber(match[1]);
-    const price = parseInt(priceStr.replace(/[,،]/g, ''), 10);
-
-    if (isNaN(price) || price <= 0) {
-      return null;
-    }
-
-    // Goldika prices are in Tomans, convert to Rials (* 10)
-    const priceInRials = price * 10;
-
-    return this.createNormalizedPrice({
-      symbol: config.productId.toUpperCase().replace('-', '_'),
-      productId: config.productId,
-      buyPrice: priceInRials,
-      sellPrice: priceInRials,
-      correlationId,
+    const queries = this.queriesFrom(data);
+    const chartQuery = queries.find((q) => {
+      const key = q.queryKey;
+      return Array.isArray(key) && key[0] === 'chart-data';
     });
+
+    if (!chartQuery) return null;
+
+    const series = chartQuery.state?.data;
+    if (!Array.isArray(series) || series.length === 0) return null;
+
+    const last = series[series.length - 1];
+    if (!this.isCandle(last)) return null;
+    return last;
   }
 
-  private normalizePersianNumber(str: string): string {
-    let result = str;
-    for (const [persian, western] of Object.entries(PERSIAN_DIGITS)) {
-      result = result.replace(new RegExp(persian, 'g'), western);
-    }
-    return result;
+  private queriesFrom(data: unknown): NextDataQuery[] {
+    const obj = data as Record<string, unknown>;
+    const props = obj?.['props'] as Record<string, unknown> | undefined;
+    const pageProps = props?.['pageProps'] as Record<string, unknown> | undefined;
+    const dehydrated = pageProps?.['dehydratedState'] as
+      | Record<string, unknown>
+      | undefined;
+    const queries = dehydrated?.['queries'];
+    return Array.isArray(queries) ? (queries as NextDataQuery[]) : [];
+  }
+
+  private isCandle(v: unknown): v is ChartCandle {
+    if (!v || typeof v !== 'object') return false;
+    const c = v as Record<string, unknown>;
+    return (
+      typeof c['date'] === 'string' &&
+      typeof c['open'] === 'number' &&
+      typeof c['high'] === 'number' &&
+      typeof c['low'] === 'number' &&
+      typeof c['close'] === 'number'
+    );
+  }
+
+  private parseDate(yyyyMmDd: string): Date | undefined {
+    // Candle dates are bare "YYYY-MM-DD". Treat them as the start of the
+    // day in UTC; the actual sub-day update time isn't exposed.
+    const parsed = new Date(yyyyMmDd + 'T00:00:00Z');
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
   }
 }

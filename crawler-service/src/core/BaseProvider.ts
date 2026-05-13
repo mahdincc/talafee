@@ -8,8 +8,23 @@ import {
   CrawlErrorType,
   HealthStatus,
 } from './models/index.js';
-import { withRetry, classifyError, globalThrottle, createChildLogger } from '../utils/index.js';
+import {
+  withRetry,
+  classifyError,
+  globalThrottle,
+  createChildLogger,
+  normalizePriceToRials,
+} from '../utils/index.js';
 import config, { type ProviderConfig } from '../../config/crawler.config.js';
+
+function rescaleOptional(
+  productId: string,
+  raw: number | undefined
+): number | undefined {
+  if (raw === undefined) return undefined;
+  const result = normalizePriceToRials(productId, raw);
+  return result.rials ?? undefined;
+}
 
 export interface ProviderStats {
   totalRequests: number;
@@ -89,7 +104,7 @@ export abstract class BaseProvider implements IProvider {
       });
 
       try {
-        const prices = await withRetry(
+        const rawPrices = await withRetry(
           async (attempt) => {
             attemptCount = attempt;
             return this.doFetch(correlationId);
@@ -107,12 +122,20 @@ export abstract class BaseProvider implements IProvider {
           correlationId
         );
 
+        // Drop prices that the normalizer in createNormalizedPrice flagged
+        // as unrecoverable (sellPrice/buyPrice zeroed out).
+        const prices = rawPrices.filter(
+          (p) => p.sellPrice > 0 && p.buyPrice > 0
+        );
+        const droppedCount = rawPrices.length - prices.length;
+
         const durationMs = Date.now() - startTime;
         this.recordSuccess(durationMs);
 
         this.logger.info(`Successfully fetched ${prices.length} prices`, {
           correlationId,
           priceCount: prices.length,
+          droppedCount,
           durationMs,
           attempts: attemptCount,
         });
@@ -202,20 +225,69 @@ export abstract class BaseProvider implements IProvider {
     providerUpdatedAt?: Date;
     correlationId: string;
   }): NormalizedPrice {
-    const avgPrice = (params.buyPrice + params.sellPrice) / 2;
+    const buy = normalizePriceToRials(params.productId, params.buyPrice);
+    const sell = normalizePriceToRials(params.productId, params.sellPrice);
+
+    // If either side can't be brought into the expected range, mark the
+    // price as invalid (zeroed) so the central filter in fetchPrices drops
+    // it. This keeps `* 10` mistakes and partial regex matches from
+    // poisoning the comparison UI.
+    if (buy.rials === null || sell.rials === null) {
+      this.logger.warn('Dropping out-of-range price', {
+        productId: params.productId,
+        symbol: params.symbol,
+        rawBuy: params.buyPrice,
+        rawSell: params.sellPrice,
+        correlationId: params.correlationId,
+      });
+      return {
+        id: uuidv4(),
+        providerId: this.providerId,
+        productId: params.productId,
+        symbol: params.symbol,
+        buyPrice: 0,
+        sellPrice: 0,
+        avgPrice: 0,
+        providerUpdatedAt: params.providerUpdatedAt ?? new Date(),
+        fetchedAt: new Date(),
+        correlationId: params.correlationId,
+      };
+    }
+
+    if (buy.scaleFactor !== 1 || sell.scaleFactor !== 1) {
+      this.logger.info('Rescaled price to expected magnitude', {
+        productId: params.productId,
+        symbol: params.symbol,
+        buyScale: buy.scaleFactor,
+        sellScale: sell.scaleFactor,
+        rawBuy: params.buyPrice,
+        rawSell: params.sellPrice,
+        correlationId: params.correlationId,
+      });
+    }
+
+    const buyPrice = buy.rials;
+    const sellPrice = sell.rials;
+    const avgPrice = (buyPrice + sellPrice) / 2;
+
+    // Optional fields: rescale by the same factor used for sell, but only
+    // if the result lands in range. Otherwise drop the field rather than
+    // emitting a misleading high/low.
+    const dailyHigh = rescaleOptional(params.productId, params.dailyHigh);
+    const dailyLow = rescaleOptional(params.productId, params.dailyLow);
 
     return {
       id: uuidv4(),
       providerId: this.providerId,
       productId: params.productId,
       symbol: params.symbol,
-      buyPrice: params.buyPrice,
-      sellPrice: params.sellPrice,
+      buyPrice,
+      sellPrice,
       avgPrice,
       buyWage: params.buyWage,
       sellWage: params.sellWage,
-      dailyHigh: params.dailyHigh,
-      dailyLow: params.dailyLow,
+      dailyHigh,
+      dailyLow,
       priceChange24h: params.priceChange24h,
       priceChangePercent: params.priceChangePercent,
       direction: params.direction,
