@@ -3056,6 +3056,12 @@
 
       document.getElementById('createAlertBtn').addEventListener('click', handleCreateAlert);
 
+      if (location.hash === '#new-alert') {
+        document.getElementById('alertsModal').classList.add('active');
+        initAlertForm();
+        history.replaceState(null, '', location.pathname);
+      }
+
       TalafeeAlerts.startAlarmListener();
       window.addEventListener('talafee:price-alert', (e) => {
         const cfg = PRODUCT_CONFIG[e.detail.productId];
