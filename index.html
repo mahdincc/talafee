@@ -1293,6 +1293,277 @@
       writing-mode: vertical-lr;
     }
 
+    /* ==================== ALERTS MONITOR DRAWER ==================== */
+    .alerts-menu-toggle {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+      padding: var(--space-3) var(--space-2);
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      color: var(--color-text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    [dir="ltr"] .alerts-menu-toggle {
+      right: auto;
+      left: 0;
+      border-right: 1px solid var(--color-border);
+      border-left: none;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    }
+
+    .alerts-menu-toggle:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .alerts-menu-toggle-text {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    [dir="ltr"] .alerts-menu-toggle-text {
+      writing-mode: vertical-lr;
+    }
+
+    .alerts-menu-badge {
+      position: absolute;
+      top: -7px;
+      inset-inline-end: -7px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 10px;
+      background: var(--color-danger, #e74c3c);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .alerts-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 240;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .alerts-drawer-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .alerts-drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 380px;
+      max-width: 92vw;
+      background: var(--color-bg, var(--color-surface));
+      border-left: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      z-index: 250;
+      transform: translateX(100%);
+      transition: transform 0.3s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    [dir="ltr"] .alerts-drawer {
+      right: auto;
+      left: 0;
+      border-left: none;
+      border-right: 1px solid var(--color-border);
+      transform: translateX(-100%);
+    }
+
+    .alerts-drawer.open {
+      transform: translateX(0);
+    }
+
+    .alerts-drawer-header {
+      background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+      padding: var(--space-4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .alerts-drawer-title {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .alerts-drawer-icon {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--space-2);
+      cursor: pointer;
+      color: #fff;
+      display: flex;
+      align-items: center;
+    }
+
+    .alerts-drawer-icon:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .alerts-drawer-hint {
+      padding: var(--space-3) var(--space-4);
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .alerts-drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .alerts-drawer-empty {
+      text-align: center;
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      padding: var(--space-6) var(--space-3);
+      line-height: 1.8;
+    }
+
+    .alert-monitor-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .alert-monitor-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .alert-monitor-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .alert-monitor-sub {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    .alert-monitor-state {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .alert-monitor-state.on {
+      background: var(--color-success-bg, rgba(46, 204, 113, 0.15));
+      color: var(--color-success, #2ecc71);
+    }
+
+    .alert-monitor-state.off {
+      background: var(--color-border);
+      color: var(--color-text-secondary);
+    }
+
+    .alert-monitor-current {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-gold-500, var(--color-gold-600));
+      margin-bottom: var(--space-3);
+      direction: ltr;
+      text-align: start;
+    }
+
+    .alert-monitor-current.muted {
+      color: var(--color-text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .alert-monitor-bounds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+
+    .bound-pill {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bound-pill-label {
+      font-size: 0.7rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bound-pill-value {
+      font-size: 0.8rem;
+      font-weight: 600;
+      direction: ltr;
+      text-align: start;
+    }
+
+    .bound-pill-diff {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .bound-pill.reached {
+      border-color: var(--color-success, #2ecc71);
+      background: var(--color-success-bg, rgba(46, 204, 113, 0.12));
+    }
+
+    .bound-pill.reached .bound-pill-diff {
+      color: var(--color-success, #2ecc71);
+    }
+
     .fast-buy-panel {
       position: fixed;
       left: 0;
@@ -2232,6 +2503,38 @@
     </div>
   </div>
 
+  <!-- Alerts Monitor Toggle (hamburger, physical right edge) -->
+  <button class="alerts-menu-toggle" id="alertsMenuToggle" onclick="toggleAlertsDrawer()" title="My Price Alerts">
+    <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+    <span class="alerts-menu-toggle-text" data-fa="هشدارها" data-en="Alerts">هشدارها</span>
+    <span class="alerts-menu-badge" id="alertsMenuBadge" style="display: none;">۰</span>
+  </button>
+
+  <!-- Alerts Monitor Backdrop -->
+  <div class="alerts-drawer-backdrop" id="alertsDrawerBackdrop" onclick="closeAlertsDrawer()"></div>
+
+  <!-- Alerts Monitor Drawer -->
+  <div class="alerts-drawer" id="alertsDrawer">
+    <div class="alerts-drawer-header">
+      <div class="alerts-drawer-title">
+        <i data-lucide="bell-ring" style="width: 20px; height: 20px;"></i>
+        <span data-fa="هشدارهای من" data-en="My Alerts">هشدارهای من</span>
+      </div>
+      <div style="display: flex; gap: var(--space-2);">
+        <button class="alerts-drawer-icon" onclick="document.getElementById('alertsBtn').click(); closeAlertsDrawer();" title="New Alert">
+          <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+        </button>
+        <button class="alerts-drawer-icon" onclick="closeAlertsDrawer()" title="Close">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+    </div>
+    <div class="alerts-drawer-hint"
+      data-fa="اختلاف لحظه‌ای قیمت با حدهای هشدار شما"
+      data-en="Live gap between current price and your alert bounds">اختلاف لحظه‌ای قیمت با حدهای هشدار شما</div>
+    <div class="alerts-drawer-body" id="alertsDrawerBody"></div>
+  </div>
+
   <!-- Fast Buy Toggle Button -->
   <button class="fast-buy-toggle" onclick="toggleFastBuyPanel()">
     <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
@@ -3022,6 +3325,7 @@
       // Re-render components
       renderPriceCards();
       renderTable();
+      if (alertsMonitorLoaded) renderAlertsMonitor();
     }
 
     // ==================== THEME TOGGLE ====================
@@ -3067,7 +3371,11 @@
         const cfg = PRODUCT_CONFIG[e.detail.productId];
         const name = cfg ? (currentLang === 'fa' ? cfg.nameFa : cfg.name) : e.detail.productId;
         showToast(`🔔 ${name}: ${formatPricePersian(e.detail.price)}`, 'warning');
+        refreshAlertsMonitor();
       });
+
+      // Populate the alerts-monitor badge for an already-subscribed browser
+      refreshAlertsMonitor();
 
       document.getElementById('closeModal').addEventListener('click', () => {
         document.getElementById('alertsModal').classList.remove('active');
@@ -3189,12 +3497,155 @@
         document.getElementById('alertHighBound').value = '';
         document.getElementById('alertsModal').classList.remove('active');
         showToast(fa ? '🔔 هشدار قیمت ساخته شد' : '🔔 Price alert created', 'success');
+        refreshAlertsMonitor();
       } catch (error) {
         status.style.color = 'var(--color-danger, #e74c3c)';
         status.textContent = (fa ? 'خطا: ' : 'Error: ') + error.message;
       } finally {
         btn.disabled = false;
       }
+    }
+
+    // ==================== ALERTS MONITOR DRAWER ====================
+    let alertsMonitorCache = [];
+    let alertsMonitorLoaded = false;
+
+    function toggleAlertsDrawer() {
+      const drawer = document.getElementById('alertsDrawer');
+      const backdrop = document.getElementById('alertsDrawerBackdrop');
+      const opening = !drawer.classList.contains('open');
+      drawer.classList.toggle('open');
+      backdrop.classList.toggle('open');
+      if (opening) {
+        TalafeeAlerts.unlockAudio();
+        refreshAlertsMonitor();
+      }
+      lucide.createIcons();
+    }
+
+    function closeAlertsDrawer() {
+      document.getElementById('alertsDrawer').classList.remove('open');
+      document.getElementById('alertsDrawerBackdrop').classList.remove('open');
+    }
+
+    async function refreshAlertsMonitor() {
+      try {
+        alertsMonitorCache = await TalafeeAlerts.listAlerts();
+      } catch {
+        alertsMonitorCache = [];
+      }
+      alertsMonitorLoaded = true;
+      renderAlertsMonitor();
+    }
+
+    // Cheapest (min) and dearest (max) live value for an alert's product+provider.
+    function currentPriceForAlert(alert) {
+      const list = allPricesByProduct[alert.productId] || [];
+      const matches = alert.providerId ? list.filter((p) => p.providerId === alert.providerId) : list;
+      const vals = matches
+        .map((p) => (alert.priceField === 'sell' ? p.sellPrice : p.buyPrice))
+        .filter((v) => v > 0);
+      if (!vals.length) return null;
+      return { min: Math.min(...vals), max: Math.max(...vals) };
+    }
+
+    function alertMonitorCardHtml(alert, fa) {
+      const prodCfg = PRODUCT_CONFIG[alert.productId];
+      const prodName = prodCfg ? (fa ? prodCfg.nameFa : prodCfg.name) : alert.productId;
+      const provCfg = alert.providerId ? CRAWLER_PROVIDER_CONFIG[alert.providerId] : null;
+      const provName = alert.providerId
+        ? (provCfg ? (fa ? provCfg.nameFa : provCfg.name) : alert.providerId)
+        : (fa ? 'همه پلتفرم‌ها' : 'All platforms');
+      const basis = alert.priceField === 'sell' ? (fa ? 'قیمت فروش' : 'Sell') : (fa ? 'قیمت خرید' : 'Buy');
+      const stateLabel = !alert.enabled ? (fa ? 'خاموش' : 'Off') : (fa ? 'فعال' : 'Active');
+      const stateClass = !alert.enabled ? 'off' : 'on';
+
+      const cur = currentPriceForAlert(alert);
+      let currentHtml;
+      let boundsHtml = '';
+
+      if (!cur) {
+        currentHtml = `<div class="alert-monitor-current muted">${fa ? 'قیمت لحظه‌ای در دسترس نیست' : 'No live price'}</div>`;
+      } else {
+        currentHtml = `<div class="alert-monitor-current">${
+          cur.min === cur.max ? formatPrice(cur.min) : `${formatPrice(cur.min)} – ${formatPrice(cur.max)}`
+        }</div>`;
+
+        const reachedText = fa ? '✓ رسید' : '✓ reached';
+        const pills = [];
+
+        if (alert.lowBound !== null) {
+          const reached = cur.min <= alert.lowBound;
+          const diff = Math.abs(cur.min - alert.lowBound);
+          pills.push(`
+            <div class="bound-pill ${reached ? 'reached' : ''}">
+              <span class="bound-pill-label"><i data-lucide="arrow-down-to-line" style="width:12px;height:12px;"></i> ${fa ? 'حد پایین' : 'Low'}</span>
+              <span class="bound-pill-value">${formatPrice(alert.lowBound)}</span>
+              <span class="bound-pill-diff">${reached ? reachedText : (fa ? `${formatPrice(diff)} مانده` : `${formatPrice(diff)} away`)}</span>
+            </div>`);
+        }
+
+        if (alert.highBound !== null) {
+          const reached = cur.max >= alert.highBound;
+          const diff = Math.abs(alert.highBound - cur.max);
+          pills.push(`
+            <div class="bound-pill ${reached ? 'reached' : ''}">
+              <span class="bound-pill-label"><i data-lucide="arrow-up-to-line" style="width:12px;height:12px;"></i> ${fa ? 'حد بالا' : 'High'}</span>
+              <span class="bound-pill-value">${formatPrice(alert.highBound)}</span>
+              <span class="bound-pill-diff">${reached ? reachedText : (fa ? `${formatPrice(diff)} مانده` : `${formatPrice(diff)} away`)}</span>
+            </div>`);
+        }
+
+        boundsHtml = `<div class="alert-monitor-bounds">${pills.join('')}</div>`;
+      }
+
+      return `
+        <div class="alert-monitor-card">
+          <div class="alert-monitor-top">
+            <div>
+              <div class="alert-monitor-title">${prodName}</div>
+              <div class="alert-monitor-sub">${provName} • ${basis}</div>
+            </div>
+            <span class="alert-monitor-state ${stateClass}">${stateLabel}</span>
+          </div>
+          ${currentHtml}
+          ${boundsHtml}
+        </div>`;
+    }
+
+    function renderAlertsMonitor() {
+      const fa = currentLang === 'fa';
+
+      const badge = document.getElementById('alertsMenuBadge');
+      const activeCount = alertsMonitorCache.filter((a) => a.enabled).length;
+      if (badge) {
+        if (activeCount > 0) {
+          badge.textContent = activeCount.toLocaleString('fa-IR');
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      const body = document.getElementById('alertsDrawerBody');
+      if (!body) return;
+
+      if (!alertsMonitorLoaded) {
+        body.innerHTML = '';
+        return;
+      }
+
+      if (!alertsMonitorCache.length) {
+        body.innerHTML = `<div class="alerts-drawer-empty">${
+          fa
+            ? 'هنوز هشداری ندارید.<br>از دکمه زنگوله بالای صفحه یک هشدار قیمت بسازید.'
+            : 'No alerts yet.<br>Use the bell button at the top to create one.'
+        }</div>`;
+      } else {
+        body.innerHTML = alertsMonitorCache.map((a) => alertMonitorCardHtml(a, fa)).join('');
+      }
+
+      lucide.createIcons();
     }
 
     // ==================== FAST BUY PANEL ====================
@@ -3678,6 +4129,9 @@
 
       // Update stats cards
       updateStatsCards(pricesByProduct);
+
+      // Recompute live gaps for the alerts monitor against fresh prices
+      if (alertsMonitorLoaded) renderAlertsMonitor();
     }
 
     function updateDisplayForProduct(productId) {
