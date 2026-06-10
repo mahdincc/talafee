@@ -13,6 +13,7 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/alerts-client.js"></script>
 
   <style>
     /* ==================== CSS RESET & DESIGN TOKENS ==================== */
@@ -1431,7 +1432,7 @@
             <div class="stat-icon gold">
               <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
             </div>
-            <div class="stat-value">3</div>
+            <div class="stat-value" id="statActiveAlerts">۰</div>
             <div class="stat-label" data-fa="هشدارهای فعال" data-en="Active Alerts">هشدارهای فعال</div>
           </div>
           <div class="stat-card">
@@ -1452,7 +1453,7 @@
             <div class="stat-icon orange">
               <i data-lucide="zap" style="width: 20px; height: 20px;"></i>
             </div>
-            <div class="stat-value">2</div>
+            <div class="stat-value" id="statTriggeredAlerts">۰</div>
             <div class="stat-label" data-fa="هشدار فعال شده" data-en="Triggered Alerts">هشدار فعال شده</div>
           </div>
         </div>
@@ -1468,34 +1469,7 @@
                 <span data-fa="مشاهده همه" data-en="View All">مشاهده همه</span>
               </button>
             </div>
-            <div class="alerts-list">
-              <div class="alert-item">
-                <div class="alert-icon">
-                  <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
-                </div>
-                <div class="alert-info">
-                  <div class="alert-title">گرم طلای ۱۸ عیار < ۱۴۸,۰۰۰,۰۰۰</div>
-                  <div class="alert-meta">
-                    <span>طلالاین</span>
-                    <span>•</span>
-                    <span class="alert-status active" data-fa="فعال" data-en="Active">فعال</span>
-                  </div>
-                </div>
-              </div>
-              <div class="alert-item">
-                <div class="alert-icon">
-                  <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
-                </div>
-                <div class="alert-info">
-                  <div class="alert-title">سکه امامی > ۸۵,۰۰۰,۰۰۰</div>
-                  <div class="alert-meta">
-                    <span>همه پلتفرم‌ها</span>
-                    <span>•</span>
-                    <span class="alert-status triggered" data-fa="فعال شده" data-en="Triggered">فعال شده</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="alerts-list" id="recentAlertsList"></div>
           </div>
 
           <div class="card">
@@ -1540,72 +1514,14 @@
             <h1 class="page-title" data-fa="هشدارهای قیمت" data-en="Price Alerts">هشدارهای قیمت</h1>
             <p class="page-subtitle" data-fa="مدیریت هشدارهای قیمت شما" data-en="Manage your price alerts">مدیریت هشدارهای قیمت شما</p>
           </div>
-          <button class="btn btn-primary">
+          <a class="btn btn-primary" href="index.html">
             <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
             <span data-fa="هشدار جدید" data-en="New Alert">هشدار جدید</span>
-          </button>
+          </a>
         </div>
 
         <div class="card">
-          <div class="alerts-list">
-            <div class="alert-item">
-              <div class="alert-icon">
-                <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
-              </div>
-              <div class="alert-info">
-                <div class="alert-title">گرم طلای ۱۸ عیار < ۱۴۸,۰۰۰,۰۰۰ ریال</div>
-                <div class="alert-meta">
-                  <span>طلالاین</span>
-                  <span>•</span>
-                  <span>ایجاد: ۱۴۰۴/۱۲/۲۵</span>
-                  <span>•</span>
-                  <span class="alert-status active">فعال</span>
-                </div>
-              </div>
-              <div class="alert-actions">
-                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
-              </div>
-            </div>
-            <div class="alert-item">
-              <div class="alert-icon">
-                <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
-              </div>
-              <div class="alert-info">
-                <div class="alert-title">سکه امامی > ۸۵,۰۰۰,۰۰۰ ریال</div>
-                <div class="alert-meta">
-                  <span>همه پلتفرم‌ها</span>
-                  <span>•</span>
-                  <span>ایجاد: ۱۴۰۴/۱۲/۲۰</span>
-                  <span>•</span>
-                  <span class="alert-status triggered">فعال شده</span>
-                </div>
-              </div>
-              <div class="alert-actions">
-                <button class="btn btn-sm btn-icon"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
-                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
-              </div>
-            </div>
-            <div class="alert-item">
-              <div class="alert-icon">
-                <i data-lucide="trending-down" style="width: 20px; height: 20px;"></i>
-              </div>
-              <div class="alert-info">
-                <div class="alert-title">نیم سکه < ۴۲,۰۰۰,۰۰۰ ریال</div>
-                <div class="alert-meta">
-                  <span>تکنوگلد</span>
-                  <span>•</span>
-                  <span>ایجاد: ۱۴۰۴/۱۲/۱۵</span>
-                  <span>•</span>
-                  <span class="alert-status active">فعال</span>
-                </div>
-              </div>
-              <div class="alert-actions">
-                <button class="btn btn-sm btn-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                <button class="btn btn-sm btn-icon btn-danger"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
-              </div>
-            </div>
-          </div>
+          <div class="alerts-list" id="alertsListReal"></div>
         </div>
       </section>
 
@@ -3237,6 +3153,182 @@
       }
     `;
     document.head.appendChild(toastStyles);
+
+    // ==================== REAL PRICE ALERTS ====================
+    let alertNames = { providers: {}, products: {} };
+    let alertsCache = [];
+    let editingAlertId = null;
+
+    function faNum(value) {
+      return new Intl.NumberFormat('fa-IR').format(value);
+    }
+
+    function parseRialInput(text) {
+      if (!text) return null;
+      const digits = String(text)
+        .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+        .replace(/\D/g, '');
+      return digits ? Number(digits) : null;
+    }
+
+    function alertProductName(alert) {
+      return alertNames.products[alert.productId]?.name?.fa || alert.productId;
+    }
+
+    function alertProviderName(alert) {
+      if (!alert.providerId) return 'همه پلتفرم‌ها';
+      return alertNames.providers[alert.providerId]?.name?.fa || alert.providerId;
+    }
+
+    function alertItemHtml(alert, compact) {
+      const icon = alert.lowBound !== null && alert.highBound !== null
+        ? 'activity'
+        : alert.highBound !== null ? 'trending-up' : 'trending-down';
+
+      const bounds = [];
+      if (alert.lowBound !== null) bounds.push(`کف: ${faNum(alert.lowBound)}`);
+      if (alert.highBound !== null) bounds.push(`سقف: ${faNum(alert.highBound)}`);
+      const basis = alert.priceField === 'sell' ? 'قیمت فروش' : 'قیمت خرید';
+
+      const status = !alert.enabled
+        ? '<span class="alert-status">خاموش</span>'
+        : alert.lastFiredAt
+          ? '<span class="alert-status triggered">فعال شده</span>'
+          : '<span class="alert-status active">فعال</span>';
+
+      const editing = !compact && alert.id === editingAlertId;
+
+      const body = editing
+        ? `<div style="display: flex; gap: var(--space-2); margin-top: var(--space-2); flex-wrap: wrap; align-items: center;">
+             <input type="text" class="form-input" dir="ltr" style="width: 130px; padding: 4px 8px; font-size: 0.8125rem;"
+               id="editLow-${alert.id}" placeholder="حد پایین" value="${alert.lowBound ?? ''}">
+             <input type="text" class="form-input" dir="ltr" style="width: 130px; padding: 4px 8px; font-size: 0.8125rem;"
+               id="editHigh-${alert.id}" placeholder="حد بالا" value="${alert.highBound ?? ''}">
+             <button class="btn btn-sm" data-action="save" data-id="${alert.id}">ذخیره</button>
+             <button class="btn btn-sm" data-action="cancel" data-id="${alert.id}">انصراف</button>
+           </div>`
+        : `<div class="alert-meta">
+             <span>${alertProviderName(alert)}</span>
+             <span>•</span>
+             <span>${bounds.join(' / ')} ریال</span>
+             <span>•</span>
+             <span>${basis}</span>
+             <span>•</span>
+             ${status}
+           </div>`;
+
+      const actions = compact ? '' : `
+        <div class="alert-actions">
+          <button class="btn btn-sm btn-icon" data-action="toggle" data-id="${alert.id}" title="${alert.enabled ? 'خاموش کردن' : 'روشن کردن'}">
+            <i data-lucide="${alert.enabled ? 'bell-off' : 'bell'}" style="width: 14px; height: 14px;"></i>
+          </button>
+          <button class="btn btn-sm btn-icon" data-action="edit" data-id="${alert.id}" title="ویرایش حدود">
+            <i data-lucide="edit-2" style="width: 14px; height: 14px;"></i>
+          </button>
+          <button class="btn btn-sm btn-icon btn-danger" data-action="delete" data-id="${alert.id}" title="حذف">
+            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+          </button>
+        </div>`;
+
+      return `
+        <div class="alert-item">
+          <div class="alert-icon">
+            <i data-lucide="${icon}" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div class="alert-info">
+            <div class="alert-title">${alertProductName(alert)}</div>
+            ${body}
+          </div>
+          ${actions}
+        </div>`;
+    }
+
+    function alertsEmptyHtml(message) {
+      return `<div class="alert-item" style="justify-content: center; color: var(--color-text-secondary); font-size: 0.875rem;">${message}</div>`;
+    }
+
+    function renderAlerts() {
+      const list = document.getElementById('alertsListReal');
+      const recent = document.getElementById('recentAlertsList');
+      const emptyMessage = 'هنوز هشداری نساخته‌اید — از صفحه اصلی، دکمه زنگوله را بزنید';
+
+      list.innerHTML = alertsCache.length
+        ? alertsCache.map((a) => alertItemHtml(a, false)).join('')
+        : alertsEmptyHtml(emptyMessage);
+
+      recent.innerHTML = alertsCache.length
+        ? alertsCache.slice(0, 3).map((a) => alertItemHtml(a, true)).join('')
+        : alertsEmptyHtml(emptyMessage);
+
+      document.getElementById('statActiveAlerts').textContent = faNum(alertsCache.filter((a) => a.enabled).length);
+      document.getElementById('statTriggeredAlerts').textContent = faNum(alertsCache.filter((a) => a.lastFiredAt).length);
+
+      lucide.createIcons();
+    }
+
+    async function refreshAlerts() {
+      try {
+        const response = await fetch('config/providers.json');
+        const config = await response.json();
+        alertNames = { providers: config.providers || {}, products: config.products || {} };
+      } catch { /* show raw ids */ }
+
+      try {
+        alertsCache = await TalafeeAlerts.listAlerts();
+      } catch {
+        alertsCache = [];
+      }
+      renderAlerts();
+    }
+
+    document.getElementById('alertsListReal').addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const alert = alertsCache.find((a) => a.id === id);
+      if (!alert) return;
+
+      try {
+        if (btn.dataset.action === 'toggle') {
+          await TalafeeAlerts.updateAlert(id, { enabled: !alert.enabled });
+          showToast(alert.enabled ? 'هشدار خاموش شد' : 'هشدار روشن شد', 'success');
+        } else if (btn.dataset.action === 'delete') {
+          if (!confirm('این هشدار حذف شود؟')) return;
+          await TalafeeAlerts.deleteAlert(id);
+          showToast('هشدار حذف شد', 'success');
+        } else if (btn.dataset.action === 'edit') {
+          editingAlertId = id;
+          renderAlerts();
+          return;
+        } else if (btn.dataset.action === 'cancel') {
+          editingAlertId = null;
+          renderAlerts();
+          return;
+        } else if (btn.dataset.action === 'save') {
+          const lowBound = parseRialInput(document.getElementById(`editLow-${id}`).value);
+          const highBound = parseRialInput(document.getElementById(`editHigh-${id}`).value);
+          if (lowBound === null && highBound === null) {
+            showToast('حداقل یکی از دو حد را وارد کنید', 'error');
+            return;
+          }
+          if (lowBound !== null && highBound !== null && lowBound >= highBound) {
+            showToast('حد پایین باید کمتر از حد بالا باشد', 'error');
+            return;
+          }
+          await TalafeeAlerts.updateAlert(id, { lowBound, highBound });
+          editingAlertId = null;
+          showToast('حدود هشدار به‌روزرسانی شد', 'success');
+        }
+      } catch (error) {
+        showToast('خطا: ' + error.message, 'error');
+      }
+
+      await refreshAlerts();
+    });
+
+    TalafeeAlerts.startAlarmListener();
+    window.addEventListener('talafee:price-alert', () => refreshAlerts());
+    refreshAlerts();
   </script>
 </body>
 </html>

@@ -2201,37 +2201,33 @@
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label" data-fa="نوع طلا" data-en="Gold Type">نوع طلا</label>
-          <select class="form-select">
-            <option data-fa="گرم طلای ۱۸ عیار" data-en="18K Gold (Gram)">گرم طلای ۱۸ عیار</option>
-            <option data-fa="سکه امامی" data-en="Emami Coin">سکه امامی</option>
-            <option data-fa="نیم سکه" data-en="Half Coin">نیم سکه</option>
-            <option data-fa="ربع سکه" data-en="Quarter Coin">ربع سکه</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-fa="شرط" data-en="Condition">شرط</label>
-          <select class="form-select">
-            <option data-fa="وقتی قیمت کمتر شد از" data-en="When price drops below">وقتی قیمت کمتر شد از</option>
-            <option data-fa="وقتی قیمت بیشتر شد از" data-en="When price rises above">وقتی قیمت بیشتر شد از</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-fa="قیمت هدف (ریال)" data-en="Target Price (IRR)">قیمت هدف (ریال)</label>
-          <input type="text" class="form-input" placeholder="148,000,000" dir="ltr">
+          <select class="form-select" id="alertProduct"></select>
         </div>
         <div class="form-group">
           <label class="form-label" data-fa="پلتفرم" data-en="Platform">پلتفرم</label>
-          <select class="form-select">
-            <option data-fa="همه پلتفرم‌ها" data-en="All Platforms">همه پلتفرم‌ها</option>
-            <option>Taline</option>
-            <option>Technogold</option>
-            <option>ZarGold</option>
+          <select class="form-select" id="alertProvider"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="مبنای قیمت" data-en="Price Basis">مبنای قیمت</label>
+          <select class="form-select" id="alertPriceField">
+            <option value="buy" data-fa="قیمت خرید (شما می‌خرید)" data-en="Buy price (you buy)">قیمت خرید (شما می‌خرید)</option>
+            <option value="sell" data-fa="قیمت فروش (شما می‌فروشید)" data-en="Sell price (you sell)">قیمت فروش (شما می‌فروشید)</option>
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="حد پایین (ریال)" data-en="Low Bound (IRR)">حد پایین (ریال)</label>
+          <input type="text" class="form-input" id="alertLowBound" placeholder="140,000,000" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-fa="حد بالا (ریال)" data-en="High Bound (IRR)">حد بالا (ریال)</label>
+          <input type="text" class="form-input" id="alertHighBound" placeholder="160,000,000" dir="ltr">
+        </div>
+        <div id="alertFormStatus" style="font-size: 0.8125rem; min-height: 1.25rem; color: var(--color-text-secondary);"></div>
       </div>
       <div class="modal-footer">
+        <a href="user-panel.html" class="btn" style="margin-inline-end: auto;" data-fa="مدیریت هشدارها" data-en="Manage Alerts">مدیریت هشدارها</a>
         <button class="btn" id="cancelAlert" data-fa="انصراف" data-en="Cancel">انصراف</button>
-        <button class="btn btn-primary" data-fa="ایجاد هشدار" data-en="Create Alert">ایجاد هشدار</button>
+        <button class="btn btn-primary" id="createAlertBtn" data-fa="ایجاد هشدار" data-en="Create Alert">ایجاد هشدار</button>
       </div>
     </div>
   </div>
@@ -2581,6 +2577,7 @@
 
   <!-- Talafee API Client for real-time prices -->
   <script src="assets/js/api-client.js"></script>
+  <script src="assets/js/alerts-client.js"></script>
 
   <script>
     // ==================== AFFILIATE CONFIGURATION ====================
@@ -3054,6 +3051,16 @@
       // Alerts modal
       document.getElementById('alertsBtn').addEventListener('click', () => {
         document.getElementById('alertsModal').classList.add('active');
+        initAlertForm();
+      });
+
+      document.getElementById('createAlertBtn').addEventListener('click', handleCreateAlert);
+
+      TalafeeAlerts.startAlarmListener();
+      window.addEventListener('talafee:price-alert', (e) => {
+        const cfg = PRODUCT_CONFIG[e.detail.productId];
+        const name = cfg ? (currentLang === 'fa' ? cfg.nameFa : cfg.name) : e.detail.productId;
+        showToast(`🔔 ${name}: ${formatPricePersian(e.detail.price)}`, 'warning');
       });
 
       document.getElementById('closeModal').addEventListener('click', () => {
@@ -3075,6 +3082,114 @@
         manualRefresh();
       });
     });
+
+    // ==================== PRICE ALERTS ====================
+    let alertProvidersLoaded = false;
+
+    async function initAlertForm() {
+      const productSelect = document.getElementById('alertProduct');
+      if (!productSelect.options.length) {
+        for (const [id, cfg] of Object.entries(PRODUCT_CONFIG)) {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = currentLang === 'fa' ? cfg.nameFa : cfg.name;
+          productSelect.appendChild(option);
+        }
+        productSelect.value = currentProductId;
+      }
+
+      const providerSelect = document.getElementById('alertProvider');
+      if (!providerSelect.options.length) {
+        const all = document.createElement('option');
+        all.value = '';
+        all.textContent = currentLang === 'fa' ? 'همه پلتفرم‌ها' : 'All Platforms';
+        providerSelect.appendChild(all);
+      }
+
+      if (!alertProvidersLoaded) {
+        try {
+          const response = await fetch('config/providers.json');
+          const config = await response.json();
+          for (const provider of Object.values(config.providers)) {
+            const option = document.createElement('option');
+            option.value = provider.id;
+            option.textContent = currentLang === 'fa' ? provider.name.fa : provider.name.en;
+            providerSelect.appendChild(option);
+          }
+          alertProvidersLoaded = true;
+        } catch (error) {
+          console.warn('Could not load providers for alert form:', error);
+        }
+      }
+    }
+
+    function parseRialInput(text) {
+      if (!text) return null;
+      const digits = text
+        .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+        .replace(/\D/g, '');
+      return digits ? Number(digits) : null;
+    }
+
+    async function handleCreateAlert() {
+      const status = document.getElementById('alertFormStatus');
+      const btn = document.getElementById('createAlertBtn');
+      const fa = currentLang === 'fa';
+
+      TalafeeAlerts.unlockAudio();
+
+      const lowBound = parseRialInput(document.getElementById('alertLowBound').value);
+      const highBound = parseRialInput(document.getElementById('alertHighBound').value);
+
+      status.style.color = 'var(--color-danger, #e74c3c)';
+      if (lowBound === null && highBound === null) {
+        status.textContent = fa ? 'حداقل یکی از دو حد قیمت را وارد کنید' : 'Enter at least one bound';
+        return;
+      }
+      if (lowBound !== null && highBound !== null && lowBound >= highBound) {
+        status.textContent = fa ? 'حد پایین باید کمتر از حد بالا باشد' : 'Low bound must be below high bound';
+        return;
+      }
+
+      btn.disabled = true;
+      status.style.color = 'var(--color-text-secondary)';
+      status.textContent = fa ? 'در حال فعال‌سازی اعلان‌ها…' : 'Enabling notifications…';
+
+      try {
+        const state = await TalafeeAlerts.setup();
+        if (state === 'unsupported') {
+          status.style.color = 'var(--color-danger, #e74c3c)';
+          status.textContent = fa ? 'مرورگر شما از اعلان push پشتیبانی نمی‌کند' : 'Your browser does not support push notifications';
+          return;
+        }
+        if (state === 'denied') {
+          status.style.color = 'var(--color-danger, #e74c3c)';
+          status.textContent = fa
+            ? 'اجازه اعلان داده نشد — از تنظیمات مرورگر، Notification را برای این سایت فعال کنید'
+            : 'Notification permission denied — enable it in browser settings';
+          return;
+        }
+
+        await TalafeeAlerts.createAlert({
+          productId: document.getElementById('alertProduct').value,
+          providerId: document.getElementById('alertProvider').value || null,
+          priceField: document.getElementById('alertPriceField').value,
+          lowBound,
+          highBound,
+        });
+
+        status.textContent = '';
+        document.getElementById('alertLowBound').value = '';
+        document.getElementById('alertHighBound').value = '';
+        document.getElementById('alertsModal').classList.remove('active');
+        showToast(fa ? '🔔 هشدار قیمت ساخته شد' : '🔔 Price alert created', 'success');
+      } catch (error) {
+        status.style.color = 'var(--color-danger, #e74c3c)';
+        status.textContent = (fa ? 'خطا: ' : 'Error: ') + error.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
 
     // ==================== FAST BUY PANEL ====================
     function toggleFastBuyPanel() {

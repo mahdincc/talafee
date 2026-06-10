@@ -2,6 +2,7 @@ import type { IResultSink } from '../core/interfaces/index.js';
 import type { NormalizedPrice, CrawlRunSummary } from '../core/models/index.js';
 import { logger } from '../utils/index.js';
 import type { BubbleService } from '../services/BubbleService.js';
+import type { AlertService } from '../services/AlertService.js';
 import type { TGJUProvider } from '../providers/TGJUProvider.js';
 import { getInvestmentGuideService } from '../services/InvestmentGuideService.js';
 import { getPriceAccuracyTracker } from '../services/PriceAccuracyTracker.js';
@@ -21,10 +22,16 @@ export class ApiCacheSink implements IResultSink {
   private priceHistory: Map<string, NormalizedPrice[]> = new Map();
   private maxHistorySize = 1000;
   private bubbleService: BubbleService | null = null;
+  private alertService: AlertService | null = null;
   private tgjuProvider: TGJUProvider | null = null;
 
   async initialize(): Promise<void> {
     logger.info(`Initializing API cache sink`);
+  }
+
+  setAlertServiceIntegration(alertService: AlertService): void {
+    this.alertService = alertService;
+    logger.info('AlertService integration configured');
   }
 
   /**
@@ -109,6 +116,10 @@ export class ApiCacheSink implements IResultSink {
     // Update InvestmentGuideService with price history
     const guideService = getInvestmentGuideService();
     guideService.updatePrices(allPrices);
+
+    if (this.alertService) {
+      await this.alertService.checkAlerts(allPrices);
+    }
   }
 
   async getCurrentPrices(): Promise<Map<string, NormalizedPrice[]>> {

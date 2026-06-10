@@ -7,6 +7,7 @@ import { getBubbleService } from './services/BubbleService.js';
 import { getTrustScoreService } from './services/TrustScoreService.js';
 import { getPriceAccuracyTracker } from './services/PriceAccuracyTracker.js';
 import { getReviewService } from './services/ReviewService.js';
+import { getAlertService } from './services/AlertService.js';
 
 async function main(): Promise<void> {
   logger.info('Starting Talafee Gold Price Crawler Service');
@@ -55,6 +56,11 @@ async function main(): Promise<void> {
   pipeline.setUptimeTracker(dbSink);
 
   await pipeline.initialize();
+
+  // After pipeline.initialize(): VAPID key persistence needs the SQLite db open
+  const alertService = getAlertService();
+  alertService.initialize(dbSink);
+  cacheSink.setAlertServiceIntegration(alertService);
 
   await startServer({
     pipeline,

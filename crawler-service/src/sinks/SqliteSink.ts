@@ -7,11 +7,16 @@ import config from '../../config/crawler.config.js';
 export class SqliteSink implements IResultSink {
   readonly sinkName = 'SqliteSink';
   private db?: DatabaseType;
+  private dbPath: string;
+
+  constructor(dbPath?: string) {
+    this.dbPath = dbPath ?? config.storage.dbPath;
+  }
 
   async initialize(): Promise<void> {
-    logger.info(`Initializing SQLite sink`, { dbPath: config.storage.dbPath });
+    logger.info(`Initializing SQLite sink`, { dbPath: this.dbPath });
 
-    this.db = new Database(config.storage.dbPath);
+    this.db = new Database(this.dbPath);
     this.db.pragma('journal_mode = WAL');
     this.db.pragma('busy_timeout = 5000');
 
@@ -24,6 +29,39 @@ export class SqliteSink implements IResultSink {
   private createTables(): void {
     this.createCoreTables();
     this.createTrustTables();
+    this.createAlertTables();
+  }
+
+  private createAlertTables(): void {
+    this.db!.exec(`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        endpoint TEXT PRIMARY KEY,
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS price_alerts (
+        id TEXT PRIMARY KEY,
+        endpoint TEXT NOT NULL,
+        product_id TEXT NOT NULL,
+        provider_id TEXT,
+        price_field TEXT NOT NULL DEFAULT 'buy' CHECK(price_field IN ('buy', 'sell')),
+        low_bound REAL,
+        high_bound REAL,
+        enabled INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        last_fired_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_price_alerts_endpoint
+        ON price_alerts(endpoint);
+
+      CREATE TABLE IF NOT EXISTS alert_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
+    `);
   }
 
   private createCoreTables(): void {
@@ -565,6 +603,156 @@ export class SqliteSink implements IResultSink {
     }
   }
 
+  // ==================== PRICE ALERTS ====================
+
+  getAlertSetting(key: string): string | undefined {
+    if (!this.db) return undefined;
+
+    const row = this.db.prepare(`
+      SELECT value FROM alert_settings WHERE key = ?
+    `).get(key) as { value: string } | undefined;
+
+    return row?.value;
+  }
+
+  setAlertSetting(key: string, value: string): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT INTO alert_settings (key, value) VALUES (?, ?)
+      ON CONFLICT(key) DO UPDATE SET value = excluded.value
+    `).run(key, value);
+  }
+
+  upsertPushSubscription(subscription: PushSubscriptionRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT INTO push_subscriptions (endpoint, p256dh, auth)
+      VALUES (?, ?, ?)
+      ON CONFLICT(endpoint) DO UPDATE SET p256dh = excluded.p256dh, auth = excluded.auth
+    `).run(subscription.endpoint, subscription.p256dh, subscription.auth);
+  }
+
+  getPushSubscription(endpoint: string): PushSubscriptionRecord | undefined {
+    if (!this.db) return undefined;
+
+    return this.db.prepare(`
+      SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE endpoint = ?
+    `).get(endpoint) as PushSubscriptionRecord | undefined;
+  }
+
+  insertPriceAlert(alert: PriceAlertRecord): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      INSERT INTO price_alerts (id, endpoint, product_id, provider_id, price_field, low_bound, high_bound, enabled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      alert.id,
+      alert.endpoint,
+      alert.productId,
+      alert.providerId,
+      alert.priceField,
+      alert.lowBound,
+      alert.highBound,
+      alert.enabled ? 1 : 0
+    );
+  }
+
+  getEnabledPriceAlerts(): EnabledPriceAlert[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT a.*, s.p256dh, s.auth
+      FROM price_alerts a
+      JOIN push_subscriptions s ON s.endpoint = a.endpoint
+      WHERE a.enabled = 1
+    `).all() as (PriceAlertRow & { p256dh: string; auth: string })[];
+
+    return rows.map((row) => ({
+      ...this.rowToPriceAlert(row),
+      subscription: { endpoint: row.endpoint, p256dh: row.p256dh, auth: row.auth },
+    }));
+  }
+
+  deletePushSubscription(endpoint: string): void {
+    if (!this.db) return;
+
+    this.db.prepare(`DELETE FROM price_alerts WHERE endpoint = ?`).run(endpoint);
+    this.db.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).run(endpoint);
+  }
+
+  getPriceAlertsByEndpoint(endpoint: string): PriceAlertRecord[] {
+    if (!this.db) return [];
+
+    const rows = this.db.prepare(`
+      SELECT * FROM price_alerts WHERE endpoint = ? ORDER BY created_at DESC
+    `).all(endpoint) as PriceAlertRow[];
+
+    return rows.map((row) => this.rowToPriceAlert(row));
+  }
+
+  deletePriceAlert(id: string, endpoint: string): boolean {
+    if (!this.db) return false;
+
+    const result = this.db.prepare(`
+      DELETE FROM price_alerts WHERE id = ? AND endpoint = ?
+    `).run(id, endpoint);
+
+    return result.changes > 0;
+  }
+
+  markPriceAlertFired(id: string, firedAt: string): void {
+    if (!this.db) return;
+
+    this.db.prepare(`
+      UPDATE price_alerts SET last_fired_at = ? WHERE id = ?
+    `).run(firedAt, id);
+  }
+
+  updatePriceAlert(
+    id: string,
+    endpoint: string,
+    patch: { enabled?: boolean; lowBound?: number | null; highBound?: number | null }
+  ): PriceAlertRecord | null {
+    if (!this.db) return null;
+
+    const row = this.db.prepare(`
+      SELECT * FROM price_alerts WHERE id = ? AND endpoint = ?
+    `).get(id, endpoint) as PriceAlertRow | undefined;
+
+    if (!row) return null;
+
+    const current = this.rowToPriceAlert(row);
+    const next = {
+      enabled: patch.enabled ?? current.enabled,
+      lowBound: patch.lowBound !== undefined ? patch.lowBound : current.lowBound,
+      highBound: patch.highBound !== undefined ? patch.highBound : current.highBound,
+    };
+
+    this.db.prepare(`
+      UPDATE price_alerts SET enabled = ?, low_bound = ?, high_bound = ? WHERE id = ? AND endpoint = ?
+    `).run(next.enabled ? 1 : 0, next.lowBound, next.highBound, id, endpoint);
+
+    return { ...current, ...next };
+  }
+
+  private rowToPriceAlert(row: PriceAlertRow): PriceAlertRecord {
+    return {
+      id: row.id,
+      endpoint: row.endpoint,
+      productId: row.product_id,
+      providerId: row.provider_id,
+      priceField: row.price_field,
+      lowBound: row.low_bound,
+      highBound: row.high_bound,
+      enabled: row.enabled === 1,
+      createdAt: row.created_at,
+      lastFiredAt: row.last_fired_at,
+    };
+  }
+
   // Helper methods for row conversion
   private rowToTrustScore(row: TrustScoreRow): TrustScoreRecord {
     return {
@@ -832,7 +1020,7 @@ export class SqliteSink implements IResultSink {
         }
       },
       24 * 60 * 60 * 1000
-    );
+    ).unref();
   }
 
   private rowToPrice(row: PriceRow): NormalizedPrice {
@@ -980,6 +1168,42 @@ interface WarningRow {
   active: number;
   created_at: string;
   resolved_at: string | null;
+}
+
+export interface PushSubscriptionRecord {
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
+export interface PriceAlertRecord {
+  id: string;
+  endpoint: string;
+  productId: string;
+  providerId: string | null;
+  priceField: 'buy' | 'sell';
+  lowBound: number | null;
+  highBound: number | null;
+  enabled: boolean;
+  createdAt?: string;
+  lastFiredAt?: string | null;
+}
+
+export interface EnabledPriceAlert extends PriceAlertRecord {
+  subscription: PushSubscriptionRecord;
+}
+
+interface PriceAlertRow {
+  id: string;
+  endpoint: string;
+  product_id: string;
+  provider_id: string | null;
+  price_field: 'buy' | 'sell';
+  low_bound: number | null;
+  high_bound: number | null;
+  enabled: number;
+  created_at: string;
+  last_fired_at: string | null;
 }
 
 export interface ReviewRecord {

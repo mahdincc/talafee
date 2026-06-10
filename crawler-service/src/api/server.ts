@@ -3,7 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import type { CrawlPipeline, Scheduler } from '../core/index.js';
 import type { ApiCacheSink, SqliteSink } from '../sinks/index.js';
-import { createPricesRouter, createHistoryRouter, createHealthRouter, createProductsRouter, bubbleRouter, guideRouter, trustRouter } from './routes/index.js';
+import { createPricesRouter, createHistoryRouter, createHealthRouter, createProductsRouter, bubbleRouter, guideRouter, trustRouter, createAlertsRouter } from './routes/index.js';
+import { getAlertService } from '../services/AlertService.js';
 import { logger } from '../utils/index.js';
 import config from '../../config/crawler.config.js';
 
@@ -50,7 +51,7 @@ export function createServer(deps: ServerDependencies): Express {
 
       callback(null, false);
     },
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-Id'],
     credentials: true,
     maxAge: 86400,
@@ -116,6 +117,9 @@ export function createServer(deps: ServerDependencies): Express {
         trustReviewsSubmit: '/api/v1/trust/reviews (POST)',
         trustReviewsVote: '/api/v1/trust/reviews/:reviewId/vote (POST)',
         trustComparison: '/api/v1/trust/comparison',
+        alertsVapidKey: '/api/v1/alerts/vapid-public-key',
+        alertsSubscribe: '/api/v1/alerts/subscriptions (POST)',
+        alerts: '/api/v1/alerts?endpoint=... | POST / | PATCH /:id | DELETE /:id',
       },
       timestamp: new Date().toISOString(),
     });
@@ -133,6 +137,7 @@ export function createServer(deps: ServerDependencies): Express {
   app.use('/api/v1/bubble', bubbleRouter);
   app.use('/api/v1/guide', guideRouter);
   app.use('/api/v1/trust', trustRouter);
+  app.use('/api/v1/alerts', createAlertsRouter(getAlertService()));
 
   app.use((_req: Request, res: Response) => {
     res.status(404).json({
