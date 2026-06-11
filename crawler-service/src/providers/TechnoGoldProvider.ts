@@ -23,9 +23,11 @@ interface TechnoGoldResponse {
 }
 
 const KEY_TO_PRODUCT: Record<string, ProductId> = {
-  // Gold category (prices per 10 grams in Rials)
+  // Gold category (prices per 10 grams in Rials).
+  // 'Gold 750' is the canonical 18k (0.750 purity). 'Gold 740' is a second
+  // 18k quote that previously mapped here too, producing a duplicate
+  // technogold row for 18k-gold — intentionally not mapped.
   'Gold 750': '18k-gold',
-  'Gold 740': '18k-gold',
   'Gold 999': '24k-gold',
   // Coin category (prices per unit in Rials)
   'Imam coin': 'emami-coin',
@@ -43,7 +45,6 @@ const KEY_TO_PRODUCT: Record<string, ProductId> = {
 // Keys that need division by 10 (prices are per 10 grams)
 const PRICE_PER_10_GRAMS: Set<string> = new Set([
   'Gold 750',
-  'Gold 740',
   'Gold 999',
   'Silver 999',
 ]);
