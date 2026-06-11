@@ -145,7 +145,7 @@ const config: CrawlerConfig = {
     bonbast: {
       id: 'bonbast',
       name: 'Bonbast',
-      enabled: false,
+      enabled: true,
       apiUrl: 'https://www.bonbast.com/json',
       timeout: 15000,
       rateLimit: {

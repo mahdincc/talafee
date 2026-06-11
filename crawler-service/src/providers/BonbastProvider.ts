@@ -48,71 +48,77 @@ export class BonbastProvider extends BaseProvider {
   }
 
   protected async doFetch(correlationId: string): Promise<NormalizedPrice[]> {
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+      'Referer': 'https://www.bonbast.com/',
+    };
+
+    // Bonbast embeds a rotating token in the homepage HTML inside the
+    // `$.post('/json', {param: "<token>,<short>,<ts>"})` call, and the POST is
+    // only accepted with the session cookie the homepage sets (otherwise /json
+    // replies {"rest":"1"}). So scrape the token AND forward the cookie each
+    // cycle — a hardcoded token gets rejected once it rotates.
+    const home = await axios.get<string>('https://www.bonbast.com/', {
+      headers,
+      timeout: this.providerConfig.timeout,
+      responseType: 'text',
+    });
+
+    const cookie = (home.headers['set-cookie'] ?? [])
+      .map((c) => c.split(';')[0])
+      .join('; ');
+
+    const match = /param:\s*"([^"]+)"/.exec(home.data);
+    if (!match) {
+      throw new Error('Bonbast token not found in homepage HTML');
+    }
+    const param = match[1];
+
+    const response = await axios.post<BonbastResponse>(
+      'https://www.bonbast.com/json',
+      `param=${encodeURIComponent(param)}`,
+      {
+        headers: {
+          ...headers,
+          'Accept': 'application/json, text/javascript, */*; q=0.01',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'Origin': 'https://www.bonbast.com',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(cookie ? { Cookie: cookie } : {}),
+        },
+        timeout: this.providerConfig.timeout,
+      }
+    );
+
+    const data = response.data;
     const prices: NormalizedPrice[] = [];
 
-    try {
-      // Generate param with token and timestamp
-      const now = new Date();
-      const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+    for (const config of BONBAST_PRODUCTS) {
+      // xxx1 = dealer sell (higher) = our buyPrice; xxx2 = dealer buy (lower) = our sellPrice.
+      const buyValue = data[config.key as keyof BonbastResponse];
+      const sellValue = config.key2 ? data[config.key2 as keyof BonbastResponse] : buyValue;
 
-      // Token appears to be static or session-based
-      const token = 'c3ee236f13ebf015e4edd57426087531';
-      const param = `${token},DaiZz,${timestamp}`;
+      if (!buyValue) continue;
 
-      const response = await axios.post<BonbastResponse>(
-        'https://www.bonbast.com/json',
-        `param=${encodeURIComponent(param)}`,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-            'Referer': 'https://www.bonbast.com/',
-            'Origin': 'https://www.bonbast.com',
-          },
-          timeout: this.providerConfig.timeout,
-        }
+      const buyPrice = this.parsePrice(buyValue);
+      const sellPrice = sellValue ? this.parsePrice(sellValue) : buyPrice;
+
+      if (buyPrice <= 0) continue;
+
+      // Bonbast quotes Tomans. Pass raw — BaseProvider's normalizer rescales
+      // to Rials by magnitude (×10 here). Don't pre-multiply.
+      prices.push(
+        this.createNormalizedPrice({
+          symbol: config.key.toUpperCase(),
+          productId: config.productId,
+          buyPrice,
+          sellPrice,
+          correlationId,
+        })
       );
-
-      const data = response.data;
-
-      for (const config of BONBAST_PRODUCTS) {
-        const buyValue = data[config.key as keyof BonbastResponse];
-        const sellValue = config.key2
-          ? data[config.key2 as keyof BonbastResponse]
-          : buyValue;
-
-        if (!buyValue) continue;
-
-        // Parse price (remove commas if present)
-        const buyPrice = this.parsePrice(buyValue);
-        const sellPrice = sellValue ? this.parsePrice(sellValue) : buyPrice;
-
-        if (buyPrice <= 0) continue;
-
-        // Bonbast prices are in Tomans, convert to Rials (* 10)
-        const buyPriceRials = buyPrice * 10;
-        const sellPriceRials = sellPrice * 10;
-
-        prices.push(
-          this.createNormalizedPrice({
-            symbol: config.key.toUpperCase(),
-            productId: config.productId,
-            buyPrice: buyPriceRials,
-            sellPrice: sellPriceRials,
-            correlationId,
-          })
-        );
-      }
-
-      this.logger.info(`Fetched ${prices.length} prices from Bonbast`, { correlationId });
-    } catch (error) {
-      this.logger.warn('Failed to fetch Bonbast prices', {
-        correlationId,
-        error: error instanceof Error ? error.message : String(error),
-      });
     }
 
+    this.logger.info(`Fetched ${prices.length} prices from Bonbast`, { correlationId });
     return prices;
   }
 
