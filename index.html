@@ -267,6 +267,84 @@
       display: none;
     }
 
+    .refresh-group {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .refresh-group .refresh-btn {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    .refresh-caret {
+      min-width: auto;
+      padding-inline: var(--space-2);
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      border-inline-start: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .refresh-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      inset-inline-end: 0;
+      min-width: 200px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-2);
+      z-index: 300;
+      display: none;
+    }
+
+    .refresh-menu.open {
+      display: block;
+    }
+
+    .refresh-menu-label {
+      font-size: 0.7rem;
+      color: var(--color-text-tertiary, var(--color-text-secondary));
+      padding: var(--space-2) var(--space-2) var(--space-1);
+    }
+
+    .refresh-menu-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-2);
+      border: none;
+      background: transparent;
+      color: var(--color-text-primary);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      text-align: start;
+    }
+
+    .refresh-menu-item:hover {
+      background: var(--color-surface-hover, var(--color-border));
+    }
+
+    .refresh-menu-item .refresh-menu-check {
+      opacity: 0;
+      color: var(--color-gold-500, var(--color-gold-600));
+    }
+
+    .refresh-menu-item.active {
+      color: var(--color-gold-500, var(--color-gold-600));
+      font-weight: 700;
+    }
+
+    .refresh-menu-item.active .refresh-menu-check {
+      opacity: 1;
+    }
+
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -2245,11 +2323,35 @@
             <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
           </button>
 
-          <button class="btn btn-primary refresh-btn" id="refreshBtn">
-            <i data-lucide="refresh-cw" class="refresh-icon" style="width: 16px; height: 16px;"></i>
-            <span class="refresh-text" data-fa="بروزرسانی" data-en="Refresh">بروزرسانی</span>
-            <span class="refresh-countdown" id="refreshCountdown"></span>
-          </button>
+          <div class="refresh-group">
+            <button class="btn btn-primary refresh-btn" id="refreshBtn">
+              <i data-lucide="refresh-cw" class="refresh-icon" style="width: 16px; height: 16px;"></i>
+              <span class="refresh-text" data-fa="بروزرسانی" data-en="Refresh">بروزرسانی</span>
+              <span class="refresh-countdown" id="refreshCountdown"></span>
+            </button>
+            <button class="btn btn-primary refresh-caret" id="refreshCaret" onclick="toggleRefreshMenu(event)" title="بازه بروزرسانی">
+              <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+            </button>
+            <div class="refresh-menu" id="refreshMenu">
+              <div class="refresh-menu-label" data-fa="بازه بروزرسانی خودکار" data-en="Auto-refresh interval">بازه بروزرسانی خودکار</div>
+              <button class="refresh-menu-item" data-interval="30" onclick="setRefreshInterval(30)">
+                <span data-fa="هر ۳۰ ثانیه" data-en="Every 30 seconds">هر ۳۰ ثانیه</span>
+                <i data-lucide="check" class="refresh-menu-check" style="width: 15px; height: 15px;"></i>
+              </button>
+              <button class="refresh-menu-item" data-interval="300" onclick="setRefreshInterval(300)">
+                <span data-fa="هر ۵ دقیقه" data-en="Every 5 minutes">هر ۵ دقیقه</span>
+                <i data-lucide="check" class="refresh-menu-check" style="width: 15px; height: 15px;"></i>
+              </button>
+              <button class="refresh-menu-item" data-interval="600" onclick="setRefreshInterval(600)">
+                <span data-fa="هر ۱۰ دقیقه" data-en="Every 10 minutes">هر ۱۰ دقیقه</span>
+                <i data-lucide="check" class="refresh-menu-check" style="width: 15px; height: 15px;"></i>
+              </button>
+              <button class="refresh-menu-item" data-interval="0" onclick="setRefreshInterval(0)">
+                <span data-fa="فقط دستی" data-en="Manual only">فقط دستی</span>
+                <i data-lucide="check" class="refresh-menu-check" style="width: 15px; height: 15px;"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3856,6 +3958,22 @@
     let livePricesEnabled = true;
     let lastPriceUpdate = null;
 
+    function handlePricePoll(prices, error) {
+      if (error) {
+        console.error('Failed to fetch live prices:', error);
+        updateConnectionStatus(false);
+        return;
+      }
+
+      updateConnectionStatus(true);
+      updateProvidersWithLiveData(prices);
+
+      // Reset countdown on successful auto-refresh
+      if (typeof startCountdown === 'function') {
+        startCountdown();
+      }
+    }
+
     function initLivePrices() {
       if (typeof TalafeeAPI === 'undefined') {
         console.warn('TalafeeAPI not loaded, using static data');
@@ -3869,26 +3987,12 @@
         : `http://${window.location.hostname}:3001/api/v1`;
       TalafeeAPI.init({
         baseUrl: apiBaseUrl,
-        pollInterval: 30000, // 30 seconds
+        pollInterval: (refreshIntervalSec > 0 ? refreshIntervalSec : 30) * 1000,
         retryAttempts: 3
       });
 
-      // Start polling for price updates
-      TalafeeAPI.startPolling((prices, error) => {
-        if (error) {
-          console.error('Failed to fetch live prices:', error);
-          updateConnectionStatus(false);
-          return;
-        }
-
-        updateConnectionStatus(true);
-        updateProvidersWithLiveData(prices);
-
-        // Reset countdown on successful auto-refresh
-        if (typeof startCountdown === 'function') {
-          startCountdown();
-        }
-      }, 30000);
+      // Start polling at the user's saved interval (or stop, for manual mode)
+      applyRefreshInterval(refreshIntervalSec);
 
       // Listen for price updates
       TalafeeAPI.on('prices', (prices) => {
@@ -4368,15 +4472,31 @@
     let countdownInterval = null;
     let nextRefreshTime = null;
     let isRefreshing = false;
-    const REFRESH_INTERVAL = 30; // seconds
+
+    const REFRESH_OPTIONS = [30, 300, 600, 0]; // seconds; 0 = manual only
+    const REFRESH_STORAGE_KEY = 'talafee_refresh_interval';
+
+    function loadRefreshInterval() {
+      const saved = parseInt(localStorage.getItem(REFRESH_STORAGE_KEY) ?? '', 10);
+      return REFRESH_OPTIONS.includes(saved) ? saved : 30;
+    }
+
+    let refreshIntervalSec = loadRefreshInterval();
 
     function startCountdown() {
-      // Clear any existing interval
       if (countdownInterval) {
         clearInterval(countdownInterval);
+        countdownInterval = null;
       }
 
-      nextRefreshTime = Date.now() + (REFRESH_INTERVAL * 1000);
+      // Manual mode: nothing counts down
+      if (refreshIntervalSec <= 0) {
+        nextRefreshTime = null;
+        updateCountdownDisplay(0);
+        return;
+      }
+
+      nextRefreshTime = Date.now() + (refreshIntervalSec * 1000);
 
       countdownInterval = setInterval(() => {
         const remaining = Math.max(0, Math.ceil((nextRefreshTime - Date.now()) / 1000));
@@ -4384,19 +4504,74 @@
 
         if (remaining <= 0) {
           // Auto refresh triggered by polling, reset countdown
-          nextRefreshTime = Date.now() + (REFRESH_INTERVAL * 1000);
+          nextRefreshTime = Date.now() + (refreshIntervalSec * 1000);
         }
       }, 1000);
 
-      // Initial display
-      updateCountdownDisplay(REFRESH_INTERVAL);
+      updateCountdownDisplay(refreshIntervalSec);
+    }
+
+    function formatCountdown(seconds) {
+      if (seconds >= 60) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${String(s).padStart(2, '0')}`;
+      }
+      return `${seconds}s`;
     }
 
     function updateCountdownDisplay(seconds) {
       const countdownEl = document.getElementById('refreshCountdown');
       if (countdownEl && !isRefreshing) {
-        countdownEl.textContent = seconds > 0 ? `${seconds}s` : '';
+        countdownEl.textContent = seconds > 0 ? formatCountdown(seconds) : '';
       }
+    }
+
+    // ----- Auto-refresh interval selector -----
+    function applyRefreshInterval(sec) {
+      refreshIntervalSec = sec;
+      try { localStorage.setItem(REFRESH_STORAGE_KEY, String(sec)); } catch {}
+
+      if (typeof TalafeeAPI !== 'undefined') {
+        if (sec > 0) {
+          TalafeeAPI.startPolling(handlePricePoll, sec * 1000);
+        } else {
+          TalafeeAPI.stopPolling();
+        }
+      }
+
+      startCountdown();
+      updateRefreshMenuUI();
+    }
+
+    function setRefreshInterval(sec) {
+      applyRefreshInterval(sec);
+      closeRefreshMenu();
+
+      const fa = currentLang === 'fa';
+      const labels = {
+        30: fa ? 'هر ۳۰ ثانیه' : 'every 30 seconds',
+        300: fa ? 'هر ۵ دقیقه' : 'every 5 minutes',
+        600: fa ? 'هر ۱۰ دقیقه' : 'every 10 minutes',
+        0: fa ? 'فقط دستی' : 'manual only',
+      };
+      showToast((fa ? 'بروزرسانی: ' : 'Refresh: ') + (labels[sec] || sec), 'success');
+    }
+
+    function updateRefreshMenuUI() {
+      document.querySelectorAll('.refresh-menu-item').forEach((item) => {
+        item.classList.toggle('active', Number(item.dataset.interval) === refreshIntervalSec);
+      });
+    }
+
+    function toggleRefreshMenu(event) {
+      if (event) event.stopPropagation();
+      document.getElementById('refreshMenu').classList.toggle('open');
+      lucide.createIcons();
+    }
+
+    function closeRefreshMenu() {
+      document.getElementById('refreshMenu').classList.remove('open');
     }
 
     function setRefreshLoading(loading) {
@@ -4450,6 +4625,12 @@
     // Start countdown when page loads
     document.addEventListener('DOMContentLoaded', () => {
       startCountdown();
+      updateRefreshMenuUI();
+
+      // Close the interval menu when clicking outside the group
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.refresh-group')) closeRefreshMenu();
+      });
     });
 
     // Manual refresh function (legacy support)
