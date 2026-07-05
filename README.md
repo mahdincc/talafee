@@ -188,8 +188,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- Website: [talafee.ir](https://talafee.ir)
-- Email: support@talafee.ir
+- Email: aghaa.mahdi@gmail.com
 
 ---
 
