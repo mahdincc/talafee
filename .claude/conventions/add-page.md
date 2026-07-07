@@ -51,7 +51,7 @@ Minimum structure:
 
 ## Wiring the API
 
-Don't hardcode `http://localhost:3001/api/v1` or `http://185.231.182.111/api/v1`. `TalafeeAPI` resolves the base URL automatically per environment:
+Don't hardcode `http://localhost:3001/api/v1` or `http://<VPS_IP>/api/v1`. `TalafeeAPI` resolves the base URL automatically per environment:
 
 ```js
 TalafeeAPI.init();   // optional — defaults are fine

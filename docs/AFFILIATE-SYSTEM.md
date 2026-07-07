@@ -1,5 +1,10 @@
 # Talafee Affiliate System Documentation
 
+> **⚠️ Proposed monetization model — illustrative figures, not actual revenue.**
+> This is a design document. All rates, revenue estimates, and per-provider splits
+> below are hypothetical planning numbers based on industry benchmarks, not signed
+> agreements or realized income. Affiliate IDs are placeholders.
+
 > Revenue Model & Technical Implementation Guide
 
 ---

@@ -138,12 +138,12 @@ Reading order for orientation: `docs/API.md` → `crawler-service/src/core/BaseP
 
 ## 7. Server / deployment quick facts
 
-- **VPS:** `185.231.182.111` (ArvanCloud, Ubuntu 24.04). Full deploy procedure in [`.claude/conventions/deploy.md`](.claude/conventions/deploy.md).
+- **VPS:** `<VPS_IP>` (ArvanCloud, Ubuntu 24.04). Full deploy procedure in [`.claude/conventions/deploy.md`](.claude/conventions/deploy.md).
 - **Code on server:** `/opt/talafee/`
 - **Services:** `nginx` (port 80, static + `/api/` proxy) and `talafee-crawler.service` (systemd, port 3001).
 - **Logs:** `journalctl -u talafee-crawler.service -f`
 - **DB:** `/opt/talafee/crawler-service/data/prices.db` (SQLite, **never** copied from local — server owns this state).
-- **SSH key:** local-only at `D:\Games\V_Ware\codex\FinTech\talafee\ar-tlafeesshkey-privatekey.pem` (gitignored). Connect: `ssh -i "<key>" root@185.231.182.111`.
+- **SSH key:** local-only, gitignored; referenced as `$DEPLOY_KEY`. Connect: `ssh -i "$DEPLOY_KEY" deploy@<VPS_IP>`.
 
 ---
 

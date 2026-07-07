@@ -71,7 +71,7 @@ Server config in `crawler-service/src/api/server.ts` allows localhost + same-ori
 
 ### "VPS service won't start after deploy"
 
-1. `ssh root@185.231.182.111 'systemctl status talafee-crawler'` → look at the last error.
+1. `ssh deploy@<VPS_IP> 'systemctl status talafee-crawler'` → look at the last error.
 2. Common causes:
    - `npm run build` failed during deploy → check the deploy command output for TS errors.
    - `better-sqlite3` native binding mismatch → run `cd /opt/talafee/crawler-service && npm rebuild better-sqlite3`.

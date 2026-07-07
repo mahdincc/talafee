@@ -159,4 +159,4 @@ See [`commit.md`](commit.md) for the full message rules.
 
 ## Step 9 — handoff
 
-Tell the user the short SHA. The deploy chat will push + redeploy. After redeploy, hit `http://185.231.182.111/api/v1/health` and confirm the new provider appears.
+Tell the user the short SHA. The deploy chat will push + redeploy. After redeploy, hit `http://<VPS_IP>/api/v1/health` and confirm the new provider appears.

@@ -35,12 +35,12 @@ If push is rejected (non-fast-forward), someone pushed in parallel. **Stop and a
 The deploy ships the working tree as a tarball, builds the crawler-service in place, and restarts the systemd unit. **One command** (the proven recipe from memory):
 
 ```bash
-PEM="D:/Games/V_Ware/codex/FinTech/talafee/ar-tlafeesshkey-privatekey.pem"
+PEM="$DEPLOY_KEY"
 cd "D:/Games/V_Ware/codex/FinTech/talafee"
 tar -czf - \
   --exclude=node_modules --exclude=.git --exclude=.claude \
   --exclude='*.pem' --exclude=dist --exclude='data/*.db*' --exclude='*.har' \
-  ./ | ssh -i "$PEM" -o StrictHostKeyChecking=no root@185.231.182.111 \
+  ./ | ssh -i "$PEM" deploy@<VPS_IP> \
   'tar -xzf - -C /opt/talafee/ \
    && cd /opt/talafee/crawler-service \
    && npm ci \
@@ -55,20 +55,20 @@ The `--exclude=.claude` is important — the worktree state and local convention
 
 ```bash
 # 4a. Service health
-ssh -i "$PEM" root@185.231.182.111 'systemctl is-active talafee-crawler nginx'
+ssh -i "$PEM" deploy@<VPS_IP> 'systemctl is-active talafee-crawler nginx'
 # expect: active\nactive
 
 # 4b. API responds, all providers healthy
-curl -s --max-time 10 http://185.231.182.111/api/v1/health | jq '{success, status, providersOK: ([.providers[] | select(.status=="healthy")] | length), providersTotal: (.providers | length)}'
+curl -s --max-time 10 http://<VPS_IP>/api/v1/health | jq '{success, status, providersOK: ([.providers[] | select(.status=="healthy")] | length), providersTotal: (.providers | length)}'
 # expect: success: true, providersOK == providersTotal
 
 # 4c. No drift — file hashes match local
 LOCAL_HASH=$(md5sum index.html | cut -d' ' -f1)
-SERVER_HASH=$(ssh -i "$PEM" root@185.231.182.111 'md5sum /opt/talafee/index.html | cut -d" " -f1')
+SERVER_HASH=$(ssh -i "$PEM" deploy@<VPS_IP> 'md5sum /opt/talafee/index.html | cut -d" " -f1')
 [ "$LOCAL_HASH" = "$SERVER_HASH" ] && echo "index.html OK" || echo "DRIFT on index.html"
 
 # 4d. (optional) Watch one crawl cycle in the journal
-ssh -i "$PEM" root@185.231.182.111 'journalctl -u talafee-crawler.service -n 50 --no-pager' | grep -E 'Crawl run completed|failedProviders'
+ssh -i "$PEM" deploy@<VPS_IP> 'journalctl -u talafee-crawler.service -n 50 --no-pager' | grep -E 'Crawl run completed|failedProviders'
 # expect: failedProviders: 0
 ```
 

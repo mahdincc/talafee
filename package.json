@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/talafee/talafee-web"
+    "url": "https://github.com/mahdincc/talafee"
   },
   "devDependencies": {
     "live-server": "^1.2.2",
