@@ -127,7 +127,8 @@ export class PriceAccuracyTracker {
         'price_anomaly',
         severity,
         `Price for ${productId} deviates ${deviationPercent.toFixed(1)}% from market average`,
-        `قیمت ${productId} ${deviationPercent.toFixed(1)}٪ با میانگین بازار اختلاف دارد`
+        `قیمت ${productId} ${deviationPercent.toFixed(1)}٪ با میانگین بازار اختلاف دارد`,
+        productId
       );
 
       logger.warn('Price anomaly detected', {

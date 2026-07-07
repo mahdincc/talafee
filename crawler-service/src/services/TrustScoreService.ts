@@ -613,12 +613,17 @@ export class TrustScoreService {
     type: string,
     severity: 'low' | 'medium' | 'high' | 'critical',
     message: string,
-    messageFa: string
+    messageFa: string,
+    dedupeKey?: string
   ): void {
     if (!this.dbSink) return;
 
+    // Deterministic id per (provider, type, subject) so a warning that keeps
+    // firing every crawl updates its row instead of colliding on the primary
+    // key (multiple products can trip in the same millisecond).
+    const idSuffix = dedupeKey ? `${type}_${dedupeKey}` : type;
     const warning: WarningRecord = {
-      id: `warn_${providerId}_${Date.now()}`,
+      id: `warn_${providerId}_${idSuffix}`,
       providerId,
       warningType: type,
       severity,

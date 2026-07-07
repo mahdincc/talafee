@@ -9,6 +9,8 @@ export interface ProviderHealth {
   successRate24h: number;
   avgResponseTimeMs: number;
   lastCheckAt: Date;
+  lastPriceCount?: number | undefined;
+  statusReason?: string | undefined;
 }
 
 export enum HealthStatus {

@@ -2460,7 +2460,8 @@
       </div>
 
       <!-- Bubble Card Section -->
-      <section class="bubble-section" id="bubbleSection">
+      <!-- Hidden until the bubble/world-price feed returns valid data (see fetchBubbleData) -->
+      <section class="bubble-section" id="bubbleSection" style="display: none;">
         <div class="bubble-card" id="bubbleCard">
           <div class="bubble-header">
             <div class="bubble-title">
@@ -4175,6 +4176,7 @@
         ? '/api/v1'
         : `http://${window.location.hostname}:3001/api/v1`;
       const bubbleUrl = `${apiBaseUrl}/bubble/summary`;
+      const bubbleSection = document.getElementById('bubbleSection');
 
       try {
         const response = await fetch(bubbleUrl);
@@ -4183,12 +4185,17 @@
         }
 
         const result = await response.json();
-        if (result.success && result.data) {
+        if (result.success && result.data && typeof result.data.bubble18k === 'number') {
           updateBubbleDisplay(result.data);
+          if (bubbleSection) bubbleSection.style.display = '';
+        } else {
+          throw new Error('Bubble data unavailable');
         }
       } catch (error) {
-        console.warn('Failed to fetch bubble data:', error);
-        // Don't show error state, just leave default values
+        // World-price feed unavailable — hide the panel rather than render
+        // dead "--" cards.
+        if (bubbleSection) bubbleSection.style.display = 'none';
+        console.warn('Bubble panel hidden (feed unavailable):', error.message);
       }
     }
 

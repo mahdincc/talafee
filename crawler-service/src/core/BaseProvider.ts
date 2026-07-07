@@ -35,7 +35,14 @@ export interface ProviderStats {
   lastFailureAt?: Date;
   lastError?: string;
   consecutiveFailures: number;
+  consecutiveEmptyFetches: number;
+  lastPriceCount?: number;
 }
+
+// A provider whose endpoint is reachable but yields no usable prices for this
+// many consecutive crawls is reported `degraded` — "reachable, no data" is not
+// the same as "healthy".
+const EMPTY_FETCH_DEGRADE_THRESHOLD = 2;
 
 export abstract class BaseProvider implements IProvider {
   protected readonly httpClient: AxiosInstance;
@@ -48,6 +55,7 @@ export abstract class BaseProvider implements IProvider {
     failedRequests: 0,
     totalResponseTimeMs: 0,
     consecutiveFailures: 0,
+    consecutiveEmptyFetches: 0,
   };
 
   abstract readonly providerId: string;
@@ -130,7 +138,7 @@ export abstract class BaseProvider implements IProvider {
         const droppedCount = rawPrices.length - prices.length;
 
         const durationMs = Date.now() - startTime;
-        this.recordSuccess(durationMs);
+        this.recordSuccess(durationMs, prices.length);
 
         this.logger.info(`Successfully fetched ${prices.length} prices`, {
           correlationId,
@@ -306,12 +314,16 @@ export abstract class BaseProvider implements IProvider {
         : 0;
 
     let status: HealthStatus;
-    if (this.stats.consecutiveFailures >= 5) {
+    let statusReason: string | undefined;
+    if (this.stats.totalRequests === 0) {
+      status = HealthStatus.Unknown;
+    } else if (this.stats.consecutiveFailures >= 5) {
       status = HealthStatus.Unhealthy;
     } else if (this.stats.consecutiveFailures >= 2 || successRate < 80) {
       status = HealthStatus.Degraded;
-    } else if (this.stats.totalRequests === 0) {
-      status = HealthStatus.Unknown;
+    } else if (this.stats.consecutiveEmptyFetches >= EMPTY_FETCH_DEGRADE_THRESHOLD) {
+      status = HealthStatus.Degraded;
+      statusReason = 'Reachable but returning no price data';
     } else {
       status = HealthStatus.Healthy;
     }
@@ -327,14 +339,19 @@ export abstract class BaseProvider implements IProvider {
       successRate24h: successRate,
       avgResponseTimeMs: avgResponseTime,
       lastCheckAt: new Date(),
+      lastPriceCount: this.stats.lastPriceCount,
+      statusReason,
     };
   }
 
-  private recordSuccess(durationMs: number): void {
+  private recordSuccess(durationMs: number, priceCount: number): void {
     this.stats.successfulRequests++;
     this.stats.totalResponseTimeMs += durationMs;
     this.stats.lastSuccessAt = new Date();
     this.stats.consecutiveFailures = 0;
+    this.stats.lastPriceCount = priceCount;
+    this.stats.consecutiveEmptyFetches =
+      priceCount > 0 ? 0 : this.stats.consecutiveEmptyFetches + 1;
   }
 
   private recordFailure(errorMessage: string): void {

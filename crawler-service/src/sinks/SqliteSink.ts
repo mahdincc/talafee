@@ -456,6 +456,13 @@ export class SqliteSink implements IResultSink {
       INSERT INTO provider_warnings
         (id, provider_id, warning_type, severity, message, message_fa, active, created_at)
       VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        severity = excluded.severity,
+        message = excluded.message,
+        message_fa = excluded.message_fa,
+        active = 1,
+        created_at = excluded.created_at,
+        resolved_at = NULL
     `).run(
       warning.id,
       warning.providerId,
