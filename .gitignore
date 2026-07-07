@@ -7,6 +7,11 @@ dist/
 build/
 *.tsbuildinfo
 
+# Compiled TS that leaked next to source config — belongs only in dist/
+crawler-service/config/*.js
+crawler-service/config/*.d.ts
+crawler-service/config/*.map
+
 # Database files
 *.db
 *.sqlite
@@ -64,3 +69,7 @@ id_rsa*
 
 # Misc local-only
 tasks.txt
+talafee_server_start.txt
+
+# Local-only competitive/reverse-engineering analysis — keep OUT of the public repo
+docs/TALINE-PLATFORM-REPORT.md
