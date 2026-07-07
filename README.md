@@ -273,11 +273,12 @@ npm install && npm run dev                                                # فر
 
 ## License
 
-[MIT](LICENSE) © Talafee
+[MIT](LICENSE) © Mahdi Aghakhani
 
 ## Contact
 
 - **Repository:** [github.com/mahdincc/talafee](https://github.com/mahdincc/talafee)
+- **Email:** aghaa.mahdi@gmail.com
 - Run the frontend locally (steps above); a public GitHub Pages demo with sample data is planned.
 
 <div align="center">
